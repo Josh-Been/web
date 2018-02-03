@@ -1,0 +1,148 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['sankey']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'From');
+        data.addColumn('string', 'To');
+        data.addColumn('number', 'Weight');
+        data.addRows([
+
+[ 'Health Sciences1', 'Agricultural and Biological Sciences2', 4676 ],
+[ 'Health Sciences1', 'Arts and Humanities2', 1125 ],
+[ 'Health Sciences1', 'Biochemistry, Genetics and Molecular Biology2', 8687 ],
+[ 'Health Sciences1', 'Business, Management and Accounting2', 3425 ],
+[ 'Health Sciences1', 'Chemical Engineering2', 1624 ],
+[ 'Health Sciences1', 'Chemistry2', 4965 ],
+[ 'Health Sciences1', 'Computer Science2', 361 ],
+[ 'Health Sciences1', 'Decision Sciences2', 816 ],
+[ 'Health Sciences1', 'Earth and Planetary Sciences2', 286 ],
+[ 'Health Sciences1', 'Economics, Econometrics and Finance2', 701 ],
+[ 'Health Sciences1', 'Energy2', 1416 ],
+[ 'Health Sciences1', 'Engineering2', 191 ],
+[ 'Health Sciences1', 'Environmental Science2', 7398 ],
+[ 'Health Sciences1', 'Health Professions2', 958 ],
+[ 'Health Sciences1', 'Immunology and Microbiology2', 814 ],
+[ 'Health Sciences1', 'Materials Science2', 298 ],
+[ 'Health Sciences1', 'Mathematics2', 1201 ],
+[ 'Health Sciences1', 'Medicine2', 20642 ],
+[ 'Health Sciences1', 'Neuroscience2', 1213 ],
+[ 'Health Sciences1', 'Nursing2', 2979 ],
+[ 'Health Sciences1', 'Pharmacology, Toxicology and Pharmaceutics2', 1524 ],
+[ 'Health Sciences1', 'Physics and Astronomy2', 255 ],
+[ 'Health Sciences1', 'Psychology2', 5761 ],
+[ 'Health Sciences1', 'Social Sciences2', 7960 ],
+[ 'Life Sciences1', 'Agricultural and Biological Sciences2', 35509 ],
+[ 'Life Sciences1', 'Arts and Humanities2', 307 ],
+[ 'Life Sciences1', 'Biochemistry, Genetics and Molecular Biology2', 70140 ],
+[ 'Life Sciences1', 'Business, Management and Accounting2', 196 ],
+[ 'Life Sciences1', 'Chemical Engineering2', 17962 ],
+[ 'Life Sciences1', 'Chemistry2', 50517 ],
+[ 'Life Sciences1', 'Computer Science2', 355 ],
+[ 'Life Sciences1', 'Decision Sciences2', 62 ],
+[ 'Life Sciences1', 'Dentistry2', 3 ],
+[ 'Life Sciences1', 'Earth and Planetary Sciences2', 2415 ],
+[ 'Life Sciences1', 'Economics, Econometrics and Finance2', 140 ],
+[ 'Life Sciences1', 'Energy2', 15539 ],
+[ 'Life Sciences1', 'Engineering2', 1334 ],
+[ 'Life Sciences1', 'Environmental Science2', 72273 ],
+[ 'Life Sciences1', 'Health Professions2', 284 ],
+[ 'Life Sciences1', 'Immunology and Microbiology2', 9148 ],
+[ 'Life Sciences1', 'Materials Science2', 3065 ],
+[ 'Life Sciences1', 'Mathematics2', 222 ],
+[ 'Life Sciences1', 'Medicine2', 11325 ],
+[ 'Life Sciences1', 'Neuroscience2', 7533 ],
+[ 'Life Sciences1', 'Nursing2', 507 ],
+[ 'Life Sciences1', 'Pharmacology, Toxicology and Pharmaceutics2', 11464 ],
+[ 'Life Sciences1', 'Physics and Astronomy2', 2722 ],
+[ 'Life Sciences1', 'Psychology2', 762 ],
+[ 'Life Sciences1', 'Social Sciences2', 1810 ],
+[ 'Life Sciences1', 'veterinary2', 4 ],
+[ 'Physical Sciences1', 'Agricultural and Biological Sciences2', 51851 ],
+[ 'Physical Sciences1', 'Arts and Humanities2', 712 ],
+[ 'Physical Sciences1', 'Biochemistry, Genetics and Molecular Biology2', 98414 ],
+[ 'Physical Sciences1', 'Business, Management and Accounting2', 2109 ],
+[ 'Physical Sciences1', 'Chemical Engineering2', 25700 ],
+[ 'Physical Sciences1', 'Chemistry2', 72759 ],
+[ 'Physical Sciences1', 'Computer Science2', 710 ],
+[ 'Physical Sciences1', 'Decision Sciences2', 495 ],
+[ 'Physical Sciences1', 'Earth and Planetary Sciences2', 3702 ],
+[ 'Physical Sciences1', 'Economics, Econometrics and Finance2', 644 ],
+[ 'Physical Sciences1', 'Energy2', 22743 ],
+[ 'Physical Sciences1', 'Engineering2', 1916 ],
+[ 'Physical Sciences1', 'Environmental Science2', 106342 ],
+[ 'Physical Sciences1', 'Health Professions2', 533 ],
+[ 'Physical Sciences1', 'Immunology and Microbiology2', 12686 ],
+[ 'Physical Sciences1', 'Materials Science2', 4529 ],
+[ 'Physical Sciences1', 'Mathematics2', 1151 ],
+[ 'Physical Sciences1', 'Medicine2', 14831 ],
+[ 'Physical Sciences1', 'Neuroscience2', 10206 ],
+[ 'Physical Sciences1', 'Nursing2', 506 ],
+[ 'Physical Sciences1', 'Pharmacology, Toxicology and Pharmaceutics2', 17010 ],
+[ 'Physical Sciences1', 'Physics and Astronomy2', 3930 ],
+[ 'Physical Sciences1', 'Psychology2', 3530 ],
+[ 'Physical Sciences1', 'Social Sciences2', 4121 ],
+[ 'Physical Sciences1', 'veterinary2', 3 ],
+[ 'Social Sciences1', 'Agricultural and Biological Sciences2', 2245 ],
+[ 'Social Sciences1', 'Arts and Humanities2', 11123 ],
+[ 'Social Sciences1', 'Biochemistry, Genetics and Molecular Biology2', 3721 ],
+[ 'Social Sciences1', 'Business, Management and Accounting2', 82390 ],
+[ 'Social Sciences1', 'Chemical Engineering2', 328 ],
+[ 'Social Sciences1', 'Chemistry2', 1026 ],
+[ 'Social Sciences1', 'Computer Science2', 2797 ],
+[ 'Social Sciences1', 'Decision Sciences2', 5470 ],
+[ 'Social Sciences1', 'Earth and Planetary Sciences2', 137 ],
+[ 'Social Sciences1', 'Economics, Econometrics and Finance2', 10593 ],
+[ 'Social Sciences1', 'Energy2', 310 ],
+[ 'Social Sciences1', 'Engineering2', 1132 ],
+[ 'Social Sciences1', 'Environmental Science2', 1710 ],
+[ 'Social Sciences1', 'Health Professions2', 2453 ],
+[ 'Social Sciences1', 'Immunology and Microbiology2', 237 ],
+[ 'Social Sciences1', 'Materials Science2', 98 ],
+[ 'Social Sciences1', 'Mathematics2', 5368 ],
+[ 'Social Sciences1', 'Medicine2', 23140 ],
+[ 'Social Sciences1', 'Neuroscience2', 1453 ],
+[ 'Social Sciences1', 'Nursing2', 3440 ],
+[ 'Social Sciences1', 'Pharmacology, Toxicology and Pharmaceutics2', 1076 ],
+[ 'Social Sciences1', 'Physics and Astronomy2', 58 ],
+[ 'Social Sciences1', 'Psychology2', 58081 ],
+[ 'Social Sciences1', 'Social Sciences2', 74004 ],
+
+
+        ]);
+
+    var colors = ['#a6cee3', '#b2df8a', '#fb9a99', '#fdbf6f',
+                  '#cab2d6', '#ffff99', '#1f78b4', '#33a02c'];
+
+    var options = {
+      height: 800,
+      sankey: {
+        node: {
+          colors: colors,
+		  label: { fontName: 'Helvetica',
+                         fontSize: 14,
+                         color: '#000000',
+                         bold: true,
+                         italic: true } 
+        },
+        link: {
+          colorMode: 'source',
+          colors: colors
+        }
+      }
+    };
+
+        // Instantiates and draws our chart, passing in some options.
+        var chart = new google.visualization.Sankey(document.getElementById('sankey_basic'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="sankey_basic" style="width: 900px; height: 300px;"></div>
+  </body>
+</html>
