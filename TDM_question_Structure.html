@@ -1,0 +1,109 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {packages:["orgchart"]});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Name');
+        data.addColumn('string', 'Manager');
+        data.addColumn('string', 'ToolTip');
+
+        // For each orgchart box, provide the name, manager, and tooltip to show.
+        data.addRows([
+		
+
+['TDM Available?', '', 'TDM Available'],
+['Yes', 'TDM Available?', 'Yes'],
+['No', 'TDM Available?', 'No'],
+['Seven Categories', 'Yes', 'Seven Categories'],
+
+['License', 'Seven Categories', 'License'],
+['What does the TDM agreement cover?', 'License', 'What does the TDM agreement cover?'],
+['Who are the parties involved in licensing?', 'License', 'Who are the parties involved in licensing?'],
+
+['Price', 'Seven Categories', 'Price'],
+['What is the cost?', 'Price', 'What is the cost?'],
+['What is the pricing model?', 'Price', 'What is the pricing model?'],
+
+['Access Restrictions', 'Seven Categories', 'Access Restrictions'],
+['Time for vendor to process request?', 'Access Restrictions', 'Time for vendor to process request?'],
+['Who makes the request?', 'Access Restrictions', 'Who makes the request?'],
+['Limited to certain classes of individuals?', 'Access Restrictions', 'Limited to certain classes of individuals?'],
+
+['Technical Proficiencies & Support', 'Seven Categories', 'Technical Proficiencies & Support'],
+['Expertise needed to mine the TDM data?', 'Technical Proficiencies & Support', 'Expertise needed to mine the TDM data?'],
+['Vendor customer support?', 'Technical Proficiencies & Support', 'Vendor customer support?'],
+
+['Content', 'Seven Categories', 'Content'],
+['Number of departments/students served by content?', 'Content', 'Number of departments/students served by content?'],
+['Extent of content?', 'Content', 'Extent of content?'],
+
+['Mining Methods', 'Seven Categories', 'Mining Methods'],
+['API', 'Mining Methods', 'API'],
+['How often do API limits reset?', 'API', 'How often do API limits reset?'],
+['API limit by researcher or institution?', 'API', 'API limit by researcher or institution?'],
+['Web/Cloud based tools', 'Mining Methods', 'Web/Cloud based tools'],
+['What are the capabilities of online tools?', 'Web/Cloud based tools', 'What are the capabilities of online tools?'],
+['Data Extraction Methods', 'Mining Methods', 'Data Extraction Methods'],
+['How are TDM datasets delivered?', 'Data Extraction Methods', 'How are TDM datasets delivered?'],
+
+['Metadata', 'Seven Categories', 'Metadata'],
+['What fields included in metadata?', 'Metadata', 'What fields included in metadata?'],
+['What level is the metadata?', 'Metadata', 'What level is the metadata?'],
+
+
+	
+        ]);
+
+        // Create the chart.
+		data.setRowProperty(4, 'style', 'background: none; background-color:FFF8DC; border: 1px solid green');
+		data.setRowProperty(5, 'style', 'background: none; background-color:FFF8DC; border: 1px solid green');
+		data.setRowProperty(6, 'style', 'background: none; background-color:FFF8DC; border: 1px solid green');
+		
+		data.setRowProperty(7, 'style', 'background: none; background-color:7FFFD4; border: 1px solid green');
+		data.setRowProperty(8, 'style', 'background: none; background-color:7FFFD4; border: 1px solid green');
+		data.setRowProperty(9, 'style', 'background: none; background-color:7FFFD4; border: 1px solid green');
+		
+		data.setRowProperty(10, 'style', 'background: none; background-color:e7e899; border: 1px solid green');
+		data.setRowProperty(11, 'style', 'background: none; background-color:e7e899; border: 1px solid green');
+		data.setRowProperty(12, 'style', 'background: none; background-color:e7e899; border: 1px solid green');
+		data.setRowProperty(13, 'style', 'background: none; background-color:e7e899; border: 1px solid green');
+		
+		data.setRowProperty(14, 'style', 'background: none; background-color:8BC573; border: 1px solid green');
+		data.setRowProperty(15, 'style', 'background: none; background-color:8BC573; border: 1px solid green');
+		data.setRowProperty(16, 'style', 'background: none; background-color:8BC573; border: 1px solid green');
+		
+		data.setRowProperty(17, 'style', 'background: none; background-color:FFD000; border: 1px solid green');
+		data.setRowProperty(18, 'style', 'background: none; background-color:FFD000; border: 1px solid green');
+		data.setRowProperty(19, 'style', 'background: none; background-color:FFD000; border: 1px solid green');
+		
+		data.setRowProperty(20, 'style', 'background: none; background-color:00FF7F; border: 1px solid green');
+		data.setRowProperty(21, 'style', 'background: none; background-color:00FF7F; border: 1px solid green');
+		data.setRowProperty(22, 'style', 'background: none; background-color:00FF7F; border: 1px solid green');
+		data.setRowProperty(23, 'style', 'background: none; background-color:00FF7F; border: 1px solid green');
+		data.setRowProperty(24, 'style', 'background: none; background-color:00FF7F; border: 1px solid green');
+		data.setRowProperty(25, 'style', 'background: none; background-color:00FF7F; border: 1px solid green');
+		data.setRowProperty(26, 'style', 'background: none; background-color:00FF7F; border: 1px solid green');
+		data.setRowProperty(27, 'style', 'background: none; background-color:00FF7F; border: 1px solid green');
+		
+		data.setRowProperty(28, 'style', 'background: none; background-color:2ED0D0; border: 1px solid green');
+		data.setRowProperty(29, 'style', 'background: none; background-color:2ED0D0; border: 1px solid green');
+		data.setRowProperty(30, 'style', 'background: none; background-color:2ED0D0; border: 1px solid green');
+		
+		
+		
+		
+        var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+        // Draw the chart, setting the allowHtml option to true for the tooltips.
+        chart.draw(data, {allowHtml:true,allowCollapse:true});
+      }
+   </script>
+    </head>
+  <body bgcolor="#C2C2C2">
+	  
+    <div id="chart_div"></div>
+  </body>
+</html>
