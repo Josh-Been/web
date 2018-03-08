@@ -34,7 +34,6 @@
 	<script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
 	<script src="https://cdn.rawgit.com/Josh-Been/web/7cc7da4f/leaflet/catiline.js"></script>
 	<script src="https://cdn.rawgit.com/Josh-Been/web/7cc7da4f/leaflet/leaflet.shpfile.js"></script>
-	<! -- https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png for openstreetmap -->
 	<script>
 		var m = L.map('map').setView([-2.4153217,108.8507662], 5);
 
@@ -59,7 +58,7 @@
 		};
 
 
-		var shpfile = new L.Shapefile('IDN_adm2.zip', {
+		var shpfile = new L.Shapefile('https://cdn.rawgit.com/Josh-Been/web/e89b8b3e/leaflet/IDN_adm2.zip', {
 			style: myStyle,
 			onEachFeature: function(feature, layer) {
 				if (feature.properties) {
@@ -72,7 +71,7 @@
 			}
 		});
 
-		var shpfile_rds = new L.Shapefile('IDN_rds.zip', {
+		var shpfile_rds = new L.Shapefile('https://cdn.rawgit.com/Josh-Been/web/e89b8b3e/leaflet/IDN_rds.zip', {
 			style: myStyle_rds,
 			onEachFeature: function(feature, layer) {
 				if (feature.properties) {
