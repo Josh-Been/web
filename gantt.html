@@ -1,0 +1,98 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages':['gantt']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function daysToMilliseconds(days) {
+      return days * 24 * 60 * 60 * 1000;
+    }
+
+    function drawChart() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Task ID');
+      data.addColumn('string', 'Task Name');
+      data.addColumn('string', 'Resource');
+      data.addColumn('date', 'Start Date');
+      data.addColumn('date', 'End Date');
+      data.addColumn('number', 'Duration');
+      data.addColumn('number', 'Percent Complete');
+      data.addColumn('string', 'Dependencies');
+
+
+
+      data.addRows([
+        ['define', 'Define Program Purpose', 'Josh',
+         new Date(2018, 0, 16), new Date(2018, 0, 17), null, 100, null],
+
+        ['outcomes', 'Define Outcomes and Dates', 'Josh, John, Carol, Sha',
+         new Date(2018, 1, 1), new Date(2018, 1, 16), null, 0, 'define'],
+
+        ['marketing', 'Meet with Marketing', 'Josh, Sinai',
+         new Date(2018, 0, 23), new Date(2018, 0, 26), null, 0, 'define'],
+
+        ['gradschool', 'Send Marketing Info to Grad School', 'Josh, Sinai',
+         new Date(2018, 0, 29), new Date(2018, 0, 30), null, 0, 'marketing'],
+
+        ['createcanvas', 'Create a Canvas Page', 'Josh',
+         new Date(2018, 0, 22), new Date(2018, 0, 23), null, 0, null],
+
+        ['techpoint', 'TechPoint Classroom Training', 'John',
+         new Date(2018, 1, 12), new Date(2018, 1, 16), null, 0, null],
+
+        ['rubric', 'Create Selection Rubric', 'Eileen, Sandy',
+         new Date(2018, 1, 19), new Date(2018, 1, 23), null, 0, 'define,outcomes'],
+
+        ['makeapplication', 'Create Online Application Page', 'Josh',
+         new Date(2018, 1, 23), new Date(2018, 1, 26), null, 0, 'rubric'],
+
+        ['apply', 'Accepting Applications', null,
+         new Date(2018, 1, 27), new Date(2018, 3, 2), null, 0, 'makeapplication'],
+
+        ['evaluate', 'Evaluate Applicants using Rubric', 'Larger Inclusive Group',
+         new Date(2018, 3, 3), new Date(2018, 3, 11), null, 0, 'apply'],
+
+        ['acceptances', 'Send Acceptances', 'Josh',
+         new Date(2018, 3, 13), new Date(2018, 3, 14), null, 0, 'evaluate'],
+
+        ['confirm', 'Acceptees Confirm Participation', null,
+         new Date(2018, 3, 15), new Date(2018, 3, 20), null, 0, 'acceptances'],
+
+        ['announce', 'Announce Scholars and Inform Turnaways', 'Josh',
+         new Date(2018, 3, 23), new Date(2018, 3, 24), null, 0, 'confirm'],
+
+        ['canvastraining', 'Canvas Training and Discussion', 'John',
+         new Date(2018, 2, 14), new Date(2018, 2, 16), null, 0, 'createcanvas'],
+
+        ['sendschedule', 'Send Schedule to Participants', 'Josh',
+         new Date(2018, 3, 25), new Date(2018, 3, 27), null, 0, 'outcomes,announce'],
+
+      ]);
+
+      var options = {
+        height: 1000,
+        gantt: {
+labelStyle: {
+  fontSize: 16,
+},
+          criticalPathEnabled: false,
+          innerGridHorizLine: {
+            stroke: '#ffe0b2',
+            strokeWidth: 2
+          },
+          innerGridTrack: {fill: '#fff3e0'},
+          innerGridDarkTrack: {fill: '#ffcc80'}
+        }
+      };
+      var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+    }
+  </script>
+</head>
+<body>
+  <div id="chart_div"></div>
+</body>
+</html>
