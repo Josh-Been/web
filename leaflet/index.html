@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset='utf-8' />
+	<title>
+		Sample Indonesia Map for Iwan
+	</title>
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+	<!--[if lte IE 8]>
+			<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" />
+		<![endif]-->
+	<style>
+		html {
+			height: 100%
+		}
+
+		body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		#map {
+			height: 100%
+		}
+	</style>
+	<link rel="stylesheet" href="gh-pages.css" />
+</head>
+
+<body>
+	
+	<div id="map"></div>
+	<script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+	<script src="catiline.js"></script>
+	<script src="leaflet.shpfile.js"></script>
+	<! -- https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png for openstreetmap -->
+	<script>
+		var m = L.map('map').setView([-2.4153217,108.8507662], 5);
+
+		var watercolor = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
+			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+		}).addTo(m);
+
+		var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' )
+
+		var natgeo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}' )
+
+		var myStyle = {
+		    "color": "#ff7800",
+		    "fillColor": "#00ff00",
+		    "weight": 1.0,
+		    "opacity": 0.6
+		};
+
+		var myStyle_rds = {
+		    "color": "#000000",
+		    "weight": 1.0,
+		};
+
+
+		var shpfile = new L.Shapefile('IDN_adm2.zip', {
+			style: myStyle,
+			onEachFeature: function(feature, layer) {
+				if (feature.properties) {
+					layer.bindPopup(Object.keys(feature.properties).map(function(k) {
+						return k + ": " + feature.properties[k];
+					}).join("<br />"), {
+						maxHeight: 200
+					});
+				}
+			}
+		});
+
+		var shpfile_rds = new L.Shapefile('IDN_rds.zip', {
+			style: myStyle_rds,
+			onEachFeature: function(feature, layer) {
+				if (feature.properties) {
+					layer.bindPopup(Object.keys(feature.properties).map(function(k) {
+						return k + ": " + feature.properties[k];
+					}).join("<br />"), {
+						maxHeight: 200
+					});
+				}
+			}
+		});
+
+	var baseLayers = {
+		"White Canvas": watercolor,
+		"Satellite": satellite,
+		"National Geographic": natgeo
+
+	};
+
+	var overlays = {
+		"Administrative Level 2": shpfile,
+		"Roads": shpfile_rds,
+	};
+
+	L.control.layers(baseLayers, overlays).addTo(m);
+		shpfile.once("data:loaded", function() {
+			console.log("finished loaded shapefile");
+		});
+
+		shpfile_rds.once("data:loaded", function() {
+			console.log("finished loaded shapefile");
+		});
+
+
+	</script>
+</body>
+
+</html>
