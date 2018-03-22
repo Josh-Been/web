@@ -1,0 +1,91 @@
+<html>
+  <head>
+  <strong>Project: </strong>Similarities Between George Whitfield's Sermons
+  <br>
+  <strong>Description: </strong>Measure the similarities between 57 of George Whitfield's sermons to eachother
+  <br>
+  <strong>Source: </strong><a href="http://www.reformed.org/documents/index.html?mainframe=http://www.reformed.org/documents/Whitefield.html" target="_new">CRTA (Center for Reformed Theology and Apologetics)</a>
+  <br>
+  <strong>Calculation Method: </strong>TF-IDF Cosine Difference (<a href="score_matrix.py" target="_new">code</a>) (<a href="score_matrix.csv">tabular results</a>)
+  <br>
+  <strong>Visualization Method: Sankey Chart using </strong><a href="https://developers.google.com/chart/interactive/docs/gallery/sankey" target="_new">Google Charts JavaScript Classes</a>. All similarity scores .35 or higher (35% similar) displayed.
+  <hr><br>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['sankey']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'From');
+        data.addColumn('string', 'To');
+        data.addColumn('number', 'Weight');
+        data.addRows([
+
+
+
+[ '24. What Think Ye of Christ?  ', '09. The Folly and Danger of Being Not Righteous Enough ', 0.357928 ],
+[ '51. Christ the Only Preservative Against a Reprobate Spirit  ', '09. The Folly and Danger of Being Not Righteous Enough ', 0.381721 ],
+[ '15. The Righteousness of Christ an Everlasting Righteousness  ', '14. The Lord Our Righteousness ', 0.524041 ],
+[ '24. What Think Ye of Christ?  ', '14. The Lord Our Righteousness ', 0.388038 ],
+[ '44. Christ the Believers Wisdom Righteousness Sanctification ', '14. The Lord Our Righteousness ', 0.36431 ],
+[ '14. The Lord Our Righteousness  ', '15. The Righteousness of Christ an Everlasting Righteousness ', 0.524041 ],
+[ '44. Christ the Believers Wisdom Righteousness Sanctification ', '15. The Righteousness of Christ an Everlasting Righteousness ', 0.362413 ],
+[ '48. Satans Devices  ', '17. The Temptation of Christ ', 0.382702 ],
+[ '09. The Folly and Danger of Being Not Righteous Enough  ', '24. What Think Ye of Christ? ', 0.357928 ],
+[ '14. The Lord Our Righteousness  ', '24. What Think Ye of Christ? ', 0.388038 ],
+[ '35. The Conversion of Zaccheus  ', '24. What Think Ye of Christ? ', 0.362282 ],
+[ '38. The Indwelling of the Spirit the Common Privilege of All Believers  ', '24. What Think Ye of Christ? ', 0.37222 ],
+[ '46. Of Justification by Christ  ', '24. What Think Ye of Christ? ', 0.380168 ],
+[ '51. Christ the Only Preservative Against a Reprobate Spirit  ', '24. What Think Ye of Christ? ', 0.351222 ],
+[ '24. What Think Ye of Christ?  ', '35. The Conversion of Zaccheus ', 0.362282 ],
+[ '24. What Think Ye of Christ?  ', '38. The Indwelling of the Spirit the Common Privilege of All Believers ', 0.37222 ],
+[ '42. Marks of Having Received the Holy Ghost  ', '38. The Indwelling of the Spirit the Common Privilege of All Believers ', 0.403758 ],
+[ '51. Christ the Only Preservative Against a Reprobate Spirit  ', '38. The Indwelling of the Spirit the Common Privilege of All Believers ', 0.37197 ],
+[ '38. The Indwelling of the Spirit the Common Privilege of All Believers  ', '42. Marks of Having Received the Holy Ghost ', 0.403758 ],
+[ '51. Christ the Only Preservative Against a Reprobate Spirit  ', '42. Marks of Having Received the Holy Ghost ', 0.377041 ],
+[ '14. The Lord Our Righteousness  ', '44. Christ the Believers Wisdom Righteousness Sanctification', 0.36431 ],
+[ '15. The Righteousness of Christ an Everlasting Righteousness  ', '44. Christ the Believers Wisdom Righteousness Sanctification', 0.362413 ],
+[ '24. What Think Ye of Christ?  ', '46. Of Justification by Christ ', 0.380168 ],
+[ '17. The Temptation of Christ  ', '48. Satans Devices ', 0.382702 ],
+[ '09. The Folly and Danger of Being Not Righteous Enough  ', '51. Christ the Only Preservative Against a Reprobate Spirit ', 0.381721 ],
+[ '24. What Think Ye of Christ?  ', '51. Christ the Only Preservative Against a Reprobate Spirit ', 0.351222 ],
+[ '38. The Indwelling of the Spirit the Common Privilege of All Believers  ', '51. Christ the Only Preservative Against a Reprobate Spirit ', 0.37197 ],
+[ '42. Marks of Having Received the Holy Ghost  ', '51. Christ the Only Preservative Against a Reprobate Spirit ', 0.377041 ],
+
+
+
+        ]);
+
+    var colors = ['#a6cee3', '#b2df8a', '#fb9a99', '#fdbf6f',
+                  '#cab2d6', '#ffff99', '#1f78b4', '#33a02c'];
+
+    var options = {
+      height: 800,
+      sankey: {
+        node: {
+          colors: colors,
+		  label: { fontName: 'Helvetica',
+                         fontSize: 14,
+                         color: '#000000',
+                         bold: true,
+                         italic: true } 
+        },
+        link: {
+          colorMode: 'gradient',
+          colors: colors,
+	  color: { stroke: 'black', strokeWidth: .15}
+        }
+      }
+    };
+
+        // Instantiates and draws our chart, passing in some options.
+        var chart = new google.visualization.Sankey(document.getElementById('sankey_basic'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="sankey_basic" style="width: 900px; height: 300px;"></div>
+  </body>
+</html>
