@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['sankey']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'From');
+        data.addColumn('string', 'To');
+        data.addColumn('number', 'Research Connections');
+        data.addRows([
+
+[ 'Academic Affairs','Central America',1 ],
+[ 'Academic Affairs','South America',1 ],
+[ 'Arts & Sciences','Central America',26 ],
+[ 'Arts & Sciences','South America',42 ],
+[ 'Business','Central America',1 ],
+[ 'Business','South America',6 ],
+[ 'Education','Central America',10 ],
+[ 'Education','South America',10 ],
+[ 'Engineering & Computer Science','Central America',6 ],
+[ 'Engineering & Computer Science','Texas/Mexico border',6 ],
+[ 'Honors College','South America',5 ],
+[ 'Robbins','South America',6 ],
+[ 'Robbins','Texas/Mexico border',2 ],
+[ 'Social Work','Central America',1 ],
+[ 'Social Work','South America',8 ],
+[ 'Social Work','Texas/Mexico border',2 ],
+[ 'Student Life','Central America',3 ],
+[ 'Student Life','South America',2 ],
+
+
+
+
+
+
+
+
+
+
+        ]);
+
+    var colors = ['#a6cee3', '#b2df8a', '#fb9a99', '#fdbf6f', '#cab2d6', '#ffff99', '#1f78b4', '#33a02c'];
+
+    var options = {
+      height: 600,
+	  width: 1000,
+      sankey: {
+        node: {
+          colors: 'brown',
+		  label: { fontName: 'Helvetica',
+                         fontSize: 14,
+                         color: '#000000',
+                         bold: true,
+                         italic: true } 
+        },
+        link: {
+          colorMode: 'source',
+          colors: colors,
+
+        }
+      }
+    };
+
+        // Instantiates and draws our chart, passing in some options.
+        var chart = new google.visualization.Sankey(document.getElementById('sankey_basic'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+<br><br>
+    <div id="sankey_basic" style="width: 400px; height: 300px;"></div>
+  </body>
+</html>
