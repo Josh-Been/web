@@ -3,16 +3,14 @@
 </head>
 <body>
 <script>
-var GET = {};
-var query = window.location.search.substring(1).split("&");
-for (var i = 0, max = query.length; i < max; i++)
-{
-    if (query[i] === "") // check for trailing & with no param
-        continue;
-
-    var param = query[i].split("=");
-    GET[decodeURIComponent(param[0])] = decodeURIComponent(param[1] || "");
+var urlParam = function(name, w){
+    w = w || window;
+    var rx = new RegExp('[\&|\?]'+name+'=([^\&\#]+)'),
+        val = w.location.search.match(rx);
+    return !val ? '':val[1];
 }
+
+var useId = urlParam('Use_Id');
 </script>
 </body>
 </html>
