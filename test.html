@@ -11,6 +11,7 @@ var urlParam = function(name, w){
 }
 
 var useId = urlParam('Use_Id');
+var useId = useId.replace(/%20/g, " ");
 document.write(useId);
 </script>
 </body>
