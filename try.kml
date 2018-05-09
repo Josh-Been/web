@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Folder>
+    <name>Ground Overlays</name>
+    <description>Examples of ground overlays</description>
+    <GroundOverlay>
+      <name>Large-scale overlay on terrain</name>
+      <description>Overlay shows Mount Etna erupting 
+          on July 13th, 2001.</description>
+      <Icon>
+        <href>https://josh-been.github.io/web/Counties_of_England,_Scotland,_Wales_and_Ireland_3.jpg</href>
+      </Icon>
+      <LatLonBox>
+        <north>59.7393796215</north>
+        <south>48.4584859495</south>
+        <east>3.1044752419</east>
+        <west>-11.3190331931</west>
+        <rotation>-0.1556640799496235</rotation>
+      </LatLonBox>
+    </GroundOverlay>
+  </Folder>
+</kml>
