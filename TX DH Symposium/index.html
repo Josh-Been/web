@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symposium Run-of-Show Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .card-enter {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .card-enter-active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        #current-action-container ul {
+            list-style-position: inside;
+            margin-left: 8px;
+        }
+        #current-action-container li {
+            margin-bottom: 0.75rem;
+        }
+        /* Role Colors */
+        .role-moderator { color: #0369a1; /* sky-700 */ }
+        .role-tech { color: #0f766e; /* teal-700 */ }
+        .role-team { color: #7e22ce; /* purple-700 */ }
+
+        /* Timeline Styles */
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+            padding-left: 2rem;
+            border-left: 2px solid #e2e8f0; /* slate-200 */
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -9px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #e2e8f0; /* slate-200 */
+            border: 2px solid #f8fafc; /* white */
+        }
+        .timeline-item.is-active {
+            border-left-color: #0284c7; /* sky-600 */
+        }
+        .timeline-item.is-active::before {
+            background-color: #0284c7; /* sky-600 */
+            transform: scale(1.1);
+        }
+        .timeline-item.is-complete {
+             border-left-color: #16a34a; /* green-600 */
+        }
+        .timeline-item.is-complete::before {
+            background-color: #16a34a; /* green-600 */
+            content: '✓';
+            color: white;
+            text-align: center;
+            font-size: 10px;
+            line-height: 14px;
+        }
+        .timeline-item:last-child {
+            border-left: 2px solid transparent;
+            padding-bottom: 0;
+        }
+        .session-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .session-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex items-center justify-center min-h-screen p-4">
+
+    <div id="home-view" class="w-full max-w-5xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900">2025 Texas DH Symposium: Run-of-Show</h1>
+            <p class="text-xl text-slate-600 mt-2">Select a session to begin.</p>
+            <div class="mt-6">
+                <a href="https://baylor0.sharepoint.com/:p:/r/teams/DHSymposium/Shared%20Documents/General/2025%20DH%20Symposium/Daily%20Agenda%20Slides.pptx?d=w40ecfef2939246f2885cbd0cc14dd0ec&csf=1&web=1&e=ynYTko" target="_blank" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 inline-flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
+                    <span>View Symposium Slideshow</span>
+                </a>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Session cards will be generated here -->
+        </div>
+    </div>
+
+    <div id="session-view" class="w-full max-w-6xl mx-auto hidden">
+        <!-- Header -->
+        <div class="text-center mb-8">
+             <button id="back-to-home" class="float-left bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition mb-4">&larr; All Sessions</button>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Texas DH Symposium: Run-of-Show</h1>
+            <p id="sessionTitle" class="text-lg text-slate-600 mt-1"></p>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Timeline -->
+            <div class="w-full lg:w-1/3">
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4">Session Timeline</h2>
+                    <div id="timeline-container"></div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="w-full lg:w-2/3">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
+                    <!-- Progress Bar -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm font-medium text-slate-500">
+                            <span id="progress-text">Step 1 of X</span>
+                            <span id="progress-time"></span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5">
+                            <div id="progress-bar" class="bg-sky-600 h-2.5 rounded-full transition-all duration-500 ease-in-out" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Current Action -->
+                    <div id="current-action-container" class="bg-sky-50 border-2 border-sky-200 rounded-xl p-6 min-h-[350px] flex flex-col justify-center"></div>
+
+                    <!-- Navigation -->
+                    <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+                        <div class="text-center md:text-left">
+                            <p class="font-bold text-slate-600">UP NEXT:</p>
+                            <p id="up-next-text" class="text-slate-500 text-sm italic">Loading...</p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <button id="prev-btn" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-3 px-6 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+                            <button id="next-btn" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const symposiumData = {
+        tue_am: {
+            title: "Tuesday, September 9, 2025: Morning Session",
+            steps: [
+                { time: "8:30 AM", task: "Pre-Session Technical Setup", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Start the Zoom meeting.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Verify all Zoom settings are correct:<ul class="list-disc pl-8 mt-2 text-sm"><li>Waiting Room is <strong>enabled</strong>.</li><li>Chat is set to <strong>"Host and co-hosts only."</strong></li><li>Q&A feature is <strong>enabled</strong>.</li><li>Non-verbal reactions are <strong>enabled</strong>.</li><li>Screen Sharing is set to <strong>"Host & Co-hosts only."</strong></li><li>Participants are <strong>muted on entry</strong>.</li><li>Participant video is <strong>OFF on entry</strong>.</li><li>Zoom Timer App is active and set to <strong>"Beep"</strong>.</li></ul></li><li><strong><span class="role-moderator">[MODERATOR</span> & <span class="role-tech">TECH SUPPORT]:</span></strong> Open the Teams channel for communications.</li></ul>` },
+                { time: "8:35 AM", task: "Presenter Welcome & Tech Check", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Admit all morning presenters from the waiting room.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Greet each presenter and confirm the following details:<ul class="list-disc pl-8 mt-2 text-sm"><li><strong>Workshop:</strong> "An AI Toolkit for Textual Analysis"<br><em>Presenter: Joshua Been (Baylor University)</em></li><li><strong>Welcome Remarks:</strong> "Welcome & Opening Remarks"<br><em>Presenter: Dr. Kim Kellison (Baylor University)</em></li><li><strong>Keynote:</strong> "Visualizing & Mapping Art History: Digital Humanities Manifested in the Arts"<br><em>Presenter: Dr. Heidi J. Hornik (Baylor University)</em></li></ul></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> One by one, assign temporary <strong>Co-host</strong> status to each presenter for their tech check.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Conduct tech check (audio, video, screen share) with each presenter.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> After checks, ensure only the first presenter, <strong>Joshua Been</strong>, has co-host status.</li></ul><p class="text-sm italic mt-4">Note: If Dr. Kellison or Dr. Hornik prefer to join later, a backup tech check is scheduled for them at 10:10 AM.</p>` },
+                { time: "8:50 AM", task: "Final Preparations", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Message on Teams that setup is complete.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 8:55 AM, share the <strong>'Tuesday Morning' agenda slide</strong>.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Prepare to admit all attendees.</li></ul>` },
+                { time: "9:00 AM", task: "Live Session Kick-Off", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Admit all attendees.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Deliver informal welcome script as attendees join: <br><em>"Good morning, everyone, and welcome. We're so glad to have you here. We'll be getting started in just a moment."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> As script is read, start <strong>cloud recording</strong> & enable <strong>live transcription</strong>.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 9:02 AM, stop sharing slide and deliver the official welcome & housekeeping script:<br><em>"A very warm welcome to the Texas Digital Humanities Symposium, Day 1, Morning Session.<br><br>My name is Steven Sielaff, and I'm delighted to be your host for this session.<br><br>As a quick note, this session is being recorded. We will also have live transcription enabled; you can view the transcript at any time by clicking the 'Captions' button in your Zoom toolbar.<br><br>Just a quick note on our format for this session: Both our opening workshop and our keynote address will have their own dedicated Q&A periods immediately following them.<br><br>For the Q&A, you can participate in two ways: either submit a question at any time using the Q&A button in your Zoom toolbar, or use the Raise Hand feature during the Q&A, and we will unmute you to ask your question live.<br><br>To help everyone stay on schedule, we will be displaying a countdown timer for each presentation. You'll hear a gentle chime when the time is up.<br><br>If you experience any technical difficulties, please send a message to the 'Host and Co-hosts' using the Chat feature, and a member of our team will be happy to assist you."</em></li></ul>` },
+                { time: "9:05 AM", task: "Workshop Begins: Joshua Been", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Introduce <strong>Joshua Been (Baylor University)</strong> and his workshop, 'An AI Toolkit for Textual Analysis.' As a reminder to our audience, please feel free to submit questions at any time using the Q&A button.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> When presentation begins, start Zoom timer for <strong>55 minutes</strong>.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Monitor chat for technical issues.</li></ul>` },
+                { time: "9:55 AM", task: "Workshop Q&A", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share the 'Q&A' slide for the workshop.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Begin the Q&A with the script:<br><em>"Thank you, Joshua, for that wonderful workshop. We now have about 15 minutes for questions. As a reminder, you can use the Q&A button to type a question, or use the 'Raise Hand' feature to ask your question live."</em></li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Facilitate the 15-min hybrid Q&A.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their virtual hand, and re-mute them after their question.</li></ul>` },
+                { time: "10:10 AM", task: "Transition to Welcome & Keynote", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Announce 5-minute break and share 'Scheduled Break' slide.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Remove co-host status from Joshua Been.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Confirm Dr. Kellison & Dr. Hornik are ready. Conduct tech checks now if needed.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Make both <strong>Dr. Kellison & Dr. Hornik</strong> co-hosts.</li></ul>` },
+                { time: "10:15 AM", task: "Official Welcome & Keynote", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Stop sharing and introduce <strong>Dr. Kellison (Baylor University)</strong>, who will deliver the symposium's welcome remarks.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Note: This welcome is scheduled for 15 minutes, but no timer is needed.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> After the welcome, remove co-host status from <strong>Dr. Kellison</strong>.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Introduce <strong>Dr. Heidi Hornik (Baylor University)</strong> and her keynote, 'Visualizing & Mapping Art History'. As a reminder to our audience, please feel free to submit questions at any time using the Q&A button.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> When keynote begins, start Zoom timer for <strong>45 minutes</strong>.</li></ul>` },
+                { time: "11:15 AM", task: "Keynote Q&A", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share the 'Keynote Q&A' slide.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Begin the Q&A with the script:<br><em>"Thank you, Dr. Hornik, for that fascinating keynote. We now have about 15 minutes for questions. As a reminder, you can use the Q&A button or the 'Raise Hand' feature."</em></li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Facilitate the 15-min hybrid Q&A.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their virtual hand, and re-mute them after their question.</li></ul>` },
+                { time: "11:30 AM", task: "End of Morning Session", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Deliver the closing script:<br><em>"We will now be taking a break until 1:30 Central Time, when we will resume with our next session. We look forward to seeing you all back here then!"</em></li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share the long break slide.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Stop the <strong>cloud recording</strong>.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Message on Teams that session has concluded.</li><li><strong><span class="role-team">[TEAM]:</span></strong> Mute mics and turn off cameras for the break.</li></ul>` }
+            ]
+        },
+        tue_pm: {
+            title: "Tuesday, September 9, 2025: Afternoon Session",
+            steps: [
+                { time: "1:00 PM", task: "Pre-Session Technical Setup", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Start the Zoom meeting.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Verify all Zoom settings are correct:<ul class="list-disc pl-8 mt-2 text-sm"><li>Waiting Room is <strong>enabled</strong>.</li><li>Chat is set to <strong>"Host and co-hosts only."</strong></li><li>Q&A feature is <strong>enabled</strong>.</li><li>Non-verbal reactions are <strong>enabled</strong>.</li><li>Screen Sharing is set to <strong>"Host & Co-hosts only."</strong></li><li>Participants are <strong>muted on entry</strong>.</li><li>Participant video is <strong>OFF on entry</strong>.</li><li>Zoom Timer App is active and set to <strong>"Beep"</strong>.</li></ul></li><li><strong><span class="role-moderator">[MODERATOR</span> & <span class="role-tech">TECH SUPPORT]:</span></strong> Open the Teams channel for communications.</li></ul>` },
+                { time: "1:05 PM", task: "Presenter Welcome & Tech Check", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Admit all afternoon presenters from the waiting room.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Greet each presenter and confirm the following details:<ul class="list-disc pl-8 mt-2 text-sm"><li><strong>Session 1:</strong> "roads Taken in the Classroom: Teaching with Digital History"<br><em>Presenter: Matt Drwenski (Rice University)</em></li><li><strong>Session 2:</strong> "Digital Humanities in Action: Creating Engaged Learning Through Interactive Teaching Tools"<br><em>Presenters: Aubree Herman, Sumeyya Akdilek, Mackenzie Mickavicz (Texas Tech University)</em></li><li><strong>Session 3:</strong> "Building the West Texas Creative Atlas"<br><em>Presenters: Lucy Schiller & Anna Kroon (Texas Tech University)</em></li></ul></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> One by one, assign temporary <strong>Co-host</strong> status to each presenter for their tech check.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Conduct tech check (audio, video, screen share) with each presenter.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> After checks, ensure only the first presenter, <strong>Matt Drwenski</strong>, has co-host status.</li></ul>` },
+                { time: "1:25 PM", task: "Final Preparations", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Message on Teams that setup is complete.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 1:25 PM, share <strong>'Tuesday Afternoon' agenda slide</strong>.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Prepare to admit attendees.</li></ul>` },
+                { time: "1:30 PM", task: "Afternoon Session Kick-Off", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Admit all attendees.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Deliver welcome and housekeeping script:<br><em>"Good afternoon, everyone, and a very warm welcome to the Texas Digital Humanities Symposium, Day 1, Afternoon Session.<br><br>My name is Steven Sielaff, and I'm delighted to be your host for this session.<br><br>As a quick note, this session is being recorded and live transcription is enabled.<br><br>Our first presentation will have its own Q&A immediately following it, and our next two sets of speakers will have a combined Q&A at the end.<br><br>You can ask questions using the Q&A button or by using the Raise Hand feature during the Q&A.<br><br>We will be using a countdown timer to stay on schedule, and if you need technical help, please message the 'Host and Co-hosts' in the Chat."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> As script is read, start <strong>cloud recording</strong> & enable <strong>live transcription</strong>.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 1:32 PM, stop sharing slide.</li></ul>` },
+                { time: "1:35 PM", task: "Session 1: Matt Drwenski", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Introduce <strong>Matt Drwenski (Rice University)</strong> and his presentation, "roads Taken in the Classroom: Teaching with Digital History". As a reminder to our audience, please feel free to submit questions at any time using the Q&A button.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> When presentation begins, start Zoom timer for <strong>55 minutes</strong>.</li></ul>`},
+                { time: "2:30 PM", task: "Session 1 Q&A", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share Q&A slide.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Begin the Q&A with the script:<br><em>"Thank you, Matt, for that great presentation. We now have 10 minutes for questions. As a reminder, you can use the Q&A button to type a question, or use the 'Raise Hand' feature to ask your question live."</em></li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Facilitate 10-min Q&A.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their virtual hand, and re-mute them after their question.</li></ul>`},
+                { time: "2:40 PM", task: "Transition to Session 2", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Thank Matt Drwenski, and introduce <strong>Aubree Herman, Sumeyya Akdilek, & Mackenzie Mickavicz (Texas Tech University)</strong> with their presentation "Digital Humanities in Action: Creating Engaged Learning Through Interactive Teaching Tools". As a reminder to our audience, please feel free to submit questions for our joint Q&A at the end of the next presentation.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Swap co-host from Matt Drwenski to <strong>Aubree Herman, Sumeyya Akdilek, and Mackenzie Mickavicz</strong>.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Start timer for <strong>30 minutes</strong>.</li></ul>`},
+                { time: "3:10 PM", task: "Transition to Session 3", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Thank the previous speakers, and introduce <strong>Lucy Schiller & Anna Kroon (Texas Tech University)</strong> with their presentation, "Building the West Texas Creative Atlas". As a reminder to our audience, we will have a joint Q&A after this presentation.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Remove co-host status from the Session 2 presenters and assign to <strong>Lucy Schiller and Anna Kroon</strong>.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Start timer for <strong>30 minutes</strong>.</li></ul>`},
+                { time: "3:40 PM", task: "Joint Q&A (Sessions 2 & 3)", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share joint Q&A slide.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Begin the Q&A with the script:<br><em>"Thank you so much to all our presenters. We now have 20 minutes for a joint Q&A. As a reminder, you can use the Q&A button to type a question, or use the 'Raise Hand' feature to ask your question live."</em></li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Facilitate 20-min Q&A for both presentations.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their virtual hand, and re-mute them after their question.</li></ul>`},
+                { time: "4:00 PM", task: "End of Day 1", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Deliver the closing script:<br><em>"What a fantastic way to conclude Day 1 of the Texas Digital Humanities Symposium! I'd like to extend a huge thank you to all of our presenters today for sharing their incredible research and insights. And, of course, a heartfelt thank you to all of you, our wonderful audience, for your active participation and excellent questions.<br><br>We hope you'll join us again tomorrow morning at 9am Central Time for what is sure to be another exciting day as we kick off tomorrow with a discussion roundtable about what an ongoing regional digital humanities community may look like.<br><br>Thank you all again. This concludes our program for today. Have a wonderful rest of your evening!"</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Stop recording.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share 'End of Day 1' slide and message Teams.</li></ul>`}
+            ]
+        },
+        wed_am: {
+            title: "Wednesday, September 10, 2025: Morning Session",
+            steps: [
+                { time: "8:30 AM", task: "Pre-Session Technical Setup", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Start the Zoom meeting.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Verify all Zoom settings are correct:<ul class="list-disc pl-8 mt-2 text-sm"><li>Waiting Room is <strong>enabled</strong>.</li><li>Chat is set to <strong>"Host and co-hosts only."</strong></li><li>Q&A feature is <strong>enabled</strong>.</li><li>Non-verbal reactions are <strong>enabled</strong>.</li><li>Screen Sharing is set to <strong>"Host & Co-hosts only."</strong></li><li>Participants are <strong>muted on entry</strong>.</li><li>Participant video is <strong>OFF on entry</strong>.</li><li>Zoom Timer App is active and set to <strong>"Beep"</strong>.</li></ul></li><li><strong><span class="role-moderator">[MODERATOR</span> & <span class="role-tech">TECH SUPPORT]:</span></strong> Open the Teams channel for communications.</li></ul>` },
+                { time: "8:35 AM", task: "Presenter Welcome & Tech Check", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Greet & confirm details for:<ul class="list-disc pl-8 mt-2 text-sm"><li><strong>Roundtable:</strong> "Building a Texas DH Community"<br><em>Facilitator: Daniel Watkins (Baylor University)</em></li><li><strong>Session 4:</strong> "ClioVis in Action: Visualizing Historical Arguments and Diverse Narratives"<br><em>Presenter: Marcus Golding (University of Texas at Austin)</em></li></ul></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> One by one, assign temporary <strong>Co-host</strong> status to each presenter for their tech check.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Conduct tech check (audio, video, screen share) with each presenter.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> After checks, ensure only the first presenter, <strong>Daniel Watkins</strong>, has co-host status.</li></ul>`},
+                { time: "8:55 AM", task: "Final Preparations", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Message on Teams that setup is complete.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 8:55 AM, share '<strong>Wednesday Morning</strong>' agenda slide.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Prepare to admit attendees.</li></ul>`},
+                { time: "9:00 AM", task: "Session Kick-Off", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Admit all attendees.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Deliver informal welcome script:<br><em>"Good morning, everyone, and welcome. We're so glad to have you here. We'll be getting started in just a moment."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> As script is read, start <strong>cloud recording</strong> & enable <strong>live transcription</strong>.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 9:02 AM, stop sharing slide and deliver the official welcome & housekeeping script:<br><em>"A very warm welcome to the Texas Digital Humanities Symposium, Day 2.<br><br>My name is <strong>Michael Thompson</strong>, and I'm delighted to be your host for this session.<br><br>As a quick note, this session is being recorded and live transcription is enabled.<br><br>Our session this morning will feature an interactive roundtable followed by a presentation, which will have its own dedicated Q&A at the end.<br><br>You can ask questions using the Q&A button or by using the Raise Hand feature during the Q&A.<br><br>We will be using a countdown timer to stay on schedule, and if you need technical help, please message the 'Host and Co-hosts' in the Chat."</em></li></ul>`},
+                { time: "9:05 AM", task: "Roundtable: Daniel Watkins", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Introduce <strong>Daniel Watkins (Baylor University)</strong> and his roundtable, "Building a Texas DH Community".</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> When the roundtable begins, start Zoom timer for <strong>50 minutes</strong>.</li></ul>`},
+                { time: "9:55 AM", task: "Transition to Session 4", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Thank Daniel Watkins and introduce <strong>Marcus Golding (University of Texas at Austin)</strong> with his presentation, "ClioVis in Action: Visualizing Historical Arguments and Diverse Narratives". As a reminder to our audience, please feel free to submit questions at any time using the Q&A button.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Swap co-host from Daniel Watkins to Marcus Golding.</li></ul>`},
+                { time: "10:00 AM", task: "Session 4: Marcus Golding", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> When presentation begins, start Zoom timer for <strong>60 minutes</strong>.</li></ul>`},
+                { time: "11:00 AM", task: "Session 4 Q&A", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share Q&A slide.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Begin the Q&A with the script:<br><em>"Thank you, Marcus, for that fantastic presentation. We now have about 20 minutes for questions. As a reminder, you can use the Q&A button to type a question, or use the 'Raise Hand' feature to ask your question live."</em></li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Facilitate 20-min Q&A.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their virtual hand, and re-mute them after their question.</li></ul>`},
+                { time: "11:20 AM", task: "End of Morning Session", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Deliver the closing script:<br><em>"We will now be taking a break until 1:30 Central Time, when we will resume with our next session. We look forward to seeing you all back here then!"</em></li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share the long break slide.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Stop the <strong>cloud recording</strong>.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Message on Teams that session has concluded.</li><li><strong><span class="role-team">[TEAM]:</span></strong> Mute mics and turn off cameras for the break.</li></ul>`}
+            ]
+        },
+        wed_pm: {
+            title: "Wednesday, September 10, 2025: Afternoon Session",
+            steps: [
+                { time: "1:00 PM", task: "Pre-Session Technical Setup", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Start the Zoom meeting.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Verify all Zoom settings are correct:<ul class="list-disc pl-8 mt-2 text-sm"><li>Waiting Room is <strong>enabled</strong>.</li><li>Chat is set to <strong>"Host and co-hosts only."</strong></li><li>Q&A feature is <strong>enabled</strong>.</li><li>Non-verbal reactions are <strong>enabled</strong>.</li><li>Screen Sharing is set to <strong>"Host & Co-hosts only."</strong></li><li>Participants are <strong>muted on entry</strong>.</li><li>Participant video is <strong>OFF on entry</strong>.</li><li>Zoom Timer App is active and set to <strong>"Beep"</strong>.</li></ul></li><li><strong><span class="role-moderator">[MODERATOR</span> & <span class="role-tech">TECH SUPPORT]:</span></strong> Open the Teams channel for communications.</li></ul>` },
+                { time: "1:05 PM", task: "Presenter Welcome & Tech Check", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Greet & confirm details for:<ul class="list-disc pl-8 mt-2 text-sm"><li><strong>Session 5:</strong> "Gen AI and Alternative Assignments for Teaching the US-Sino Relationship History"<br><em>Presenter: Shu Wan (State University of New York at Buffalo)</em></li><li><strong>Session 6:</strong> "Navigating the Unknown: AI Tools for Humanities Research"<br><em>Presenters: Carrie Johnston & Rafia Mirza (Southern Methodist University)</em></li><li><strong>Session 7:</strong> "Adventures in DH: Historical Documents, AI, and Dataset Construction"<br><em>Presenter: Patrick Leech (Anderson University)</em></li></ul></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> One by one, assign temporary <strong>Co-host</strong> status to each presenter for their tech check.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Conduct tech check (audio, video, screen share) with each presenter.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> After checks, ensure only the first presenter, <strong>Shu Wan</strong>, has co-host status.</li></ul>`},
+                { time: "1:25 PM", task: "Final Preparations", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Message on Teams that setup is complete.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 1:25 PM, share 'Wednesday Afternoon' agenda slide.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Prepare to admit attendees.</li></ul>`},
+                { time: "1:30 PM", task: "Session Kick-Off", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Admit all attendees.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Deliver informal welcome script:<br><em>"Good afternoon, everyone, and welcome. We're so glad to have you here. We'll be getting started in just a moment."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> As script is read, start <strong>cloud recording</strong> & enable <strong>live transcription</strong>.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 1:32 PM, stop sharing slide and deliver the official welcome & housekeeping script:<br><em>"A very warm welcome to the Texas Digital Humanities Symposium, Day 2, Afternoon Session.<br><br>My name is <strong>Laura Semrau</strong>, and I'm delighted to be your host.<br><br>This afternoon, our first two presentations will have a joint Q&A, and our final presentation will have its own Q&A at the end.<br><br>You can ask questions using the Q&A button or by using the Raise Hand feature during the Q&A.<br><br>We will be using a countdown timer to stay on schedule, and if you need technical help, please message the 'Host and Co-hosts' in the Chat."</em></li></ul>`},
+                { time: "1:35 PM", task: "Session 5: Shu Wan", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Introduce <strong>Shu Wan (State University of New York at Buffalo)</strong> and her presentation, "Gen AI and Alternative Assignments for Teaching the US-Sino Relationship History". As a reminder to our audience, please feel free to submit questions for our joint Q&A.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Start timer for <strong>30 minutes</strong>.</li></ul>`},
+                { time: "2:05 PM", task: "Transition to Session 6", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Thank Shu Wan, and introduce <strong>Carrie Johnston & Rafia Mirza (Southern Methodist University)</strong> with their presentation, "Navigating the Unknown: AI Tools for Humanities Research". As a reminder to our audience, we will have a joint Q&A after this presentation.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Swap co-host from Shu Wan to Carrie Johnston & Rafia Mirza.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Start timer for <strong>30 minutes</strong>.</li></ul>`},
+                { time: "2:35 PM", task: "Joint Q&A (Sessions 5 & 6)", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share joint Q&A slide.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Begin Q&A with script:<br><em>"Thank you to our presenters. We now have 15 minutes for a joint Q&A. As a reminder, you can use the Q&A button to type a question, or use the 'Raise Hand' feature to ask your question live."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their virtual hand, and re-mute them after their question.</li></ul>`},
+                { time: "2:50 PM", task: "Transition to Session 7", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Thank the previous speakers, and introduce <strong>Patrick Leech (Anderson University)</strong> with his presentation, "Adventures in DH: Historical Documents, AI, and Dataset Construction". As a reminder, we will have a Q&A after this presentation.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Remove co-host from prior presenters and assign to Patrick Leech.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Start timer for <strong>60 minutes</strong>.</li></ul>`},
+                { time: "3:50 PM", task: "Session 7 Q&A", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share Q&A slide.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Begin Q&A with script:<br><em>"Thank you, Patrick. We now have 10 minutes for questions. As a reminder, you can use the Q&A button to type a question, or use the 'Raise Hand' feature to ask your question live."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their virtual hand, and re-mute them after their question.</li></ul>`},
+                { time: "4:00 PM", task: "End of Day 2", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Deliver 'End of Day 2' script:<br><em>"And that concludes our sessions for Day 2! A huge thank you to all of today's presenters and to our wonderful audience. We hope to see you for our final day tomorrow, starting at 9 AM Central with a panel on Funding for DH."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Stop recording.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share 'End of Day 2' slide and message Teams.</li></ul>`}
+            ]
+        },
+        thu_am: {
+            title: "Thursday, September 11, 2025: Morning Session",
+            steps: [
+                { time: "8:30 AM", task: "Pre-Session Technical Setup", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Start the Zoom meeting.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Verify all Zoom settings are correct:<ul class="list-disc pl-8 mt-2 text-sm"><li>Waiting Room is <strong>enabled</strong>.</li><li>Chat is set to <strong>"Host and co-hosts only."</strong></li><li>Q&A feature is <strong>enabled</strong>.</li><li>Non-verbal reactions are <strong>enabled</strong>.</li><li>Screen Sharing is set to <strong>"Host & Co-hosts only."</strong></li><li>Participants are <strong>muted on entry</strong>.</li><li>Participant video is <strong>OFF on entry</strong>.</li><li>Zoom Timer App is active and set to <strong>"Beep"</strong>.</li></ul></li><li><strong><span class="role-moderator">[MODERATOR</span> & <span class="role-tech">TECH SUPPORT]:</span></strong> Open the Teams channel for communications.</li></ul>` },
+                { time: "8:35 AM", task: "Presenter Welcome & Tech Check", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Greet & confirm details for:<ul class="list-disc pl-8 mt-2 text-sm"><li><strong>Panel:</strong> "Funding to Support Digital Humanities"<br><em>Chair: Daniel Watkins (Baylor University)<br>Panelists: Elise King (Baylor University) & J.B. Shank (University of Minnesota)</em></li><li><strong>Session 8:</strong> "Visualizing the Invisible: Using Social Network Analysis to Map Academic Library Relationships"<br><em>Presenter: Ellen Hampton-Filgo (Baylor University)</em></li><li><strong>Session 9:</strong> "From Print to Portal: Latino Archives and Digital Futures"<br><em>Presenters: Andrea Cuevas, Carolina Suárez Latorre, Gabriela Baeza Ventura, & Carolina Villarroel (University of Houston)</em></li></ul></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> One by one, assign temporary <strong>Co-host</strong> status to each presenting group for their tech check.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Conduct tech check with each group.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> After checks, ensure only the first panel group, <strong>Daniel Watkins, Elise King & J.B. Shank</strong>, have co-host status.</li></ul>`},
+                { time: "8:55 AM", task: "Final Preparations", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Message on Teams that setup is complete.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 8:55 AM, share '<strong>Thursday Morning</strong>' agenda slide.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Prepare to admit attendees.</li></ul>`},
+                { time: "9:00 AM", task: "Session Kick-Off", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Admit all attendees.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Deliver informal welcome script:<br><em>"Good morning, everyone, and welcome. We're so glad to have you here. We'll be getting started in just a moment."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> As script is read, start <strong>cloud recording</strong> & enable <strong>live transcription</strong>.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 9:02 AM, stop sharing slide and deliver the official welcome & housekeeping script:<br><em>"A very warm welcome to the final day of the Texas Digital Humanities Symposium.<br><br>My name is <strong>Ezra Choe</strong>, and I'm delighted to be your host.<br><br>This morning, each of our sessions will have its own dedicated Q&A period immediately following it.<br><br>You can ask questions using the Q&A button or by using the Raise Hand feature during the Q&A.<br><br>We will be using a countdown timer to stay on schedule, and if you need technical help, please message the 'Host and Co-hosts' in the Chat."</em></li></ul>`},
+                { time: "9:05 AM", task: "Panel: Funding DH", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Introduce the panel, "Funding to Support Digital Humanities," with chair <strong>Daniel Watkins (Baylor University)</strong> and panelists <strong>Elise King (Baylor University) & J.B. Shank (University of Minnesota)</strong>. As a reminder to our audience, please feel free to submit questions at any time using the Q&A button.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Start timer for <strong>25 minutes</strong>.</li></ul>`},
+                { time: "9:30 AM", task: "Panel Q&A", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share Q&A slide.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Begin Q&A with script:<br><em>"Thank you for that insightful discussion. We now have about 5 minutes for questions. As a reminder, you can use the Q&A button to type a question, or use the 'Raise Hand' feature to ask your question live."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their virtual hand, and re-mute them after their question.</li></ul>`},
+                { time: "9:35 AM", task: "Transition to Session 8", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Thank the panelists and introduce <strong>Ellen Hampton-Filgo (Baylor University)</strong> with her presentation, "Visualizing the Invisible: Using Social Network Analysis to Map Academic Library Relationships". As a reminder to our audience, please feel free to submit questions at any time using the Q&A button.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Swap co-host from Daniel Watkins, Elise King & J.B. Shank to Ellen Hampton-Filgo.</li></ul>`},
+                { time: "9:40 AM", task: "Session 8: Ellen Hampton-Filgo", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Start timer for <strong>30 minutes</strong>.</li></ul>`},
+                { time: "10:10 AM", task: "Session 8 Q&A", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share Q&A slide.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Begin Q&A with script:<br><em>"Thank you, Ellen. We now have 10 minutes for questions. As a reminder, you can use the Q&A button to type a question, or use the 'Raise Hand' feature to ask your question live."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their virtual hand, and re-mute them after their question.</li></ul>`},
+                { time: "10:20 AM", task: "Transition to Session 9", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Thank Ellen Hampton-Filgo and introduce <strong>Andrea Cuevas, Carolina Suárez Latorre, Gabriela Baeza Ventura, & Carolina Villarroel (University of Houston)</strong> with their presentation, "From Print to Portal: Latino Archives and Digital Futures". As a reminder, we will have a Q&A after this presentation.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Swap co-host to <strong>Andrea Cuevas, Carolina Suárez Latorre, Gabriela Baeza Ventura, & Carolina Villarroel</strong>.</li></ul>`},
+                { time: "10:25 AM", task: "Session 9: Cuevas et al.", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Start timer for <strong>60 minutes</strong>.</li></ul>`},
+                { time: "11:25 AM", task: "Session 9 Q&A", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share Q&A slide.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Begin Q&A with script:<br><em>"Thank you all for that wonderful panel. We now have 15 minutes for questions. As a reminder, you can use the Q&A button to type a question, or use the 'Raise Hand' feature to ask your question live."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their virtual hand, and re-mute them after their question.</li></ul>`},
+                { time: "11:40 AM", task: "End of Morning Session", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Deliver the closing script:<br><em>"We will now be taking a break until 1:30 Central Time, when we will resume with our next session. We look forward to seeing you all back here then!"</em></li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share the long break slide.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Stop the <strong>cloud recording</strong>.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Message on Teams that session has concluded.</li><li><strong><span class="role-team">[TEAM]:</span></strong> Mute mics and turn off cameras for the break.</li></ul>`}
+            ]
+        },
+        thu_pm: {
+            title: "Thursday, September 11, 2025: Afternoon Session",
+            steps: [
+                { time: "1:00 PM", task: "Pre-Session Technical Setup", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Start the Zoom meeting.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Verify all Zoom settings are correct:<ul class="list-disc pl-8 mt-2 text-sm"><li>Waiting Room is <strong>enabled</strong>.</li><li>Chat is set to <strong>"Host and co-hosts only."</strong></li><li>Q&A feature is <strong>enabled</strong>.</li><li>Non-verbal reactions are <strong>enabled</strong>.</li><li>Screen Sharing is set to <strong>"Host & Co-hosts only."</strong></li><li>Participants are <strong>muted on entry</strong>.</li><li>Participant video is <strong>OFF on entry</strong>.</li><li>Zoom Timer App is active and set to <strong>"Beep"</strong>.</li></ul></li><li><strong><span class="role-moderator">[MODERATOR</span> & <span class="role-tech">TECH SUPPORT]:</span></strong> Open the Teams channel for communications.</li></ul>`},
+                { time: "1:05 PM", task: "Presenter Welcome & Tech Check", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Greet & confirm details for:<ul class="list-disc pl-8 mt-2 text-sm"><li><strong>Session 10:</strong> "Recovering Du Bois' Seventh Ward: Resource Gaps, Historical Memory, and the Infrastructure of Digital Humanities"<br><em>Presenters: Stephanie Boddie (Baylor University) & Amy Hillier (University of Pennsylvania)</em></li><li><strong>Session 11:</strong> "At the Core’s Core: Showcasing Student Support of Digital Research from Start to Finish"<br><em>Presenters: Taylor Davis-Van Atta & Linda García Merchant (University of Houston)</em></li></ul></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> One by one, assign temporary <strong>Co-host</strong> status to each presenting group for their tech check.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Conduct tech check with each group.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> After checks, ensure only the first presenters, <strong>Stephanie Boddie & Amy Hillier</strong>, have co-host status.</li></ul>`},
+                { time: "1:25 PM", task: "Final Preparations", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Message on Teams that setup is complete.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 1:25 PM, share 'Thursday Afternoon' agenda slide.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Prepare to admit attendees.</li></ul>`},
+                { time: "1:30 PM", task: "Session Kick-Off", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Admit all attendees.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Deliver informal welcome script:<br><em>"Good afternoon, everyone, and welcome. We're so glad to have you here. We'll be getting started in just a moment."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> As script is read, start <strong>cloud recording</strong> & enable <strong>live transcription</strong>.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 1:32 PM, stop sharing slide and deliver the official welcome & housekeeping script:<br><em>"A very warm welcome to the final session of the Texas Digital Humanities Symposium.<br><br>My name is <strong>Ezra Choe</strong>, and I'm delighted to be your host.<br><br>This afternoon, our two presentations will have a joint Q&A, followed by the symposium's closing remarks.<br><br>You can ask questions using the Q&A button or by using the Raise Hand feature during the Q&A.<br><br>We will be using a countdown timer to stay on schedule, and if you need technical help, please message the 'Host and Co-hosts' in the Chat."</em></li></ul>`},
+                { time: "1:35 PM", task: "Session 10: Boddie & Hillier", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Introduce <strong>Stephanie Boddie (Baylor University) & Amy Hillier (University of Pennsylvania)</strong> and their presentation, "Recovering Du Bois' Seventh Ward: Resource Gaps, Historical Memory, and the Infrastructure of Digital Humanities". As a reminder, we will have a joint Q&A after the next presentation.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Start timer for <strong>30 minutes</strong>.</li></ul>`},
+                { time: "2:05 PM", task: "Transition to Session 11", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Thank the presenters and introduce <strong>Taylor Davis-Van Atta & Linda García Merchant (University of Houston)</strong> with their presentation, "At the Core’s Core: Showcasing Student Support of Digital Research from Start to Finish". As a reminder, we will have a joint Q&A after this presentation.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Swap co-host from Boddie & Hillier to Davis-Van Atta & Merchant.</li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Start timer for <strong>30 minutes</strong>.</li></ul>`},
+                { time: "2:35 PM", task: "Joint Q&A & Closing Remarks", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share joint Q&A slide.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Begin Q&A with script:<br><em>"Thank you to our presenters. We now have about 20 minutes for questions. As a reminder, you can use the Q&A button to type a question, or use the 'Raise Hand' feature to ask your question live."</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their virtual hand, and re-mute them after their question.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> At 2:55 PM, introduce <strong>Joshua Been (Baylor University)</strong> to deliver the symposium's closing remarks.</li></ul>`},
+                { time: "3:00 PM", task: "Symposium End", details: `<ul class="space-y-3 text-slate-600 md:text-lg"><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> After remarks, deliver final thank you script:<br><em>"And with that, we have reached the conclusion of the second annual Texas Digital Humanities Symposium. On behalf of the entire planning committee, I want to extend our deepest gratitude to every single one of our presenters. Thank you for so generously sharing your time, expertise, and passion with us over these past three days.<br><br>And to our incredible audience, thank you. Your engagement, insightful questions, and enthusiasm are what make this community so special and vibrant.<br><br>We hope this symposium has left you feeling inspired and connected. Please keep an eye on your email for a link to our feedback survey; your thoughts are so important as we begin to dream about what's next.<br><br>Thank you all one last time for making this such a memorable event. We wish you all the best and look forward to seeing you again next year!"</em></li><li><strong><span class="role-tech">[TECH SUPPORT]:</span></strong> Stop recording.</li><li><strong><span class="role-moderator">[MODERATOR]:</span></strong> Share 'Final Thank You' slide and message Teams.</li></ul>`}
+            ]
+        }
+    };
+    
+    // --- App Logic ---
+    const homeView = document.getElementById('home-view');
+    const sessionView = document.getElementById('session-view');
+    const homeGrid = homeView.querySelector('.grid');
+    const backToHomeBtn = document.getElementById('back-to-home');
+    const sessionTitleEl = document.getElementById('sessionTitle');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const progressTime = document.getElementById('progress-time');
+    const currentActionContainer = document.getElementById('current-action-container');
+    const upNextText = document.getElementById('up-next-text');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const timelineContainer = document.getElementById('timeline-container');
+
+    let currentSessionSteps = [];
+    let currentStep = 0;
+
+    function renderHomePage() {
+        homeGrid.innerHTML = '';
+        Object.keys(symposiumData).forEach(key => {
+            const session = symposiumData[key];
+            const card = document.createElement('button');
+            card.className = 'session-card bg-white rounded-2xl shadow-lg p-6 text-left w-full';
+            card.dataset.sessionKey = key;
+            const day = session.title.split(',')[0];
+            const sessionName = session.title.split(': ')[1];
+            card.innerHTML = `
+                <p class="text-sm font-semibold text-sky-600">${day}</p>
+                <h3 class="text-xl font-bold text-slate-800 mt-1">${sessionName}</h3>
+            `;
+            homeGrid.appendChild(card);
+        });
+    }
+
+    function showSessionView(sessionKey) {
+        currentSessionSteps = symposiumData[sessionKey].steps;
+        sessionTitleEl.textContent = symposiumData[sessionKey].title;
+        currentStep = 0;
+        homeView.classList.add('hidden');
+        sessionView.classList.remove('hidden');
+        renderStep(currentStep);
+    }
+
+    function showHomeView() {
+        sessionView.classList.add('hidden');
+        homeView.classList.remove('hidden');
+    }
+
+    homeGrid.addEventListener('click', (e) => {
+        const card = e.target.closest('.session-card');
+        if (card) {
+            showSessionView(card.dataset.sessionKey);
+        }
+    });
+
+    backToHomeBtn.addEventListener('click', showHomeView);
+
+    function renderTimeline(activeIndex) {
+        timelineContainer.innerHTML = '';
+        const ol = document.createElement('ol');
+        currentSessionSteps.forEach((step, index) => {
+            const li = document.createElement('li');
+            li.className = 'timeline-item';
+            const button = document.createElement('button');
+            button.dataset.index = index;
+            button.className = 'text-left w-full hover:bg-slate-100 p-1 rounded-md transition';
+            if (index === activeIndex) {
+                li.classList.add('is-active');
+                button.innerHTML = `<strong class="text-sky-700 font-bold">${step.task}</strong>`;
+            } else if (index < activeIndex) {
+                li.classList.add('is-complete');
+                button.innerHTML = `<span class="text-slate-500 line-through">${step.task}</span>`;
+            } else {
+                button.innerHTML = `<span class="text-slate-600">${step.task}</span>`;
+            }
+            li.appendChild(button);
+            ol.appendChild(li);
+        });
+        timelineContainer.appendChild(ol);
+    }
+    
+    function renderStep(index) {
+        currentStep = index;
+        const step = currentSessionSteps[index];
+        currentActionContainer.classList.remove('card-enter-active');
+        currentActionContainer.classList.add('card-enter');
+        setTimeout(() => {
+            currentActionContainer.innerHTML = `
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900">${step.task}</h2>
+                    <span class="text-lg font-bold text-slate-700">${step.time}</span>
+                </div>
+                <div class="text-slate-600 md:text-lg">${step.details}</div>
+            `;
+            currentActionContainer.classList.add('card-enter-active');
+        }, 50);
+        const progressPercentage = ((index + 1) / currentSessionSteps.length) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
+        progressText.textContent = `Step ${index + 1} of ${currentSessionSteps.length}`;
+        progressTime.textContent = step.time;
+        if (index + 1 < currentSessionSteps.length) {
+            upNextText.textContent = `${currentSessionSteps[index + 1].task}`;
+        } else {
+            upNextText.textContent = 'End of session.';
+        }
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === currentSessionSteps.length - 1;
+        renderTimeline(index);
+    }
+
+    prevBtn.addEventListener('click', () => { if (currentStep > 0) renderStep(currentStep - 1); });
+    nextBtn.addEventListener('click', () => { if (currentStep < currentSessionSteps.length - 1) renderStep(currentStep + 1); });
+    timelineContainer.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-index]');
+        if (button) {
+            const index = parseInt(button.dataset.index, 10);
+            renderStep(index);
+        }
+    });
+
+    renderHomePage();
+    </script>
+</body>
+</html>
+
