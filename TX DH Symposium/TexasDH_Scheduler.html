@@ -123,14 +123,15 @@
         .presentation-card.placed::before {
             content: "✓";
             position: absolute;
-            top: 6px;
-            right: 8px;
-            font-size: 18px;
+            top: 50%;
+            left: 6px;
+            transform: translateY(-50%);
+            font-size: 16px;
             color: #3b6d11;
             font-weight: bold;
             background: #eaf3de;
-            width: 26px;
-            height: 26px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -143,6 +144,18 @@
             font-weight: 500;
             margin-bottom: 0.25rem;
             color: #1a1a18;
+        }
+        
+        .card-categories {
+            display: flex;
+            gap: 0.35rem;
+            margin-top: 0.4rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-icon {
+            font-size: 14px;
+            display: inline-block;
         }
         
         .card-meta {
@@ -249,6 +262,22 @@
             cursor: not-allowed !important;
         }
         
+        .slot-content.lunch {
+            border: 2px solid #d4a574 !important;
+            background: #f5e6d3 !important;
+            cursor: not-allowed !important;
+        }
+        
+        .slot-content.lunch::after {
+            content: "LUNCH BREAK";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #8b6f47;
+            font-weight: 600;
+        }
+        
         .slot-empty-text {
             font-size: 12px;
             color: #b4b2a9;
@@ -311,6 +340,16 @@
             <!-- LEFT PANEL: PRESENTATIONS -->
             <div class="section">
                 <h2>Presentations</h2>
+                
+                <div style="background: #f8f7f4; border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem; font-size: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #6b6a66;">Category Legend:</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+                        <div>⚙️ DH Tools: Practical Empowerment</div>
+                        <div>📚 DH Content: Diverse Perspectives</div>
+                        <div>🎓 Teaching & Classroom Integration</div>
+                        <div>🔍 Research Challenges: Navigating the Unknown</div>
+                    </div>
+                </div>
                 
                 <div class="category">
                     <div class="category-title">Special Events (Confirmed)</div>
@@ -424,15 +463,44 @@
 
     <script>
         const times = [];
-        for (let h = 9; h < 16; h++) {
+        for (let h = 9; h < 17; h++) {
             times.push(`${h}:00`);
-            times.push(`${h}:30`);
+            if (h < 16) {
+                times.push(`${h}:30`);
+            }
         }
         
+        const lunchSlots = new Set(['12:00', '12:30']);
         const blockedSlots = new Set();
         const placedPresentations = new Set();
         let draggedCard = null;
         let draggedDuration = 0;
+        
+        const categorySymbols = {
+            "DH Tools: Practical Empowerment": "⚙️",
+            "DH Content: Diverse Perspectives": "📚",
+            "Teaching & Classroom Integration: Real-World Impact": "🎓",
+            "Research Challenges: Navigating the Unknown": "🔍"
+        };
+        
+        const categoryMap = {
+            "Can Generative AI Clean Historical Documents? An Experiment with Eighteenth-Century Missionary Letters": ["DH Tools: Practical Empowerment"],
+            "A Digital and Collaborative Transformation of \"Mexican Revolution\" Collections": ["DH Content: Diverse Perspectives", "DH Tools: Practical Empowerment", "Teaching & Classroom Integration: Real-World Impact"],
+            "The Collaborative Internship Program: SIPHDH24, DMIPP25, D&DIP26": ["Teaching & Classroom Integration: Real-World Impact", "Research Challenges: Navigating the Unknown"],
+            "Uplifting Zines Through Digital Humanities Practices": ["Teaching & Classroom Integration: Real-World Impact"],
+            "Aiding Our Humans: Improving Workflow Efficiencies at BUIOH": ["DH Tools: Practical Empowerment"],
+            "Visualizing Cambodian American Lived Experiences and Journeys Across the Pacific, 1950s–2020": ["DH Content: Diverse Perspectives"],
+            "Documenting Latina/o Life and Death: Ethics, Data, and Community Archives in the Morales Collection": ["DH Content: Diverse Perspectives", "Teaching & Classroom Integration: Real-World Impact"],
+            "Mapping Victory: How We Created a Public Humanities Project from an Archive of WWII Souvenir Maps": ["DH Content: Diverse Perspectives", "DH Tools: Practical Empowerment", "Teaching & Classroom Integration: Real-World Impact"],
+            "Bridging past, present, and underrepresented languages using digital tools": ["DH Content: Diverse Perspectives", "DH Tools: Practical Empowerment"],
+            "Feeling Narrative: A Sentiment Analysis of Queer-Themed Spanish Picturebooks": ["DH Tools: Practical Empowerment", "Research Challenges: Navigating the Unknown"],
+            "Directories to Data: Leveraging Generative AI and Historical Expertise to Unlock Houston's Printed Past": ["DH Tools: Practical Empowerment", "Research Challenges: Navigating the Unknown"]
+        };
+        
+        function getCategoryIcons(title) {
+            const categories = categoryMap[title] || [];
+            return categories.map(cat => categorySymbols[cat] || '').filter(Boolean);
+        }
         
         function getDuration(card) {
             const meta = card.querySelector('.card-meta')?.textContent || '';
@@ -481,11 +549,16 @@
             if (!slotContent) return;
             
             const isBlocked = isSlotBlocked(dayId, time);
+            const isLunch = lunchSlots.has(time);
             
             if (isBlocked) {
                 slotContent.classList.add('blocked');
             } else {
                 slotContent.classList.remove('blocked');
+                // If it's a lunch slot, make sure the lunch class is present
+                if (isLunch) {
+                    slotContent.classList.add('lunch');
+                }
             }
         }
         
@@ -533,10 +606,14 @@
                     slotContent.dataset.time = time;
                     slotContent.dataset.day = dayId;
                     
-                    const emptyText = document.createElement('div');
-                    emptyText.className = 'slot-empty-text';
-                    emptyText.textContent = 'Drop here';
-                    slotContent.appendChild(emptyText);
+                    if (lunchSlots.has(time)) {
+                        slotContent.classList.add('lunch');
+                    } else {
+                        const emptyText = document.createElement('div');
+                        emptyText.className = 'slot-empty-text';
+                        emptyText.textContent = 'Drop here';
+                        slotContent.appendChild(emptyText);
+                    }
                     
                     slotContent.addEventListener('dragover', handleDragOver);
                     slotContent.addEventListener('drop', handleDrop);
@@ -555,6 +632,24 @@
             document.querySelectorAll('.presentation-card').forEach(card => {
                 card.addEventListener('dragstart', handleDragStart);
                 card.addEventListener('dragend', handleDragEnd);
+                
+                // Add category icons if not already added
+                if (!card.querySelector('.card-categories')) {
+                    const title = card.querySelector('.card-title')?.textContent || '';
+                    const icons = getCategoryIcons(title);
+                    
+                    if (icons.length > 0) {
+                        const categoriesDiv = document.createElement('div');
+                        categoriesDiv.className = 'card-categories';
+                        icons.forEach(icon => {
+                            const iconSpan = document.createElement('span');
+                            iconSpan.className = 'category-icon';
+                            iconSpan.textContent = icon;
+                            categoriesDiv.appendChild(iconSpan);
+                        });
+                        card.appendChild(categoriesDiv);
+                    }
+                }
             });
         }
         
@@ -580,8 +675,9 @@
             if (!slotContent) return;
             
             const isBlocked = isSlotBlocked(slotContent.dataset.day, slotContent.dataset.time);
+            const isLunch = slotContent.classList.contains('lunch');
             
-            if (isBlocked) {
+            if (isBlocked || isLunch) {
                 e.dataTransfer.dropEffect = 'none';
             } else {
                 e.dataTransfer.dropEffect = 'move';
@@ -608,7 +704,7 @@
             const dayId = slotContent.dataset.day;
             const time = slotContent.dataset.time;
             
-            if (isSlotBlocked(dayId, time)) {
+            if (isSlotBlocked(dayId, time) || lunchSlots.has(time)) {
                 return;
             }
             
@@ -616,6 +712,10 @@
                 const nextTime = getNextSlotTime(time);
                 if (!nextTime) {
                     alert('60-minute presentations must be placed before the last slot of the day.');
+                    return;
+                }
+                if (nextTime === '12:00' || time === '11:30') {
+                    alert('60-minute presentations cannot be placed before lunch (11:30–12:30). Please choose an earlier slot.');
                     return;
                 }
             }
@@ -630,8 +730,11 @@
             removeBtn.textContent = '✕';
             removeBtn.onclick = (evt) => {
                 evt.stopPropagation();
-                const presentationTitle = draggedCard.querySelector('.card-title')?.textContent || '';
-                if (draggedDuration === 60) {
+                const presentationTitle = card.querySelector('.card-title')?.textContent || '';
+                const cardMeta = card.querySelector('.card-meta')?.textContent || '';
+                const duration = cardMeta.includes('60 minutes') || cardMeta.includes('45 minutes') ? 60 : 30;
+                
+                if (duration === 60) {
                     unblockSlot(dayId, time);
                 }
                 unmarkPresentationAsPlaced(presentationTitle);
