@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texas DH Symposium Scheduler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f8f7f4;
+            padding: 2rem;
+            color: #1a1a18;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #6b6a66;
+            margin-bottom: 2rem;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+        
+        .section {
+            background: white;
+            border: 0.5px solid #d0cfca;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .section h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 0.5px solid #d0cfca;
+        }
+        
+        .category {
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b6a66;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+        }
+        
+        .presentation-card {
+            background: white;
+            border: 0.5px solid #d0cfca;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            cursor: move;
+            user-select: none;
+            transition: all 0.15s;
+        }
+        
+        .presentation-card:hover {
+            border-color: #888780;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .presentation-card.dragging {
+            opacity: 0.6;
+            transform: scale(0.98);
+        }
+        
+        .presentation-card.confirmed {
+            background: #eaf3de;
+            border-color: #97c459;
+        }
+        
+        .presentation-card.unconfirmed {
+            background: #f8f7f4;
+            border-color: #b4b2a9;
+            opacity: 0.8;
+        }
+        
+        .presentation-card.unconfirmed::after {
+            content: "pending";
+            display: inline-block;
+            font-size: 10px;
+            background: #d3d1c7;
+            color: #6b6a66;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .card-title {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            color: #1a1a18;
+        }
+        
+        .card-meta {
+            font-size: 11px;
+            color: #6b6a66;
+            line-height: 1.4;
+        }
+        
+        .schedule-container {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .day-schedule {
+            flex: 1;
+        }
+        
+        .day-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 0.5px solid #d0cfca;
+        }
+        
+        .time-slot {
+            background: #f8f7f4;
+            border: 0.5px solid #d0cfca;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            min-height: 60px;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            cursor: default;
+        }
+        
+        .time-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b6a66;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 50px;
+            padding-top: 0.25rem;
+            white-space: nowrap;
+        }
+        
+        .slot-content {
+            flex: 1;
+            min-height: 50px;
+            border: 2px dashed #d0cfca;
+            border-radius: 4px;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .slot-content:hover {
+            border-color: #888780;
+            background: #f1efe8;
+        }
+        
+        .slot-content.dragover {
+            border-color: #639922;
+            background: #eaf3de;
+        }
+        
+        .slot-content.dragover.blocked {
+            border-color: #d0cfca;
+            background: #f8f7f4;
+            cursor: not-allowed;
+        }
+        
+        .slot-content.filled {
+            border: none;
+            padding: 0;
+        }
+        
+        .slot-content.filled .presentation-card {
+            margin-bottom: 0;
+        }
+        
+        .slot-content.filled .presentation-card + .presentation-card {
+            margin-top: 0.5rem;
+        }
+        
+        .slot-content.blocked::after {
+            content: "(continuation of 60-min session)";
+            display: block;
+            font-size: 12px;
+            color: #6b6a66;
+            font-weight: 500;
+            text-align: center;
+            padding: 0.5rem;
+        }
+        
+        .slot-content.blocked {
+            border: 2px solid #b4b2a9 !important;
+            background: #d3d1c7 !important;
+            cursor: not-allowed !important;
+        }
+        
+        .slot-empty-text {
+            font-size: 12px;
+            color: #b4b2a9;
+            font-style: italic;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: space-between;
+        }
+        
+        button {
+            padding: 0.5rem 1rem;
+            border: 0.5px solid #888780;
+            background: white;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: #1a1a18;
+        }
+        
+        button:hover {
+            background: #f1efe8;
+            border-color: #6b6a66;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .schedule-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Texas DH Symposium Scheduler</h1>
+        <p class="subtitle">Drag presentations to arrange the schedule. 60-minute sessions automatically lock the next slot.</p>
+        
+        <div class="controls">
+            <button onclick="resetSchedule()">Reset Schedule</button>
+            <div>
+                <button onclick="document.getElementById('importFile').click()">Import Configuration</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importConfig(event)">
+                <button onclick="exportConfig()">Export Configuration</button>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <!-- LEFT PANEL: PRESENTATIONS -->
+            <div class="section">
+                <h2>Presentations</h2>
+                
+                <div class="category">
+                    <div class="category-title">Special Events (Confirmed)</div>
+                    <div class="presentation-card confirmed" draggable="true">
+                        <div class="card-title">Keynote Presentation</div>
+                        <div class="card-meta">60 minutes</div>
+                    </div>
+                    <div class="presentation-card confirmed" draggable="true">
+                        <div class="card-title">AI Workshop</div>
+                        <div class="card-meta">60 minutes</div>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-title">State of DH Events (Not Confirmed)</div>
+                    <div class="presentation-card unconfirmed" draggable="true">
+                        <div class="card-title">State of DH Event 1</div>
+                        <div class="card-meta">30 minutes</div>
+                    </div>
+                    <div class="presentation-card unconfirmed" draggable="true">
+                        <div class="card-title">State of DH Event 2</div>
+                        <div class="card-meta">30 minutes</div>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-title">CFP Presentations (Confirmed)</div>
+                    <div class="presentation-card confirmed" draggable="true">
+                        <div class="card-title">A Digital and Collaborative Transformation of "Mexican Revolution" Collections</div>
+                        <div class="card-meta">UT • 20 minutes</div>
+                    </div>
+                    <div class="presentation-card confirmed" draggable="true">
+                        <div class="card-title">The Collaborative Internship Program: SIPHDH24, DMIPP25, D&DIP26</div>
+                        <div class="card-meta">UH • 45 minutes</div>
+                    </div>
+                    <div class="presentation-card confirmed" draggable="true">
+                        <div class="card-title">Uplifting Zines Through Digital Humanities Practices</div>
+                        <div class="card-meta">UT • 45 minutes</div>
+                    </div>
+                    <div class="presentation-card confirmed" draggable="true">
+                        <div class="card-title">Aiding Our Humans: Improving Workflow Efficiencies at BUIOH</div>
+                        <div class="card-meta">Baylor • 45 minutes</div>
+                    </div>
+                    <div class="presentation-card confirmed" draggable="true">
+                        <div class="card-title">Visualizing Cambodian American Lived Experiences and Journeys Across the Pacific, 1950s–2020</div>
+                        <div class="card-meta">Baylor • 20 minutes</div>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-title">CFP Presentations (Not Confirmed)</div>
+                    <div class="presentation-card unconfirmed" draggable="true">
+                        <div class="card-title">Can Generative AI Clean Historical Documents? An Experiment with Eighteenth-Century Missionary Letters</div>
+                        <div class="card-meta">Baylor • 20 minutes</div>
+                    </div>
+                    <div class="presentation-card unconfirmed" draggable="true">
+                        <div class="card-title">Documenting Latina/o Life and Death: Ethics, Data, and Community Archives in the Morales Collection</div>
+                        <div class="card-meta">UH • 45 minutes</div>
+                    </div>
+                    <div class="presentation-card unconfirmed" draggable="true">
+                        <div class="card-title">Mapping Victory: How We Created a Public Humanities Project from an Archive of WWII Souvenir Maps</div>
+                        <div class="card-meta">A&M • 45 minutes</div>
+                    </div>
+                    <div class="presentation-card unconfirmed" draggable="true">
+                        <div class="card-title">Bridging past, present, and underrepresented languages using digital tools</div>
+                        <div class="card-meta">UT • 20 minutes</div>
+                    </div>
+                    <div class="presentation-card unconfirmed" draggable="true">
+                        <div class="card-title">Feeling Narrative: A Sentiment Analysis of Queer-Themed Spanish Picturebooks</div>
+                        <div class="card-meta">U. Mich • 20 minutes</div>
+                    </div>
+                    <div class="presentation-card unconfirmed" draggable="true">
+                        <div class="card-title">Directories to Data: Leveraging Generative AI and Historical Expertise to Unlock Houston's Printed Past</div>
+                        <div class="card-meta">Rice • 20 minutes</div>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-title">Vendor Presentations (Confirmed)</div>
+                    <div class="presentation-card confirmed" draggable="true">
+                        <div class="card-title">Gale</div>
+                        <div class="card-meta">20 minutes</div>
+                    </div>
+                    <div class="presentation-card confirmed" draggable="true">
+                        <div class="card-title">Elsevier</div>
+                        <div class="card-meta">20 minutes</div>
+                    </div>
+                    <div class="presentation-card confirmed" draggable="true">
+                        <div class="card-title">Adam Matthew</div>
+                        <div class="card-meta">20 minutes</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- RIGHT PANEL: SCHEDULE -->
+            <div class="section">
+                <h2>Schedule</h2>
+                <div class="schedule-container">
+                    <div class="day-schedule">
+                        <div class="day-title">September 24</div>
+                        <div id="day1-schedule"></div>
+                    </div>
+                    <div class="day-schedule">
+                        <div class="day-title">September 25</div>
+                        <div id="day2-schedule"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const times = [];
+        for (let h = 9; h < 16; h++) {
+            times.push(`${h}:00`);
+            times.push(`${h}:30`);
+        }
+        
+        const blockedSlots = new Set();
+        let draggedCard = null;
+        let draggedDuration = 0;
+        
+        function getDuration(card) {
+            const meta = card.querySelector('.card-meta')?.textContent || '';
+            if (meta.includes('60 minutes') || meta.includes('45 minutes')) {
+                return 60;
+            }
+            return 30;
+        }
+        
+        function getSlotKey(dayId, time) {
+            return `${dayId}|${time}`;
+        }
+        
+        function getNextSlotTime(time) {
+            const idx = times.indexOf(time);
+            if (idx >= 0 && idx < times.length - 1) {
+                return times[idx + 1];
+            }
+            return null;
+        }
+        
+        function blockSlot(dayId, time) {
+            const nextTime = getNextSlotTime(time);
+            if (nextTime) {
+                const key = getSlotKey(dayId, nextTime);
+                blockedSlots.add(key);
+                updateSlotVisuals(dayId, nextTime);
+            }
+        }
+        
+        function unblockSlot(dayId, time) {
+            const nextTime = getNextSlotTime(time);
+            if (nextTime) {
+                const key = getSlotKey(dayId, nextTime);
+                blockedSlots.delete(key);
+                updateSlotVisuals(dayId, nextTime);
+            }
+        }
+        
+        function isSlotBlocked(dayId, time) {
+            return blockedSlots.has(getSlotKey(dayId, time));
+        }
+        
+        function updateSlotVisuals(dayId, time) {
+            const slotContent = document.querySelector(`.slot-content[data-day="${dayId}"][data-time="${time}"]`);
+            if (!slotContent) return;
+            
+            const isBlocked = isSlotBlocked(dayId, time);
+            
+            if (isBlocked) {
+                slotContent.classList.add('blocked');
+            } else {
+                slotContent.classList.remove('blocked');
+            }
+        }
+        function initSchedule() {
+            ['day1-schedule', 'day2-schedule'].forEach(dayId => {
+                const dayEl = document.getElementById(dayId);
+                dayEl.innerHTML = '';
+                
+                times.forEach(time => {
+                    const timeSlot = document.createElement('div');
+                    timeSlot.className = 'time-slot';
+                    timeSlot.dataset.time = time;
+                    timeSlot.dataset.day = dayId;
+                    
+                    const timeLabel = document.createElement('div');
+                    timeLabel.className = 'time-label';
+                    timeLabel.textContent = time;
+                    
+                    const slotContent = document.createElement('div');
+                    slotContent.className = 'slot-content';
+                    slotContent.dataset.time = time;
+                    slotContent.dataset.day = dayId;
+                    
+                    const emptyText = document.createElement('div');
+                    emptyText.className = 'slot-empty-text';
+                    emptyText.textContent = 'Drop here';
+                    slotContent.appendChild(emptyText);
+                    
+                    slotContent.addEventListener('dragover', handleDragOver);
+                    slotContent.addEventListener('drop', handleDrop);
+                    slotContent.addEventListener('dragleave', handleDragLeave);
+                    
+                    timeSlot.appendChild(timeLabel);
+                    timeSlot.appendChild(slotContent);
+                    dayEl.appendChild(timeSlot);
+                });
+            });
+            
+            attachCardListeners();
+        }
+        
+        function attachCardListeners() {
+            document.querySelectorAll('.presentation-card').forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+            });
+        }
+        
+        function handleDragStart(e) {
+            draggedCard = e.target.closest('.presentation-card');
+            draggedDuration = getDuration(draggedCard);
+            draggedCard.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        
+        function handleDragEnd(e) {
+            document.querySelectorAll('.slot-content').forEach(slot => {
+                slot.classList.remove('dragover');
+            });
+            draggedCard?.classList.remove('dragging');
+            draggedCard = null;
+            draggedDuration = 0;
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            const slotContent = e.target.closest('.slot-content');
+            if (!slotContent) return;
+            
+            const isBlocked = isSlotBlocked(slotContent.dataset.day, slotContent.dataset.time);
+            
+            if (isBlocked) {
+                e.dataTransfer.dropEffect = 'none';
+            } else {
+                e.dataTransfer.dropEffect = 'move';
+                slotContent.classList.add('dragover');
+            }
+        }
+        
+        function handleDragLeave(e) {
+            const slotContent = e.target.closest('.slot-content');
+            if (slotContent && e.target === slotContent) {
+                slotContent.classList.remove('dragover');
+            }
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            const slotContent = e.target.closest('.slot-content');
+            if (!slotContent) return;
+            
+            slotContent.classList.remove('dragover');
+            
+            if (!draggedCard) return;
+            
+            const dayId = slotContent.dataset.day;
+            const time = slotContent.dataset.time;
+            
+            if (isSlotBlocked(dayId, time)) {
+                return;
+            }
+            
+            if (draggedDuration === 60) {
+                const nextTime = getNextSlotTime(time);
+                if (!nextTime) {
+                    alert('60-minute presentations must be placed before the last slot of the day.');
+                    return;
+                }
+            }
+            
+            const card = draggedCard.cloneNode(true);
+            card.classList.remove('dragging');
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.style.cssText = 'position: absolute; top: 4px; right: 4px; padding: 2px 6px; font-size: 11px; background: rgba(255,255,255,0.9); border: 0.5px solid #d0cfca; cursor: pointer;';
+            removeBtn.textContent = '✕';
+            removeBtn.onclick = (evt) => {
+                evt.stopPropagation();
+                if (draggedDuration === 60) {
+                    unblockSlot(dayId, time);
+                }
+                card.remove();
+                updateSlotDisplay(slotContent);
+            };
+            card.style.position = 'relative';
+            card.appendChild(removeBtn);
+            
+            slotContent.innerHTML = '';
+            slotContent.appendChild(card);
+            slotContent.classList.add('filled');
+            updateSlotDisplay(slotContent);
+            
+            if (draggedDuration === 60) {
+                blockSlot(dayId, time);
+            }
+        }
+        
+        function updateSlotDisplay(slotContent) {
+            if (slotContent.querySelector('.presentation-card')) {
+                slotContent.classList.add('filled');
+            } else {
+                slotContent.classList.remove('filled');
+                const emptyText = document.createElement('div');
+                emptyText.className = 'slot-empty-text';
+                emptyText.textContent = 'Drop here';
+                slotContent.appendChild(emptyText);
+            }
+        }
+        
+        function silentResetSchedule() {
+            document.querySelectorAll('.slot-content').forEach(slot => {
+                slot.innerHTML = '';
+                slot.classList.remove('filled', 'blocked');
+                const emptyText = document.createElement('div');
+                emptyText.className = 'slot-empty-text';
+                emptyText.textContent = 'Drop here';
+                slot.appendChild(emptyText);
+            });
+            blockedSlots.clear();
+        }
+        
+        function resetSchedule() {
+            if (confirm('Reset the entire schedule to empty?')) {
+                silentResetSchedule();
+                attachCardListeners();
+            }
+        }
+        
+        function exportConfig() {
+            const config = {
+                timestamp: new Date().toISOString(),
+                schedule: {}
+            };
+            
+            ['day1-schedule', 'day2-schedule'].forEach(dayId => {
+                const dayNum = dayId === 'day1-schedule' ? 'September 24' : 'September 25';
+                config.schedule[dayNum] = {};
+                
+                document.querySelectorAll(`[data-day="${dayId}"] .slot-content`).forEach(slot => {
+                    const time = slot.dataset.time;
+                    const cards = slot.querySelectorAll('.presentation-card');
+                    if (cards.length > 0) {
+                        config.schedule[dayNum][time] = [];
+                        cards.forEach(card => {
+                            const title = card.querySelector('.card-title')?.textContent || '';
+                            const meta = card.querySelector('.card-meta')?.textContent || '';
+                            config.schedule[dayNum][time].push({ title, meta });
+                        });
+                    }
+                });
+            });
+            
+            const json = JSON.stringify(config, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TexasDH_Schedule_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function importConfig(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const config = JSON.parse(e.target.result);
+                    
+                    silentResetSchedule();
+                    
+                    Object.keys(config.schedule).forEach(dayName => {
+                        const dayId = dayName === 'September 24' ? 'day1-schedule' : 'day2-schedule';
+                        const schedule = config.schedule[dayName];
+                        
+                        Object.keys(schedule).forEach(time => {
+                            const presentations = schedule[time];
+                            const slotContent = document.querySelector(`.slot-content[data-day="${dayId}"][data-time="${time}"]`);
+                            
+                            if (slotContent && presentations.length > 0) {
+                                slotContent.innerHTML = '';
+                                
+                                presentations.forEach(presentation => {
+                                    const card = document.createElement('div');
+                                    card.className = 'presentation-card confirmed';
+                                    card.style.position = 'relative';
+                                    card.innerHTML = `
+                                        <div class="card-title">${presentation.title}</div>
+                                        <div class="card-meta">${presentation.meta}</div>
+                                    `;
+                                    
+                                    const removeBtn = document.createElement('button');
+                                    removeBtn.style.cssText = 'position: absolute; top: 4px; right: 4px; padding: 2px 6px; font-size: 11px; background: rgba(255,255,255,0.9); border: 0.5px solid #d0cfca; cursor: pointer;';
+                                    removeBtn.textContent = '✕';
+                                    removeBtn.onclick = (evt) => {
+                                        evt.stopPropagation();
+                                        card.remove();
+                                        updateSlotDisplay(slotContent);
+                                    };
+                                    card.appendChild(removeBtn);
+                                    slotContent.appendChild(card);
+                                });
+                                
+                                slotContent.classList.add('filled');
+                                updateSlotDisplay(slotContent);
+                                
+                                const duration = presentations[0].meta.includes('60 minutes') || presentations[0].meta.includes('45 minutes') ? 60 : 30;
+                                if (duration === 60) {
+                                    blockSlot(dayId, time);
+                                }
+                            }
+                        });
+                    });
+                    
+                    alert('Schedule imported successfully!');
+                } catch (error) {
+                    alert('Error importing schedule: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            event.target.value = '';
+        }
+        
+        initSchedule();
+    </script>
+</body>
+</html>
