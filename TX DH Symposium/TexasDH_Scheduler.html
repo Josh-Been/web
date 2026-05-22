@@ -79,6 +79,7 @@
             cursor: move;
             user-select: none;
             transition: all 0.15s;
+            position: relative;
         }
         
         .presentation-card:hover {
@@ -113,6 +114,28 @@
             margin-left: 0.5rem;
             font-weight: 600;
             text-transform: uppercase;
+        }
+        
+        .presentation-card.placed {
+            cursor: not-allowed !important;
+        }
+        
+        .presentation-card.placed::before {
+            content: "✓";
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            font-size: 18px;
+            color: #3b6d11;
+            font-weight: bold;
+            background: #eaf3de;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
         }
         
         .card-title {
@@ -407,6 +430,7 @@
         }
         
         const blockedSlots = new Set();
+        const placedPresentations = new Set();
         let draggedCard = null;
         let draggedDuration = 0;
         
@@ -463,6 +487,31 @@
             } else {
                 slotContent.classList.remove('blocked');
             }
+        }
+        
+        function markPresentationAsPlaced(title) {
+            placedPresentations.add(title);
+            updatePresentationCards();
+        }
+        
+        function unmarkPresentationAsPlaced(title) {
+            placedPresentations.delete(title);
+            updatePresentationCards();
+        }
+        
+        function updatePresentationCards() {
+            document.querySelectorAll('.presentation-card').forEach(card => {
+                const title = card.querySelector('.card-title')?.textContent || '';
+                const isPlaced = placedPresentations.has(title);
+                
+                if (isPlaced) {
+                    card.classList.add('placed');
+                    card.draggable = false;
+                } else {
+                    card.classList.remove('placed');
+                    card.draggable = true;
+                }
+            });
         }
         function initSchedule() {
             ['day1-schedule', 'day2-schedule'].forEach(dayId => {
@@ -581,9 +630,11 @@
             removeBtn.textContent = '✕';
             removeBtn.onclick = (evt) => {
                 evt.stopPropagation();
+                const presentationTitle = draggedCard.querySelector('.card-title')?.textContent || '';
                 if (draggedDuration === 60) {
                     unblockSlot(dayId, time);
                 }
+                unmarkPresentationAsPlaced(presentationTitle);
                 card.remove();
                 updateSlotDisplay(slotContent);
             };
@@ -594,6 +645,9 @@
             slotContent.appendChild(card);
             slotContent.classList.add('filled');
             updateSlotDisplay(slotContent);
+            
+            const presentationTitle = draggedCard.querySelector('.card-title')?.textContent || '';
+            markPresentationAsPlaced(presentationTitle);
             
             if (draggedDuration === 60) {
                 blockSlot(dayId, time);
@@ -622,6 +676,8 @@
                 slot.appendChild(emptyText);
             });
             blockedSlots.clear();
+            placedPresentations.clear();
+            updatePresentationCards();
         }
         
         function resetSchedule() {
@@ -703,11 +759,15 @@
                                     removeBtn.textContent = '✕';
                                     removeBtn.onclick = (evt) => {
                                         evt.stopPropagation();
+                                        const presentationTitle = presentation.title;
+                                        unmarkPresentationAsPlaced(presentationTitle);
                                         card.remove();
                                         updateSlotDisplay(slotContent);
                                     };
                                     card.appendChild(removeBtn);
                                     slotContent.appendChild(card);
+                                    
+                                    markPresentationAsPlaced(presentation.title);
                                 });
                                 
                                 slotContent.classList.add('filled');
