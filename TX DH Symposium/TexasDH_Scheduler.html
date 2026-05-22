@@ -718,6 +718,11 @@
                     alert('60-minute presentations cannot be placed before lunch (11:30–12:30). Please choose an earlier slot.');
                     return;
                 }
+                const nextSlot = document.querySelector(`.slot-content[data-day="${dayId}"][data-time="${nextTime}"]`);
+                if (nextSlot && nextSlot.querySelector('.presentation-card')) {
+                    alert('The next 30-minute slot is already occupied. Please choose a different time.');
+                    return;
+                }
             }
             
             const card = draggedCard.cloneNode(true);
