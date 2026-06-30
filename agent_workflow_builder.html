@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent Workflow Builder</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .sidebar {
+      width: 220px;
+      background: #ffffff;
+      border-right: 1px solid #e0e0e0;
+      padding: 20px;
+      overflow-y: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .sidebar-section {
+      margin-bottom: 24px;
+    }
+    
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    
+    .tool-node {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 8px;
+      cursor: move;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    
+    .tool-node:hover {
+      border-color: #999;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .tool-node.dragging {
+      opacity: 0.5;
+    }
+    
+    .canvas-area {
+      flex: 1;
+      position: relative;
+      background: #fafafa;
+      overflow: hidden;
+    }
+    
+    svg {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+    }
+    
+    .agent-node-rect {
+      fill: #ffffff;
+      stroke: #999;
+      stroke-width: 1.5;
+    }
+    
+    .agent-node-rect.selected {
+      stroke: #0066cc;
+      stroke-width: 2;
+      filter: drop-shadow(0 0 6px rgba(0,102,204,0.3));
+    }
+    
+    .agent-node-text {
+      font-size: 14px;
+      font-weight: 600;
+      fill: #333;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+    
+    .agent-node-label {
+      font-size: 11px;
+      fill: #999;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+    
+    .tool-node-rect {
+      fill: #e3f2fd;
+      stroke: #0066cc;
+      stroke-width: 1;
+    }
+    
+    .tool-node-text {
+      font-size: 12px;
+      font-weight: 500;
+      fill: #0066cc;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+    
+    .constraint-node {
+      background: #f3e5f5;
+      border-color: #7b1fa2;
+      color: #7b1fa2;
+    }
+    
+    .constraint-node-rect {
+      fill: #f3e5f5;
+      stroke: #7b1fa2;
+      stroke-width: 1;
+    }
+    
+    .constraint-node-text {
+      font-size: 10px;
+      font-weight: 500;
+      fill: #7b1fa2;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+    
+    .connection-line {
+      stroke: #ccc;
+      stroke-width: 1.5;
+      fill: none;
+    }
+    
+    .flow-input,
+    .flow-output {
+      fill: #e8f5e9;
+      stroke: #4caf50;
+      stroke-width: 1.5;
+    }
+    
+    .flow-text {
+      font-size: 13px;
+      font-weight: 600;
+      fill: #2e7d32;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+    
+    .agent-dropdown {
+      position: absolute;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 12px;
+      z-index: 100;
+      display: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .agent-dropdown.show {
+      display: block;
+    }
+    
+    .agent-dropdown select {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 12px;
+      background: #fafafa;
+      color: #333;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+    .agent-dropdown select:focus {
+      outline: none;
+      border-color: #0066cc;
+      background: #ffffff;
+    }
+    
+    .example-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 16px;
+      width: 300px;
+      font-size: 13px;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 50;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .example-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .example-text {
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    
+    .example-toggle {
+      cursor: pointer;
+      color: #0066cc;
+      text-decoration: underline;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .example-toggle:hover {
+      color: #0052a3;
+    }
+    
+    .instructions {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #fffde7;
+      border: 1px solid #f9a825;
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #666;
+      max-width: 300px;
+      z-index: 50;
+    }
+    
+    .export-button {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: #4caf50;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      z-index: 50;
+      transition: all 0.2s;
+    }
+    
+    .export-button:hover {
+      background: #388e3c;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .export-button:active {
+      transform: scale(0.98);
+    }
+    
+    .export-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    
+    .category-description {
+      font-size: 11px;
+      color: #999;
+      font-weight: normal;
+      margin-bottom: 10px;
+      line-height: 1.4;
+      font-style: italic;
+    }
+    
+    .tooltip-box {
+      position: absolute;
+      background: #333;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      max-width: 200px;
+      z-index: 1000;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      display: none;
+      word-wrap: break-word;
+      line-height: 1.4;
+    }
+    
+    .tooltip-box.show {
+      display: block;
+    }
+    
+    .agent-card {
+      position: absolute;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.6;
+      width: 240px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+    
+    .agent-card-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .agent-card-row {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    
+    .agent-card-label {
+      font-weight: 500;
+      color: #666;
+      min-width: 70px;
+      flex-shrink: 0;
+    }
+    
+    .agent-card-value {
+      color: #333;
+      flex: 1;
+      word-break: break-word;
+    }
+    
+    .agent-card-empty {
+      color: #999;
+      font-style: italic;
+    }
+    
+    .agent-card-clickable {
+      cursor: pointer;
+      position: relative;
+      padding: 2px 4px;
+      border-radius: 3px;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    
+    .agent-card-clickable:hover {
+      background: #ffebee;
+      color: #c62828;
+    }
+    
+    .agent-card-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    
+    .agent-card-tag {
+      background: #e3f2fd;
+      border: 0.5px solid #0066cc;
+      border-radius: 3px;
+      padding: 3px 6px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    
+    .agent-card-tag:hover {
+      background: #ffebee;
+      border-color: #c62828;
+      color: #c62828;
+    }
+    
+    .agent-card-constraint-tag {
+      background: #f3e5f5;
+      border: 0.5px solid #7b1fa2;
+      border-radius: 3px;
+      padding: 3px 6px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    
+    .agent-card-constraint-tag:hover {
+      background: #ffebee;
+      border-color: #c62828;
+      color: #c62828;
+    }
+    
+    .workflow-constraints-card {
+      position: absolute;
+      background: #f9f9f9;
+      border: 2px solid #4caf50;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.6;
+      width: 320px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 20;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    .workflow-constraints-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: #2e7d32;
+      margin-bottom: 4px;
+    }
+    
+    .workflow-constraints-subtitle {
+      font-size: 11px;
+      color: #999;
+      font-style: italic;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .workflow-constraints-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    
+    .workflow-constraints-empty {
+      color: #999;
+      font-style: italic;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Agents</div>
+      <div class="category-description">Build your workflow by dragging agents onto the canvas</div>
+      <div class="tool-node" draggable="true" data-agent-slot="true" data-description="Add an agent node to your workflow. You can add up to 3 agents, and they will be positioned in sequence." style="background: #f0f4ff; border-color: #0066cc; color: #0066cc; font-weight: 600;">Agent</div>
+    </div>
+    
+    <div class="sidebar-section">
+      <div class="sidebar-title">Role <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
+      <div class="category-description">Define what each agent is and their primary expertise area</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Strategic planner" data-category="role" data-description="Sets overall strategy, defines objectives, and establishes rules and constraints that other agents must follow.">Strategic planner</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Data gatherer" data-category="role" data-description="Collects and searches for information from various sources. Focuses on finding raw data and evidence.">Data gatherer</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Insight synthesizer" data-category="role" data-description="Analyzes collected data, identifies patterns, and transforms raw information into actionable insights.">Insight synthesizer</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Quality validator" data-category="role" data-description="Reviews and validates the work of other agents, ensures quality, and flags issues or gaps.">Quality validator</div>
+    </div>
+    
+    <div class="sidebar-section">
+      <div class="sidebar-title">Primary Task <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
+      <div class="category-description">Specify the core work or responsibility this agent will perform</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Define constraints" data-category="task" data-description="Establish the boundaries, rules, budget, timeline, and other limits that guide the workflow.">Define constraints</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Gather market data" data-category="task" data-description="Search for and collect information about markets, competitors, customers, and trends.">Gather market data</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Analyze competition" data-category="task" data-description="Study competitor strategies, strengths, weaknesses, and market positioning.">Analyze competition</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Synthesize insights" data-category="task" data-description="Combine data from multiple sources, identify patterns, and draw meaningful conclusions.">Synthesize insights</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Validate findings" data-category="task" data-description="Check the quality and accuracy of work, ensure all assumptions are documented.">Validate findings</div>
+    </div>
+    
+    <div class="sidebar-section">
+      <div class="sidebar-title">Tools/Capabilities <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
+      <div class="category-description">Assign specific tools or functions that enable the agent to perform its task</div>
+      <div class="tool-node" draggable="true" data-tool="Define Constraints" data-description="Allows the agent to establish and communicate rules, budgets, timelines, and other constraints.">Define Constraints</div>
+      <div class="tool-node" draggable="true" data-tool="Google Search" data-description="Enables web search to gather current market data, competitor info, and industry research.">Google Search</div>
+      <div class="tool-node" draggable="true" data-tool="Format & Synthesize" data-description="Structures data into organized formats and creates summaries from raw information.">Format & Synthesize</div>
+      <div class="tool-node" draggable="true" data-tool="Compare datasets" data-description="Analyzes multiple datasets side-by-side to identify differences, trends, and patterns.">Compare datasets</div>
+      <div class="tool-node" draggable="true" data-tool="Generate summary" data-description="Creates concise summaries of complex information for handoff to the next agent.">Generate summary</div>
+    </div>
+    
+    <div class="sidebar-section">
+      <div class="sidebar-title">Output Format <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
+      <div class="category-description">Specify the structure and format of what this agent will deliver</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Strategic brief" data-category="output" data-description="A concise document outlining strategy, objectives, and key decisions.">Strategic brief</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Data summary" data-category="output" data-description="A structured summary of collected data with sources and methodology noted.">Data summary</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Executive report" data-category="output" data-description="A professional report with findings, analysis, recommendations, and supporting evidence.">Executive report</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Structured table" data-category="output" data-description="Data organized in rows and columns for easy comparison and analysis.">Structured table</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Risk assessment" data-category="output" data-description="A document identifying potential risks, their likelihood, and mitigation strategies.">Risk assessment</div>
+    </div>
+    
+    <div class="sidebar-section">
+      <div class="sidebar-title">Constraints <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
+      <div class="category-description">Define the limits, rules, and conditions that govern this agent's behavior</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Budget-aware" data-category="constraint" data-description="The agent must consider and respect budget limitations in all decisions.">Budget-aware</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Time-limited" data-category="constraint" data-description="The agent operates under a specific time constraint or deadline.">Time-limited</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Data-source restricted" data-category="constraint" data-description="The agent can only use approved or specified data sources.">Data-source restricted</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Compliance-bound" data-category="constraint" data-description="The agent must follow regulatory, legal, or compliance requirements.">Compliance-bound</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Regional focus" data-category="constraint" data-description="The agent's analysis is limited to a specific geographic region or market.">Regional focus</div>
+    </div>
+    
+    <div class="sidebar-section">
+      <div class="sidebar-title">Handoff Instructions <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
+      <div class="category-description">Specify what information or format this agent must pass to the next agent</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Pass structured data" data-category="handoff" data-description="The agent must organize output in a clear, structured format for the next agent to use.">Pass structured data</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Include methodology" data-category="handoff" data-description="The agent must document and explain the methods used to arrive at findings.">Include methodology</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Flag uncertainties" data-category="handoff" data-description="The agent must highlight areas of uncertainty or gaps in confidence.">Flag uncertainties</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Document sources" data-category="handoff" data-description="The agent must provide full attribution and sources for all information used.">Document sources</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Highlight assumptions" data-category="handoff" data-description="The agent must clearly state all assumptions made in the analysis.">Highlight assumptions</div>
+    </div>
+  </div>
+  
+  <div class="tooltip-box" id="tooltip"></div>
+  
+  <div class="canvas-area" id="canvas">
+    <svg id="workflowSvg"></svg>
+    
+    <div class="agent-dropdown" id="agentDropdown">
+      <select id="agentSelect">
+        <option value="Manager">Manager</option>
+        <option value="Researcher">Researcher</option>
+        <option value="Analyst">Analyst</option>
+      </select>
+      <button id="removeAgentBtn" style="width: 100%; margin-top: 8px; padding: 6px; background: #ffebee; border: 1px solid #ef5350; border-radius: 4px; color: #c62828; cursor: pointer; font-size: 12px; font-weight: 500;">Remove Agent</button>
+    </div>
+    
+    <div class="example-panel" id="examplePanel">
+      <div class="example-title">Example workflow</div>
+      <div class="example-text">
+        Manager defines market constraints → Researcher gathers competitive data → Analyst synthesizes insights into an Executive Report.
+      </div>
+      <div class="example-toggle" onclick="document.getElementById('examplePanel').style.display='none';">Hide</div>
+    </div>
+    
+    <div class="instructions">
+      <strong>How to use:</strong> Drag tools from the sidebar onto agent nodes. Click agents to rename them. Click tools to remove them.
+    </div>
+    
+    <button class="export-button" id="exportButton">Export to Markdown</button>
+  </div>
+</div>
+
+<script>
+  const svg = document.getElementById('workflowSvg');
+  const canvas = document.getElementById('canvas');
+  const agentDropdown = document.getElementById('agentDropdown');
+  const agentSelect = document.getElementById('agentSelect');
+  
+  let canvasWidth = canvas.offsetWidth;
+  let canvasHeight = canvas.offsetHeight;
+  
+  let agents = {
+    manager: { name: '', x: 150, y: 120, tools: [], constraints: [], active: false },
+    researcher: { name: '', x: 150, y: 280, tools: [], constraints: [], active: false },
+    analyst: { name: '', x: 150, y: 440, tools: [], constraints: [], active: false }
+  };
+  
+  let selectedAgent = null;
+  let draggedTool = null;
+  let draggedConstraint = null;
+  let draggedAgent = null;
+  let agentCount = 0;
+  
+  const nodeWidth = 140;
+  const nodeHeight = 60;
+  const toolNodeRadius = 24;
+  
+  function drawWorkflow() {
+    // Clear all existing cards from DOM
+    document.querySelectorAll('.agent-card').forEach(card => card.remove());
+    document.querySelectorAll('.workflow-constraints-card').forEach(card => card.remove());
+    
+    svg.innerHTML = '';
+    
+    const padding = 40;
+    const inputY = 40;
+    const outputY = canvasHeight - 40;
+    
+    // Create and render Workflow Constraints card
+    const allConstraints = [];
+    Object.keys(agents).forEach(key => {
+      agents[key].constraints.forEach(c => {
+        if (['Budget-aware', 'Time-limited', 'Data-source restricted', 'Compliance-bound', 'Regional focus'].includes(c) && !allConstraints.includes(c)) {
+          allConstraints.push(c);
+        }
+      });
+    });
+    
+    const constraintsCard = document.createElement('div');
+    constraintsCard.className = 'workflow-constraints-card';
+    constraintsCard.innerHTML = `
+      <div class="workflow-constraints-title">Workflow Constraints</div>
+      <div class="workflow-constraints-subtitle">Set by Manager, followed by all downstream agents</div>
+      <div class="workflow-constraints-list">
+        ${allConstraints.length > 0 ? allConstraints.map(constraint => `<span class="agent-card-constraint-tag" data-constraint="${constraint}" data-type="workflow-constraint">${constraint}</span>`).join('') : '<span class="workflow-constraints-empty">None assigned</span>'}
+      </div>
+    `;
+    canvas.appendChild(constraintsCard);
+    
+    // Add click handlers for constraint removal
+    constraintsCard.querySelectorAll('[data-constraint]').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const constraintText = item.dataset.constraint;
+        
+        // Remove this constraint from ALL agents
+        Object.keys(agents).forEach(agentKey => {
+          agents[agentKey].constraints = agents[agentKey].constraints.filter(c => c !== constraintText);
+        });
+        drawWorkflow();
+      });
+    });
+    
+    // Input node
+    svg.innerHTML += `
+      <rect class="flow-input" x="${canvasWidth/2 - 80}" y="${inputY - 20}" width="160" height="40" rx="20" />
+      <text class="flow-text" x="${canvasWidth/2}" y="${inputY + 5}">Business Challenge</text>
+    `;
+    
+    // Get active agents in order
+    const activeAgents = ['manager', 'researcher', 'analyst'].filter(key => agents[key].active);
+    
+    if (activeAgents.length > 0) {
+      // Calculate vertical spacing based on number of agents
+      const totalHeight = outputY - inputY - 80;
+      const agentSpacing = totalHeight / (activeAgents.length + 1);
+      
+      // Draw connection from input to first agent
+      const firstAgentY = inputY + agentSpacing;
+      svg.innerHTML += `
+        <line class="connection-line" x1="${canvasWidth/2}" y1="${inputY + 20}" x2="${canvasWidth/2}" y2="${firstAgentY - nodeHeight/2}" />
+      `;
+      
+      // Draw agent nodes
+      activeAgents.forEach((key, idx) => {
+        const agent = agents[key];
+        const y = inputY + (idx + 1) * agentSpacing;
+        agent.y = y;
+        
+        const isSelected = selectedAgent === key;
+        const rectClass = isSelected ? 'agent-node-rect selected' : 'agent-node-rect';
+        
+        svg.innerHTML += `
+          <g class="agent-group" data-agent="${key}">
+            <rect class="${rectClass}" 
+                  x="${canvasWidth/2 - nodeWidth/2}" y="${y - nodeHeight/2}" 
+                  width="${nodeWidth}" height="${nodeHeight}" rx="6" 
+                  style="cursor: pointer;" />
+            <text class="agent-node-text" x="${canvasWidth/2}" y="${y - 10}">${agent.name || '(Unnamed)'}</text>
+            <text class="agent-node-label" x="${canvasWidth/2}" y="${y + 15}">${agent.tools.length + agent.constraints.length} item${agent.tools.length + agent.constraints.length !== 1 ? 's' : ''}</text>
+          </g>
+        `;
+        
+        // Connection to next agent or output
+        if (idx < activeAgents.length - 1) {
+          const nextAgentY = inputY + (idx + 2) * agentSpacing;
+          svg.innerHTML += `
+            <line class="connection-line" x1="${canvasWidth/2}" y1="${y + nodeHeight/2}" 
+                  x2="${canvasWidth/2}" y2="${nextAgentY - nodeHeight/2}" />
+          `;
+        } else {
+          svg.innerHTML += `
+            <line class="connection-line" x1="${canvasWidth/2}" y1="${y + nodeHeight/2}" 
+                  x2="${canvasWidth/2}" y2="${outputY - 20}" />
+          `;
+        }
+      });
+    } else {
+      // No agents yet, connect input directly to output
+      svg.innerHTML += `
+        <line class="connection-line" x1="${canvasWidth/2}" y1="${inputY + 20}" x2="${canvasWidth/2}" y2="${outputY - 20}" />
+      `;
+    }
+    
+    // Draw tool nodes attached to each agent
+    activeAgents.forEach(agentKey => {
+      const agent = agents[agentKey];
+      
+      // Extract roles and tasks from constraints
+      const role = agent.constraints.find(c => {
+        // Check if this constraint came from the Role category
+        // We'll track category in a smarter way - for now, identify by common patterns
+        return ['Strategic planner', 'Data gatherer', 'Insight synthesizer', 'Quality validator'].includes(c);
+      });
+      
+      const task = agent.constraints.find(c => {
+        return ['Define constraints', 'Gather market data', 'Analyze competition', 'Synthesize insights', 'Validate findings'].includes(c);
+      });
+      
+      const output = agent.constraints.find(c => {
+        return ['Strategic brief', 'Data summary', 'Executive report', 'Structured table', 'Risk assessment'].includes(c);
+      });
+      
+      const agentConstraints = agent.constraints.filter(c => {
+        return ['Budget-aware', 'Time-limited', 'Data-source restricted', 'Compliance-bound', 'Regional focus'].includes(c);
+      });
+      
+      const handoffInstructions = agent.constraints.filter(c => {
+        return ['Pass structured data', 'Include methodology', 'Flag uncertainties', 'Document sources', 'Highlight assumptions'].includes(c);
+      });
+      
+      // Create HTML card
+      const cardY = agent.y;
+      const cardX = canvasWidth/2 + nodeWidth/2 + 20;
+      
+      const cardHtml = `
+        <div class="agent-card" style="left: ${cardX}px; top: ${cardY - 100}px;">
+          <div class="agent-card-title">${agent.name || '(Unnamed Agent)'}</div>
+          
+          <div class="agent-card-row">
+            <div class="agent-card-label">Role:</div>
+            <div class="agent-card-value ${!role ? 'agent-card-empty' : ''}">${role || 'Not assigned'}</div>
+          </div>
+          
+          <div class="agent-card-row">
+            <div class="agent-card-label">Task:</div>
+            <div class="agent-card-value ${!task ? 'agent-card-empty' : ''}">${task || 'Not assigned'}</div>
+          </div>
+          
+          <div class="agent-card-row">
+            <div class="agent-card-label">Tools:</div>
+            <div class="agent-card-value ${agent.tools.length === 0 ? 'agent-card-empty' : ''}">${agent.tools.length > 0 ? agent.tools.join(', ') : 'None assigned'}</div>
+          </div>
+          
+          <div class="agent-card-row">
+            <div class="agent-card-label">Output:</div>
+            <div class="agent-card-value ${!output ? 'agent-card-empty' : ''}">${output || 'Not assigned'}</div>
+          </div>
+          
+          ${agentConstraints.length > 0 ? `
+          <div class="agent-card-row">
+            <div class="agent-card-label">Constraints:</div>
+            <div class="agent-card-value">${agentConstraints.join(', ')}</div>
+          </div>
+          ` : ''}
+          
+          ${handoffInstructions.length > 0 ? `
+          <div class="agent-card-row">
+            <div class="agent-card-label">Handoff:</div>
+            <div class="agent-card-value">${handoffInstructions.join(', ')}</div>
+          </div>
+          ` : ''}
+        </div>
+      `;
+      
+      // Insert card into canvas area (not SVG)
+      const existingCards = document.querySelectorAll('.agent-card');
+      existingCards.forEach(card => card.remove()); // Clear old cards
+    });
+    
+    // Add all cards after SVG is done rendering
+    setTimeout(() => {
+      activeAgents.forEach((agentKey, agentIndex) => {
+        const agent = agents[agentKey];
+        
+        // Extract roles and tasks from constraints
+        const role = agent.constraints.find(c => {
+          return ['Strategic planner', 'Data gatherer', 'Insight synthesizer', 'Quality validator'].includes(c);
+        });
+        
+        const task = agent.constraints.find(c => {
+          return ['Define constraints', 'Gather market data', 'Analyze competition', 'Synthesize insights', 'Validate findings'].includes(c);
+        });
+        
+        const output = agent.constraints.find(c => {
+          return ['Strategic brief', 'Data summary', 'Executive report', 'Structured table', 'Risk assessment'].includes(c);
+        });
+        
+        const agentConstraints = agent.constraints.filter(c => {
+          return ['Budget-aware', 'Time-limited', 'Data-source restricted', 'Compliance-bound', 'Regional focus'].includes(c);
+        });
+        
+        const handoffInstructions = agent.constraints.filter(c => {
+          return ['Pass structured data', 'Include methodology', 'Flag uncertainties', 'Document sources', 'Highlight assumptions'].includes(c);
+        });
+        
+        const cardY = agent.y;
+        
+        // Position cards: middle on left, top and bottom on right
+        let cardX;
+        let topOffset;
+        
+        if (activeAgents.length === 1) {
+          // Single agent - put on right
+          cardX = canvasWidth/2 + nodeWidth/2 + 20;
+          topOffset = cardY - 100;
+        } else if (activeAgents.length === 2) {
+          // Two agents - both on right, staggered
+          cardX = canvasWidth/2 + nodeWidth/2 + 20;
+          topOffset = cardY - 100;
+        } else if (activeAgents.length === 3) {
+          // Three agents - middle on left, top and bottom on right
+          if (agentIndex === 0) {
+            // Top agent - right side, higher up
+            cardX = canvasWidth/2 + nodeWidth/2 + 20;
+            topOffset = cardY - 50;
+          } else if (agentIndex === 1) {
+            // Middle agent - left side, further out
+            cardX = canvasWidth/2 - nodeWidth/2 - 280;
+            topOffset = cardY - 100;
+          } else {
+            // Bottom agent - right side, lower down
+            cardX = canvasWidth/2 + nodeWidth/2 + 20;
+            topOffset = cardY - 50;
+          }
+        }
+        
+        const card = document.createElement('div');
+        card.className = 'agent-card';
+        card.style.left = cardX + 'px';
+        card.style.top = topOffset + 'px';
+        card.innerHTML = `
+          <div class="agent-card-title">${agent.name || '(Unnamed Agent)'}</div>
+          
+          <div class="agent-card-row">
+            <div class="agent-card-label">Role:</div>
+            <div class="agent-card-value ${!role ? 'agent-card-empty' : ''}">
+              ${role ? `<span class="agent-card-clickable" data-agent="${agentKey}" data-item="${role}" data-type="constraint">${role}</span>` : 'Not assigned'}
+            </div>
+          </div>
+          
+          <div class="agent-card-row">
+            <div class="agent-card-label">Task:</div>
+            <div class="agent-card-value ${!task ? 'agent-card-empty' : ''}">
+              ${task ? `<span class="agent-card-clickable" data-agent="${agentKey}" data-item="${task}" data-type="constraint">${task}</span>` : 'Not assigned'}
+            </div>
+          </div>
+          
+          <div class="agent-card-row">
+            <div class="agent-card-label">Tools:</div>
+            <div class="agent-card-value">
+              ${agent.tools.length > 0 ? `<div class="agent-card-list">${agent.tools.map(tool => `<span class="agent-card-tag" data-agent="${agentKey}" data-item="${tool}" data-type="tool">${tool}</span>`).join('')}</div>` : '<span class="agent-card-empty">None assigned</span>'}
+            </div>
+          </div>
+          
+          <div class="agent-card-row">
+            <div class="agent-card-label">Output:</div>
+            <div class="agent-card-value ${!output ? 'agent-card-empty' : ''}">
+              ${output ? `<span class="agent-card-clickable" data-agent="${agentKey}" data-item="${output}" data-type="constraint">${output}</span>` : 'Not assigned'}
+            </div>
+          </div>
+          
+          ${handoffInstructions.length > 0 ? `
+          <div class="agent-card-row">
+            <div class="agent-card-label">Handoff:</div>
+            <div class="agent-card-value">
+              <div class="agent-card-list">${handoffInstructions.map(handoff => `<span class="agent-card-constraint-tag" data-agent="${agentKey}" data-item="${handoff}" data-type="constraint">${handoff}</span>`).join('')}</div>
+            </div>
+          </div>
+          ` : ''}
+        `;
+        canvas.appendChild(card);
+        
+        // Add click handlers for item removal
+        card.querySelectorAll('[data-item]').forEach(item => {
+          item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const agentKey = item.dataset.agent;
+            const itemText = item.dataset.item;
+            const itemType = item.dataset.type;
+            
+            if (itemType === 'tool') {
+              agents[agentKey].tools = agents[agentKey].tools.filter(t => t !== itemText);
+            } else if (itemType === 'constraint') {
+              agents[agentKey].constraints = agents[agentKey].constraints.filter(c => c !== itemText);
+            }
+            drawWorkflow();
+          });
+        });
+      });
+    }, 0);
+    
+    // Output node
+    svg.innerHTML += `
+      <rect class="flow-output" x="${canvasWidth/2 - 80}" y="${outputY - 20}" width="160" height="40" rx="20" />
+      <text class="flow-text" x="${canvasWidth/2}" y="${outputY + 5}">Executive Report</text>
+    `;
+    
+    // Attach event listeners
+    document.querySelectorAll('.agent-group').forEach(g => {
+      g.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const key = e.currentTarget.dataset.agent;
+        selectedAgent = selectedAgent === key ? null : key;
+        if (selectedAgent) {
+          agentSelect.value = agents[key].name;
+          const rect = e.currentTarget.querySelector('.agent-node-rect').getBoundingClientRect();
+          const canvasRect = canvas.getBoundingClientRect();
+          agentDropdown.style.left = (rect.left - canvasRect.left) + 'px';
+          agentDropdown.style.top = (rect.bottom - canvasRect.top + 5) + 'px';
+          agentDropdown.classList.add('show');
+        } else {
+          agentDropdown.classList.remove('show');
+        }
+        drawWorkflow();
+      });
+    });
+    
+    // Item removal is now handled through card interface
+    // Students click on the agent card to edit
+  }
+  
+  // Sidebar drag handlers
+  document.querySelectorAll('.tool-node').forEach(node => {
+    node.addEventListener('dragstart', (e) => {
+      if (e.target.dataset.agentSlot) {
+        draggedAgent = 'agent';
+      } else if (e.target.dataset.constraint) {
+        draggedConstraint = {
+          text: e.target.dataset.constraint,
+          category: e.target.dataset.category
+        };
+      } else if (e.target.dataset.tool) {
+        draggedTool = e.target.dataset.tool;
+      }
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    
+    node.addEventListener('dragend', (e) => {
+      e.target.classList.remove('dragging');
+      draggedTool = null;
+      draggedConstraint = null;
+      draggedAgent = null;
+    });
+    
+    node.addEventListener('mouseenter', (e) => {
+      const description = e.target.dataset.description;
+      if (description) {
+        const tooltip = document.getElementById('tooltip');
+        tooltip.textContent = description;
+        const rect = e.target.getBoundingClientRect();
+        const sidebarRect = document.querySelector('.sidebar').getBoundingClientRect();
+        tooltip.style.left = (rect.right - sidebarRect.left + 10) + 'px';
+        tooltip.style.top = (rect.top - sidebarRect.top) + 'px';
+        tooltip.classList.add('show');
+      }
+    });
+    
+    node.addEventListener('mouseleave', (e) => {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.remove('show');
+    });
+  });
+  
+  // Canvas drop handlers
+  svg.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  });
+  
+  svg.addEventListener('drop', (e) => {
+    e.preventDefault();
+    
+    if (draggedAgent) {
+      // Determine which agent slot to fill (in order: manager, researcher, analyst)
+      const agentOrder = ['manager', 'researcher', 'analyst'];
+      for (let key of agentOrder) {
+        if (!agents[key].active) {
+          agents[key].active = true;
+          agents[key].name = '';
+          selectedAgent = key;
+          agentSelect.value = '';
+          const agentDropdown = document.getElementById('agentDropdown');
+          agentDropdown.style.left = '50%';
+          agentDropdown.style.top = '50%';
+          agentDropdown.classList.add('show');
+          drawWorkflow();
+          break;
+        }
+      }
+    } else if (draggedConstraint) {
+      const svgRect = svg.getBoundingClientRect();
+      const x = e.clientX - svgRect.left;
+      const y = e.clientY - svgRect.top;
+      
+      Object.keys(agents).forEach(key => {
+        if (!agents[key].active) return;
+        const agent = agents[key];
+        const dist = Math.sqrt(Math.pow(x - canvasWidth/2, 2) + Math.pow(y - agent.y, 2));
+        if (dist < 120 && !agent.constraints.includes(draggedConstraint.text)) {
+          agent.constraints.push(draggedConstraint.text);
+          drawWorkflow();
+        }
+      });
+    } else if (draggedTool) {
+      const svgRect = svg.getBoundingClientRect();
+      const x = e.clientX - svgRect.left;
+      const y = e.clientY - svgRect.top;
+      
+      Object.keys(agents).forEach(key => {
+        if (!agents[key].active) return;
+        const agent = agents[key];
+        const dist = Math.sqrt(Math.pow(x - canvasWidth/2, 2) + Math.pow(y - agent.y, 2));
+        if (dist < 120 && !agent.tools.includes(draggedTool)) {
+          agent.tools.push(draggedTool);
+          drawWorkflow();
+        }
+      });
+    }
+  });
+  
+  // Agent rename handler
+  agentSelect.addEventListener('change', (e) => {
+    if (selectedAgent) {
+      agents[selectedAgent].name = e.target.value;
+      drawWorkflow();
+    }
+  });
+  
+  // Remove agent handler
+  document.getElementById('removeAgentBtn').addEventListener('click', (e) => {
+    if (selectedAgent) {
+      agents[selectedAgent].active = false;
+      agents[selectedAgent].tools = [];
+      agents[selectedAgent].constraints = [];
+      agents[selectedAgent].name = '';
+      selectedAgent = null;
+      agentDropdown.classList.remove('show');
+      drawWorkflow();
+    }
+  });
+  
+  // Click canvas to deselect
+  canvas.addEventListener('click', (e) => {
+    if (e.target === canvas || e.target === svg) {
+      selectedAgent = null;
+      agentDropdown.classList.remove('show');
+      drawWorkflow();
+    }
+  });
+  
+  // Window resize handler
+  window.addEventListener('resize', () => {
+    canvasWidth = canvas.offsetWidth;
+    canvasHeight = canvas.offsetHeight;
+    drawWorkflow();
+  });
+  
+  // Export to Markdown function
+  function generateMarkdownFiles() {
+    const activeAgents = ['manager', 'researcher', 'analyst'].filter(key => agents[key].active);
+    
+    if (activeAgents.length === 0) {
+      alert('Please add at least one agent to export.');
+      return;
+    }
+    
+    // Get all workflow-level constraints
+    const workflowConstraints = [];
+    Object.keys(agents).forEach(key => {
+      agents[key].constraints.forEach(c => {
+        if (['Budget-aware', 'Time-limited', 'Data-source restricted', 'Compliance-bound', 'Regional focus'].includes(c) && !workflowConstraints.includes(c)) {
+          workflowConstraints.push(c);
+        }
+      });
+    });
+    
+    // Helper function to extract attributes
+    function getAttributes(agentKey) {
+      const agent = agents[agentKey];
+      
+      const role = agent.constraints.find(c => 
+        ['Strategic planner', 'Data gatherer', 'Insight synthesizer', 'Quality validator'].includes(c)
+      );
+      
+      const task = agent.constraints.find(c => 
+        ['Define constraints', 'Gather market data', 'Analyze competition', 'Synthesize insights', 'Validate findings'].includes(c)
+      );
+      
+      const output = agent.constraints.find(c => 
+        ['Strategic brief', 'Data summary', 'Executive report', 'Structured table', 'Risk assessment'].includes(c)
+      );
+      
+      const handoff = agent.constraints.filter(c => 
+        ['Pass structured data', 'Include methodology', 'Flag uncertainties', 'Document sources', 'Highlight assumptions'].includes(c)
+      );
+      
+      return { role, task, output, handoff };
+    }
+    
+    // Generate Manager.md
+    const managerAttrs = getAttributes('manager');
+    const managerMd = `# Manager Agent
+
+## Role
+${managerAttrs.role || '[TODO: Define role]'}
+
+## Primary Task
+${managerAttrs.task || '[TODO: Define primary task]'}
+
+## Tools/Capabilities
+${agents.manager.tools.length > 0 ? agents.manager.tools.map(t => `- ${t}`).join('\n') : '- [TODO: Add tools]'}
+
+## Output Format
+${managerAttrs.output || '[TODO: Define output format]'}
+
+## Constraints
+<!-- GUIDANCE: These are the constraints that govern the entire workflow. Describe each constraint and why it applies to your scenario. -->
+${workflowConstraints.length > 0 ? workflowConstraints.map(c => `- ${c}`).join('\n') : '<!-- No constraints defined yet -->'}
+
+[TODO: Add detailed explanation of each constraint and its business rationale]
+
+## Handoff Instructions
+<!-- GUIDANCE: Write out the strategic objectives and constraints that the Researcher needs to understand. Be specific about what data is needed and any boundaries. -->
+
+Pass the following to the Researcher:
+- Strategic objectives and market focus
+- Budget and timeline constraints
+- Any regulatory or compliance requirements
+- Geographic or segment-specific limitations
+
+[TODO: Write out the specific handoff message in your own words]
+`;
+
+    // Generate Researcher.md
+    const researcherAttrs = getAttributes('researcher');
+    const researcherMd = `# Researcher Agent
+
+## Role
+${researcherAttrs.role || '[TODO: Define role]'}
+
+## Primary Task
+${researcherAttrs.task || '[TODO: Define primary task]'}
+
+## Tools/Capabilities
+${agents.researcher.tools.length > 0 ? agents.researcher.tools.map(t => `- ${t}`).join('\n') : '- [TODO: Add tools]'}
+
+## Output Format
+${researcherAttrs.output || '[TODO: Define output format]'}
+
+## Constraints
+<!-- GUIDANCE: The Researcher operates within the constraints set by the Manager. Reference those constraints here. -->
+
+Operate within the following constraints established by Manager:
+${workflowConstraints.length > 0 ? workflowConstraints.map(c => `- ${c}`).join('\n') : '- [TODO: Reference Manager constraints]'}
+
+[TODO: Explain how each constraint affects your research approach]
+
+## Handoff Instructions
+<!-- GUIDANCE: Specify what data structure, documentation, and metadata the Analyst needs to receive. -->
+
+Pass to Analyst:
+${researcherAttrs.handoff.length > 0 ? researcherAttrs.handoff.map(h => `- ${h}`).join('\n') : '- [TODO: Define handoff requirements]'}
+
+[TODO: Describe the exact format and content expected in your data handoff]
+`;
+
+    // Generate Analyst.md
+    const analystAttrs = getAttributes('analyst');
+    const analystMd = `# Analyst Agent
+
+## Role
+${analystAttrs.role || '[TODO: Define role]'}
+
+## Primary Task
+${analystAttrs.task || '[TODO: Define primary task]'}
+
+## Tools/Capabilities
+${agents.analyst.tools.length > 0 ? agents.analyst.tools.map(t => `- ${t}`).join('\n') : '- [TODO: Add tools]'}
+
+## Output Format
+${analystAttrs.output || '[TODO: Define output format]'}
+
+## Constraints
+<!-- GUIDANCE: The Analyst operates within the constraints set by the Manager. Reference those constraints here. -->
+
+Operate within the following constraints established by Manager:
+${workflowConstraints.length > 0 ? workflowConstraints.map(c => `- ${c}`).join('\n') : '- [TODO: Reference Manager constraints]'}
+
+[TODO: Explain how each constraint affects your analysis and recommendations]
+
+## Handoff Instructions
+<!-- GUIDANCE: The Analyst is the final agent, so document how the Executive Report should be structured and what it should contain. -->
+
+Produce an Executive Report that includes:
+${analystAttrs.handoff.length > 0 ? analystAttrs.handoff.map(h => `- ${h}`).join('\n') : '- Clear recommendations\n- Supporting evidence\n- Risk assessment'}
+
+[TODO: Define the specific structure and critical elements of your Executive Report]
+`;
+
+    // Download files
+    downloadMarkdownFile('manager.md', managerMd);
+    downloadMarkdownFile('researcher.md', researcherMd);
+    downloadMarkdownFile('analyst.md', analystMd);
+  }
+  
+  function downloadMarkdownFile(filename, content) {
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+  
+  // Export button click handler
+  document.getElementById('exportButton').addEventListener('click', generateMarkdownFiles);
+  
+  // Initial draw
+  drawWorkflow();
+</script>
+
+</body>
+</html>
