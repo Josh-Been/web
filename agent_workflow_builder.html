@@ -478,15 +478,15 @@
       <div class="tool-node constraint-node" draggable="true" data-constraint="Strategic planner" data-category="role" data-description="Sets overall strategy, defines objectives, and establishes rules and constraints that other agents must follow.">Strategic planner</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Data gatherer" data-category="role" data-description="Collects and searches for information from various sources. Focuses on finding raw data and evidence.">Data gatherer</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Insight synthesizer" data-category="role" data-description="Analyzes collected data, identifies patterns, and transforms raw information into actionable insights.">Insight synthesizer</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Quality validator" data-category="role" data-description="Reviews and validates the work of other agents, ensures quality, and flags issues or gaps.">Quality validator</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Quality validator" data-category="role" data-description="Reviews and validates the work of other agents, ensures quality, and flags issues or gaps. Note: this 3-agent workflow has no dedicated QA step -- assigning this role raises a good discussion question about whether a 4-agent design is needed.">Quality validator</div>
     </div>
     
     <div class="sidebar-section">
       <div class="sidebar-title">Primary Task <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
       <div class="category-description">Specify the core work or responsibility this agent will perform</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Define constraints" data-category="task" data-description="Establish the boundaries, rules, budget, timeline, and other limits that guide the workflow.">Define constraints</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Gather market data" data-category="task" data-description="Search for and collect information about markets, competitors, customers, and trends.">Gather market data</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Analyze competition" data-category="task" data-description="Study competitor strategies, strengths, weaknesses, and market positioning.">Analyze competition</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Gather job postings/company data" data-category="task" data-description="Search for and collect information about open roles, companies, and industry trends relevant to the candidate.">Gather job postings/company data</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Analyze role fit" data-category="task" data-description="Evaluate how well available roles match the candidate's background, constraints, and priorities.">Analyze role fit</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Synthesize insights" data-category="task" data-description="Combine data from multiple sources, identify patterns, and draw meaningful conclusions.">Synthesize insights</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Validate findings" data-category="task" data-description="Check the quality and accuracy of work, ensure all assumptions are documented.">Validate findings</div>
     </div>
@@ -495,7 +495,7 @@
       <div class="sidebar-title">Tools/Capabilities <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
       <div class="category-description">Assign specific tools or functions that enable the agent to perform its task</div>
       <div class="tool-node" draggable="true" data-tool="Define Constraints" data-description="Allows the agent to establish and communicate rules, budgets, timelines, and other constraints.">Define Constraints</div>
-      <div class="tool-node" draggable="true" data-tool="Google Search" data-description="Enables web search to gather current market data, competitor info, and industry research.">Google Search</div>
+      <div class="tool-node" draggable="true" data-tool="Google Search" data-description="Enables web search to gather current job postings, company info, and industry research.">Google Search</div>
       <div class="tool-node" draggable="true" data-tool="Format & Synthesize" data-description="Structures data into organized formats and creates summaries from raw information.">Format & Synthesize</div>
       <div class="tool-node" draggable="true" data-tool="Compare datasets" data-description="Analyzes multiple datasets side-by-side to identify differences, trends, and patterns.">Compare datasets</div>
       <div class="tool-node" draggable="true" data-tool="Generate summary" data-description="Creates concise summaries of complex information for handoff to the next agent.">Generate summary</div>
@@ -514,11 +514,11 @@
     <div class="sidebar-section">
       <div class="sidebar-title">Constraints <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
       <div class="category-description">Define the limits, rules, and conditions that govern this agent's behavior</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Budget-aware" data-category="constraint" data-description="The agent must consider and respect budget limitations in all decisions.">Budget-aware</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Compensation-aware" data-category="constraint" data-description="The agent must consider and respect the candidate's salary expectations or compensation floor in all decisions.">Compensation-aware</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Time-limited" data-category="constraint" data-description="The agent operates under a specific time constraint or deadline.">Time-limited</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Data-source restricted" data-category="constraint" data-description="The agent can only use approved or specified data sources.">Data-source restricted</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Compliance-bound" data-category="constraint" data-description="The agent must follow regulatory, legal, or compliance requirements.">Compliance-bound</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Regional focus" data-category="constraint" data-description="The agent's analysis is limited to a specific geographic region or market.">Regional focus</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Company-size restricted" data-category="constraint" data-description="The agent's search is limited to a specific company size range (e.g., startup vs. enterprise).">Company-size restricted</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Visa/sponsorship-bound" data-category="constraint" data-description="The agent must account for the candidate's work authorization or sponsorship needs.">Visa/sponsorship-bound</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Regional focus" data-category="constraint" data-description="The agent's search is limited to a specific geographic region, or must account for remote/relocation preferences.">Regional focus</div>
     </div>
     
     <div class="sidebar-section">
@@ -549,7 +549,7 @@
     <div class="example-panel" id="examplePanel">
       <div class="example-title">Example workflow</div>
       <div class="example-text">
-        Manager defines market constraints → Researcher gathers competitive data → Analyst synthesizes insights into an Executive Report.
+        Manager defines candidate constraints → Researcher gathers matching job postings and company data → Analyst synthesizes findings into a Search Strategy.
       </div>
       <div class="example-toggle" onclick="document.getElementById('examplePanel').style.display='none';">Hide</div>
     </div>
@@ -602,7 +602,7 @@
     const allConstraints = [];
     Object.keys(agents).forEach(key => {
       agents[key].constraints.forEach(c => {
-        if (['Budget-aware', 'Time-limited', 'Data-source restricted', 'Compliance-bound', 'Regional focus'].includes(c) && !allConstraints.includes(c)) {
+        if (['Compensation-aware', 'Time-limited', 'Company-size restricted', 'Visa/sponsorship-bound', 'Regional focus'].includes(c) && !allConstraints.includes(c)) {
           allConstraints.push(c);
         }
       });
@@ -636,7 +636,7 @@
     // Input node
     svg.innerHTML += `
       <rect class="flow-input" x="${canvasWidth/2 - 80}" y="${inputY - 20}" width="160" height="40" rx="20" />
-      <text class="flow-text" x="${canvasWidth/2}" y="${inputY + 5}">Business Challenge</text>
+      <text class="flow-text" x="${canvasWidth/2}" y="${inputY + 5}">Candidate Profile</text>
     `;
     
     // Get active agents in order
@@ -700,13 +700,11 @@
       
       // Extract roles and tasks from constraints
       const role = agent.constraints.find(c => {
-        // Check if this constraint came from the Role category
-        // We'll track category in a smarter way - for now, identify by common patterns
         return ['Strategic planner', 'Data gatherer', 'Insight synthesizer', 'Quality validator'].includes(c);
       });
       
       const task = agent.constraints.find(c => {
-        return ['Define constraints', 'Gather market data', 'Analyze competition', 'Synthesize insights', 'Validate findings'].includes(c);
+        return ['Define constraints', 'Gather job postings/company data', 'Analyze role fit', 'Synthesize insights', 'Validate findings'].includes(c);
       });
       
       const output = agent.constraints.find(c => {
@@ -714,7 +712,7 @@
       });
       
       const agentConstraints = agent.constraints.filter(c => {
-        return ['Budget-aware', 'Time-limited', 'Data-source restricted', 'Compliance-bound', 'Regional focus'].includes(c);
+        return ['Compensation-aware', 'Time-limited', 'Company-size restricted', 'Visa/sponsorship-bound', 'Regional focus'].includes(c);
       });
       
       const handoffInstructions = agent.constraints.filter(c => {
@@ -781,7 +779,7 @@
         });
         
         const task = agent.constraints.find(c => {
-          return ['Define constraints', 'Gather market data', 'Analyze competition', 'Synthesize insights', 'Validate findings'].includes(c);
+          return ['Define constraints', 'Gather job postings/company data', 'Analyze role fit', 'Synthesize insights', 'Validate findings'].includes(c);
         });
         
         const output = agent.constraints.find(c => {
@@ -789,7 +787,7 @@
         });
         
         const agentConstraints = agent.constraints.filter(c => {
-          return ['Budget-aware', 'Time-limited', 'Data-source restricted', 'Compliance-bound', 'Regional focus'].includes(c);
+          return ['Compensation-aware', 'Time-limited', 'Company-size restricted', 'Visa/sponsorship-bound', 'Regional focus'].includes(c);
         });
         
         const handoffInstructions = agent.constraints.filter(c => {
@@ -895,7 +893,7 @@
     // Output node
     svg.innerHTML += `
       <rect class="flow-output" x="${canvasWidth/2 - 80}" y="${outputY - 20}" width="160" height="40" rx="20" />
-      <text class="flow-text" x="${canvasWidth/2}" y="${outputY + 5}">Executive Report</text>
+      <text class="flow-text" x="${canvasWidth/2}" y="${outputY + 5}">Search Strategy</text>
     `;
     
     // Attach event listeners
@@ -1072,7 +1070,7 @@
     const workflowConstraints = [];
     Object.keys(agents).forEach(key => {
       agents[key].constraints.forEach(c => {
-        if (['Budget-aware', 'Time-limited', 'Data-source restricted', 'Compliance-bound', 'Regional focus'].includes(c) && !workflowConstraints.includes(c)) {
+        if (['Compensation-aware', 'Time-limited', 'Company-size restricted', 'Visa/sponsorship-bound', 'Regional focus'].includes(c) && !workflowConstraints.includes(c)) {
           workflowConstraints.push(c);
         }
       });
@@ -1087,7 +1085,7 @@
       );
       
       const task = agent.constraints.find(c => 
-        ['Define constraints', 'Gather market data', 'Analyze competition', 'Synthesize insights', 'Validate findings'].includes(c)
+        ['Define constraints', 'Gather job postings/company data', 'Analyze role fit', 'Synthesize insights', 'Validate findings'].includes(c)
       );
       
       const output = agent.constraints.find(c => 
@@ -1118,21 +1116,55 @@ ${agents.manager.tools.length > 0 ? agents.manager.tools.map(t => `- ${t}`).join
 ${managerAttrs.output || '[TODO: Define output format]'}
 
 ## Constraints
-<!-- GUIDANCE: These are the constraints that govern the entire workflow. Describe each constraint and why it applies to your scenario. -->
+<!-- GUIDANCE: These are the constraint CATEGORIES your workflow will handle -- not
+specific values. Specific values (e.g., which region, which timeline) come from the
+candidate's CV and their Colab Form selections when the notebook runs. Your job here
+is to write instructions for HOW the Manager should reason about each category.
+
+Example -- Regional focus:
+"When a regional constraint is present, identify the geographic scope from the
+candidate's form selection and note explicitly whether relocation is acceptable.
+If the candidate indicates 'remote only,' exclude location-restricted roles from
+the Researcher's search entirely rather than flagging them as lower priority."
+
+Example -- Time-limited:
+"If the candidate specifies an urgent timeline (e.g., under 30 days), instruct the
+Researcher to prioritize roles with active/recent postings over passive opportunities,
+and instruct the Analyst to flag any recommended role requiring a multi-stage interview
+process as a timeline risk."
+
+Example -- Compensation-aware:
+"Treat the candidate's stated compensation floor as a hard filter, not a preference --
+instruct the Researcher to exclude roles with a listed range entirely below the floor,
+and flag roles with no listed range as 'compensation unconfirmed' rather than assuming fit."
+
+Example -- Visa/sponsorship-bound:
+"If the candidate requires sponsorship, instruct the Researcher to flag any posting that
+doesn't explicitly confirm sponsorship as 'sponsorship unconfirmed' rather than excluding
+or including it by default."
+
+Example -- Company-size restricted:
+"If the candidate has a stated company-size preference (e.g., startup vs. enterprise),
+instruct the Researcher to note company size for every result so the Analyst can weigh it." 
+-->
+
 ${workflowConstraints.length > 0 ? workflowConstraints.map(c => `- ${c}`).join('\n') : '<!-- No constraints defined yet -->'}
 
-[TODO: Add detailed explanation of each constraint and its business rationale]
+[TODO: Write your own constraint-handling instructions here, following the pattern above]
 
 ## Handoff Instructions
-<!-- GUIDANCE: Write out the strategic objectives and constraints that the Researcher needs to understand. Be specific about what data is needed and any boundaries. -->
+<!-- GUIDANCE: Write the specific message the Manager passes to the Researcher -- not
+a general category, but what the Researcher actually needs to know to search effectively.
 
-Pass the following to the Researcher:
-- Strategic objectives and market focus
-- Budget and timeline constraints
-- Any regulatory or compliance requirements
-- Geographic or segment-specific limitations
+Example:
+"Pass along: (1) the candidate's inferred target industries and seniority level from
+the CV, (2) any hard constraints from the form -- region, visa status, compensation
+floor -- explicitly labeled as non-negotiable vs. preferred, and (3) a note on which
+constraints came from the CV (inferred) vs. the form (explicit), so the Researcher
+knows which to treat as flexible."
+-->
 
-[TODO: Write out the specific handoff message in your own words]
+[TODO: Write your specific handoff message here]
 `;
 
     // Generate Researcher.md
@@ -1152,17 +1184,41 @@ ${agents.researcher.tools.length > 0 ? agents.researcher.tools.map(t => `- ${t}`
 ${researcherAttrs.output || '[TODO: Define output format]'}
 
 ## Constraints
-<!-- GUIDANCE: The Researcher operates within the constraints set by the Manager. Reference those constraints here. -->
+<!-- GUIDANCE: Explain how each constraint passed down from the Manager changes what
+and how you search -- not just that it exists.
+
+Example -- Regional focus (remote only):
+"Exclude any posting requiring on-site presence unless it explicitly offers a remote
+option. Do not rely on job title alone to judge this -- check the posting's location
+field."
+
+Example -- Visa/sponsorship-bound:
+"Since sponsorship status is rarely stated clearly in postings, do not assume a role
+qualifies just because it doesn't mention visa requirements. Flag these as 'sponsorship
+unconfirmed' rather than silently including or excluding them."
+
+Example -- Compensation-aware:
+"Exclude roles with a listed compensation range entirely below the candidate's floor.
+For roles with no listed range, include them but mark as 'compensation unconfirmed.'"
+-->
 
 Operate within the following constraints established by Manager:
 ${workflowConstraints.length > 0 ? workflowConstraints.map(c => `- ${c}`).join('\n') : '- [TODO: Reference Manager constraints]'}
 
-[TODO: Explain how each constraint affects your research approach]
+[TODO: Write your own constraint-handling instructions here, following the pattern above]
 
 ## Handoff Instructions
-<!-- GUIDANCE: Specify what data structure, documentation, and metadata the Analyst needs to receive. -->
+<!-- GUIDANCE: Specify the exact structure the Analyst needs -- not just "pass along
+findings," but what fields, in what format, and what you flag as uncertain.
 
-Pass to Analyst:
+Example:
+"For each role found, pass: job title, company, location/remote status, listed
+compensation (or 'not listed'), and a one-line note on any constraint that couldn't
+be fully verified from the posting (e.g., sponsorship, exact seniority level). Group
+findings by how well they match the candidate's stated constraints -- strong fit,
+partial fit, uncertain -- so the Analyst isn't re-doing your filtering work."
+-->
+
 ${researcherAttrs.handoff.length > 0 ? researcherAttrs.handoff.map(h => `- ${h}`).join('\n') : '- [TODO: Define handoff requirements]'}
 
 [TODO: Describe the exact format and content expected in your data handoff]
@@ -1185,20 +1241,43 @@ ${agents.analyst.tools.length > 0 ? agents.analyst.tools.map(t => `- ${t}`).join
 ${analystAttrs.output || '[TODO: Define output format]'}
 
 ## Constraints
-<!-- GUIDANCE: The Analyst operates within the constraints set by the Manager. Reference those constraints here. -->
+<!-- GUIDANCE: Same pattern as Researcher -- explain how each constraint shapes your
+analysis and recommendations, not just synthesis of findings.
+
+Example -- Time-limited:
+"Weight roles with faster, simpler application processes higher in your recommendation
+if the candidate's timeline is urgent, even if a slower-process role is a marginally
+stronger fit."
+
+Example -- Company-size restricted:
+"If the candidate prefers startups, weight cultural/scope-of-role fit more heavily than
+brand recognition when ranking recommendations."
+-->
 
 Operate within the following constraints established by Manager:
 ${workflowConstraints.length > 0 ? workflowConstraints.map(c => `- ${c}`).join('\n') : '- [TODO: Reference Manager constraints]'}
 
-[TODO: Explain how each constraint affects your analysis and recommendations]
+[TODO: Write your own constraint-handling instructions here, following the pattern above]
 
 ## Handoff Instructions
-<!-- GUIDANCE: The Analyst is the final agent, so document how the Executive Report should be structured and what it should contain. -->
+<!-- GUIDANCE: This is your final deliverable to the candidate -- the Search Strategy.
+This is NOT just a formatted list of findings. It should include a recommendation and
+narrative guidance, similar to what a career advisor would hand a client.
 
-Produce an Executive Report that includes:
-${analystAttrs.handoff.length > 0 ? analystAttrs.handoff.map(h => `- ${h}`).join('\n') : '- Clear recommendations\n- Supporting evidence\n- Risk assessment'}
+Example structure to build from:
+1. Top 2-3 recommended roles, with a one-sentence reason each ties back to the
+   candidate's background or stated priorities
+2. Any gaps the candidate should address before applying (e.g., "consider highlighting
+   X experience more prominently for these roles")
+3. Flagged uncertainties the candidate should verify themselves (sponsorship, exact
+   compensation, etc.)
+4. A suggested order of outreach/application if timeline is a factor
+-->
 
-[TODO: Define the specific structure and critical elements of your Executive Report]
+Produce a Search Strategy that includes:
+${analystAttrs.handoff.length > 0 ? analystAttrs.handoff.map(h => `- ${h}`).join('\n') : '- Clear recommendations\n- Supporting evidence\n- Flagged uncertainties'}
+
+[TODO: Define the specific structure and content of your Search Strategy, following the pattern above]
 `;
 
     // Download files
