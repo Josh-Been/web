@@ -417,48 +417,126 @@
       color: #c62828;
     }
     
-    .workflow-constraints-card {
+    .workflow-constraints-badge {
       position: absolute;
-      background: #f9f9f9;
+      background: #ffffff;
       border: 2px solid #4caf50;
-      border-radius: 6px;
-      padding: 12px;
-      font-size: 12px;
-      line-height: 1.6;
-      width: 320px;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #2e7d32;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
       z-index: 20;
       top: 20px;
       left: 50%;
       transform: translateX(-50%);
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .workflow-constraints-badge:hover {
+      background: #f1f8f2;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .workflow-constraints-badge .badge-caret {
+      font-size: 10px;
+      color: #4caf50;
+    }
+
+    .workflow-constraints-overlay-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.25);
+      z-index: 199;
+    }
+
+    .workflow-constraints-overlay {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #ffffff;
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      padding: 20px;
+      width: min(600px, 90vw);
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      z-index: 200;
+    }
+
+    .workflow-constraints-overlay-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+
+    .workflow-constraints-overlay-close {
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #666;
+      flex-shrink: 0;
+    }
+
+    .workflow-constraints-overlay-close:hover {
+      background: #eee;
+    }
+
+    .workflow-constraints-overlay-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .workflow-constraints-overlay-row:last-child {
+      border-bottom: none;
     }
     
     .workflow-constraints-title {
       font-weight: 600;
-      font-size: 13px;
+      font-size: 16px;
       color: #2e7d32;
       margin-bottom: 4px;
     }
     
     .workflow-constraints-subtitle {
-      font-size: 11px;
+      font-size: 12px;
       color: #999;
       font-style: italic;
-      margin-bottom: 10px;
-      padding-bottom: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
       border-bottom: 1px solid #ddd;
     }
     
     .workflow-constraints-list {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
+      flex-direction: column;
     }
     
     .workflow-constraints-empty {
       color: #999;
       font-style: italic;
-      font-size: 11px;
+      font-size: 13px;
+      padding: 10px 0;
     }
   </style>
 </head>
@@ -556,7 +634,7 @@
     </div>
     
     <div class="instructions">
-      <strong>How to use:</strong> Drag tools from the sidebar onto agent nodes. Click agents to rename them. Click tools to remove them. Click a constraint's value box anytime to add or edit specifics.
+      <strong>How to use:</strong> Drag tools from the sidebar onto agent nodes. Click agents to rename them. Click tools to remove them. Click the "Workflow Constraints" badge anytime to view or edit constraint details.
     </div>
     
     <button class="export-button" id="exportButton">Export to Markdown</button>
@@ -581,6 +659,9 @@
   // Workflow-level constraint values (specific details students optionally add per constraint)
   // Keyed by constraint name, e.g. constraintValues['Regional focus'] = 'Remote, US only'
   let constraintValues = {};
+
+  // Whether the Workflow Constraints overlay panel is currently open
+  let constraintsPanelOpen = false;
   
   let selectedAgent = null;
   let draggedTool = null;
@@ -596,9 +677,11 @@
   const HANDOFF_TAGS = ['Pass structured data', 'Include methodology', 'Flag uncertainties', 'Document sources', 'Highlight assumptions', 'Include workflow critique'];
   
   function drawWorkflow() {
-    // Clear all existing cards from DOM
+    // Clear all existing cards / badges / overlays from DOM
     document.querySelectorAll('.agent-card').forEach(card => card.remove());
-    document.querySelectorAll('.workflow-constraints-card').forEach(card => card.remove());
+    document.querySelectorAll('.workflow-constraints-badge').forEach(el => el.remove());
+    document.querySelectorAll('.workflow-constraints-overlay').forEach(el => el.remove());
+    document.querySelectorAll('.workflow-constraints-overlay-backdrop').forEach(el => el.remove());
     
     svg.innerHTML = '';
     
@@ -606,7 +689,7 @@
     const inputY = 40;
     const outputY = canvasHeight - 40;
     
-    // Create and render Workflow Constraints card
+    // Determine all workflow-level constraints across agents
     const allConstraints = [];
     Object.keys(agents).forEach(key => {
       agents[key].constraints.forEach(c => {
@@ -615,52 +698,85 @@
         }
       });
     });
-    
-    const constraintsCard = document.createElement('div');
-    constraintsCard.className = 'workflow-constraints-card';
-    constraintsCard.innerHTML = `
-      <div class="workflow-constraints-title">Workflow Constraints</div>
-      <div class="workflow-constraints-subtitle">Set by Manager, followed by all downstream agents. Click a value box to add or edit specifics -- optional, anytime.</div>
-      <div class="workflow-constraints-list">
-        ${allConstraints.length > 0 ? allConstraints.map(constraint => `
-          <span class="agent-card-constraint-tag" data-constraint="${constraint}" data-type="workflow-constraint" style="display:inline-flex; align-items:center; gap:4px;">
-            <span class="constraint-remove-label" data-constraint="${constraint}">${constraint}</span>
-            <input type="text"
-                   class="constraint-value-input"
-                   data-constraint-value="${constraint}"
-                   value="${(constraintValues[constraint] || '').replace(/"/g, '&quot;')}"
-                   placeholder="add detail"
-                   size="10"
-                   style="font-size:11px; border:1px solid #ce93d8; border-radius:3px; padding:2px 4px; width:70px; background:#fff; color:#4a148c;" />
-          </span>
-        `).join('') : '<span class="workflow-constraints-empty">None assigned</span>'}
-      </div>
+
+    // Small, fixed-size badge -- always visible, never grows, never collides with canvas nodes
+    const badge = document.createElement('div');
+    badge.className = 'workflow-constraints-badge';
+    badge.innerHTML = `
+      <span>⚙️ Workflow Constraints (${allConstraints.length})</span>
+      <span class="badge-caret">${constraintsPanelOpen ? '▲' : '▼'}</span>
     `;
-    canvas.appendChild(constraintsCard);
-    
-    // Add click handlers for constraint removal (clicking the label, not the input)
-    constraintsCard.querySelectorAll('.constraint-remove-label').forEach(item => {
-      item.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const constraintText = item.dataset.constraint;
-        
-        // Remove this constraint from ALL agents
-        Object.keys(agents).forEach(agentKey => {
-          agents[agentKey].constraints = agents[agentKey].constraints.filter(c => c !== constraintText);
-        });
-        delete constraintValues[constraintText];
+    badge.addEventListener('click', (e) => {
+      e.stopPropagation();
+      constraintsPanelOpen = !constraintsPanelOpen;
+      drawWorkflow();
+    });
+    canvas.appendChild(badge);
+
+    // Overlay panel -- only rendered when open, sits on its own fixed layer above everything,
+    // fully decoupled from the canvas/SVG layout so it can never overlap an agent node.
+    if (constraintsPanelOpen) {
+      const backdrop = document.createElement('div');
+      backdrop.className = 'workflow-constraints-overlay-backdrop';
+      backdrop.addEventListener('click', () => {
+        constraintsPanelOpen = false;
         drawWorkflow();
       });
-    });
+      document.body.appendChild(backdrop);
 
-    // Add input handlers for constraint value editing -- always available, does not remove the tag
-    constraintsCard.querySelectorAll('.constraint-value-input').forEach(input => {
-      input.addEventListener('click', (e) => e.stopPropagation());
-      input.addEventListener('input', (e) => {
-        const constraintText = e.target.dataset.constraintValue;
-        constraintValues[constraintText] = e.target.value;
+      const overlay = document.createElement('div');
+      overlay.className = 'workflow-constraints-overlay';
+      overlay.addEventListener('click', (e) => e.stopPropagation());
+      overlay.innerHTML = `
+        <div class="workflow-constraints-overlay-header">
+          <div>
+            <div class="workflow-constraints-title">Workflow Constraints</div>
+            <div class="workflow-constraints-subtitle" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">Set by Manager, followed by all downstream agents. Add or edit a detail anytime -- optional.</div>
+          </div>
+          <button class="workflow-constraints-overlay-close" id="constraintsOverlayClose">✕</button>
+        </div>
+        <div class="workflow-constraints-list">
+          ${allConstraints.length > 0 ? allConstraints.map(constraint => `
+            <div class="workflow-constraints-overlay-row">
+              <span class="constraint-remove-label agent-card-constraint-tag" data-constraint="${constraint}" style="cursor:pointer;">${constraint}</span>
+              <input type="text"
+                     class="constraint-value-input"
+                     data-constraint-value="${constraint}"
+                     value="${(constraintValues[constraint] || '').replace(/"/g, '&quot;')}"
+                     placeholder="add detail (optional)"
+                     size="20"
+                     style="font-size:12px; border:1px solid #ce93d8; border-radius:3px; padding:4px 6px; flex:1; background:#fff; color:#4a148c; min-width:0;" />
+            </div>
+          `).join('') : '<div class="workflow-constraints-empty">No constraints tagged yet. Drag a Constraint tile onto an agent to get started.</div>'}
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      overlay.querySelector('#constraintsOverlayClose').addEventListener('click', () => {
+        constraintsPanelOpen = false;
+        drawWorkflow();
       });
-    });
+
+      overlay.querySelectorAll('.constraint-remove-label').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const constraintText = item.dataset.constraint;
+          Object.keys(agents).forEach(agentKey => {
+            agents[agentKey].constraints = agents[agentKey].constraints.filter(c => c !== constraintText);
+          });
+          delete constraintValues[constraintText];
+          drawWorkflow();
+        });
+      });
+
+      overlay.querySelectorAll('.constraint-value-input').forEach(input => {
+        input.addEventListener('click', (e) => e.stopPropagation());
+        input.addEventListener('input', (e) => {
+          const constraintText = e.target.dataset.constraintValue;
+          constraintValues[constraintText] = e.target.value;
+        });
+      });
+    }
     
     // Input node
     svg.innerHTML += `
