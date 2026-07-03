@@ -563,7 +563,7 @@
       <div class="sidebar-title">Primary Task <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
       <div class="category-description">Specify the core work or responsibility this agent will perform</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Define constraints" data-category="task" data-description="Establish the boundaries, rules, budget, timeline, and other limits that guide the workflow.">Define constraints</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Gather job postings/company data" data-category="task" data-description="Search for and collect information about open roles, companies, and industry trends relevant to the candidate.">Gather job postings/company data</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Gather job postings/company data" data-category="task" data-description="Filter and identify open roles, companies, and industry trends relevant to the candidate from the pre-collected listings database.">Gather job postings/company data</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Analyze role fit" data-category="task" data-description="Evaluate how well available roles match the candidate's background, constraints, and priorities.">Analyze role fit</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Synthesize insights" data-category="task" data-description="Combine data from multiple sources, identify patterns, and draw meaningful conclusions.">Synthesize insights</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Validate findings" data-category="task" data-description="Check the quality and accuracy of work, ensure all assumptions are documented.">Validate findings</div>
@@ -573,7 +573,7 @@
       <div class="sidebar-title">Tools/Capabilities <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
       <div class="category-description">Assign specific tools or functions that enable the agent to perform its task</div>
       <div class="tool-node" draggable="true" data-tool="Define Constraints" data-description="Allows the agent to establish and communicate rules, budgets, timelines, and other constraints.">Define Constraints</div>
-      <div class="tool-node" draggable="true" data-tool="Google Search" data-description="Enables web search to gather current job postings, company info, and industry research.">Google Search</div>
+      <div class="tool-node" draggable="true" data-tool="Query Job Database" data-description="Enables the agent to search and filter the pre-collected job listings database rather than searching the live web -- supports reproducible results across runs.">Query Job Database</div>
       <div class="tool-node" draggable="true" data-tool="Format & Synthesize" data-description="Structures data into organized formats and creates summaries from raw information.">Format & Synthesize</div>
       <div class="tool-node" draggable="true" data-tool="Compare datasets" data-description="Analyzes multiple datasets side-by-side to identify differences, trends, and patterns.">Compare datasets</div>
       <div class="tool-node" draggable="true" data-tool="Generate summary" data-description="Creates concise summaries of complex information for handoff to the next agent.">Generate summary</div>
@@ -628,7 +628,7 @@
     <div class="example-panel" id="examplePanel">
       <div class="example-title">Example workflow</div>
       <div class="example-text">
-        Manager defines candidate constraints → Researcher gathers matching job postings and company data → Analyst synthesizes findings into a Search Strategy.
+        Manager defines candidate constraints → Researcher identifies matching job postings and company data → Analyst synthesizes findings into a Search Strategy.
       </div>
       <div class="example-toggle" onclick="document.getElementById('examplePanel').style.display='none';">Hide</div>
     </div>
@@ -1116,12 +1116,6 @@
         if (!agents[key].active) {
           agents[key].active = true;
           agents[key].name = '';
-          selectedAgent = key;
-          agentSelect.value = '';
-          const agentDropdown = document.getElementById('agentDropdown');
-          agentDropdown.style.left = '50%';
-          agentDropdown.style.top = '50%';
-          agentDropdown.classList.add('show');
           drawWorkflow();
           break;
         }
@@ -1161,6 +1155,8 @@
   agentSelect.addEventListener('change', (e) => {
     if (selectedAgent) {
       agents[selectedAgent].name = e.target.value;
+      selectedAgent = null;
+      agentDropdown.classList.remove('show');
       drawWorkflow();
     }
   });
