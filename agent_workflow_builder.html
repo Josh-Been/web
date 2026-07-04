@@ -1301,6 +1301,13 @@ team who wrote your instructions, not to the candidate. -->
 `;
     
     // Generate Manager.md
+    const MANAGER_CONSTRAINT_INSTRUCTIONS = {
+      'Regional focus': 'Treat the stated region as the primary geographic scope for the search. Exclude postings that require on-site presence outside that region. Include remote postings regardless of where the company is headquartered, since remote work satisfies a regional constraint by definition. Instruct the Researcher to label every included posting with its on-site or remote status so the Analyst can weigh it.',
+      'Candidate urgency': 'Instruct the Researcher to prioritize postings with recent or active listing dates over older ones. Instruct the Analyst to flag any recommended role with a multi-stage interview process as a timeline risk. Do not exclude a role solely for having a longer process; flag it instead so the candidate can weigh the tradeoff.',
+      'Compensation-aware': 'Treat the stated compensation floor as a hard filter. Instruct the Researcher to exclude postings with a listed range entirely below the floor. For postings with no listed range, include them but label as compensation unconfirmed rather than assuming they meet the floor.',
+      'Visa/sponsorship-bound': 'Instruct the Researcher to flag any posting that does not explicitly confirm sponsorship as sponsorship unconfirmed. Do not exclude these postings by default, and do not assume sponsorship is available simply because it is not mentioned.',
+      'Company-size restricted': 'Instruct the Researcher to record company size for every posting when it is available. Exclude companies below the stated minimum employee count. For companies with no listed employee count, include them but label as company size unconfirmed rather than excluding them or assuming they meet the threshold.'
+    };
     const managerAttrs = getAttributes('manager');
     const managerMd = `# Manager Agent
 
@@ -1326,56 +1333,15 @@ can reason about that category. -->
 ${workflowConstraints.length > 0 ? workflowConstraints.map(formatConstraintLine).join('\n') : '<!-- No constraints tagged yet -->'}
 
 ## Constraints
-<!-- GUIDANCE: These are the constraint CATEGORIES your workflow will handle -- not
-specific values. Specific values (e.g., which region, which timeline) come from the
-candidate's CV and the Candidate Profile Parameters above when the notebook runs. Your job
-here is to write instructions for HOW the Manager should reason about each category.
+Apply the following pre-defined reasoning for each constraint category tagged in this workflow. These instructions are final and require no further drafting.
 
-Example -- Regional focus:
-"When a regional constraint is present, identify the geographic scope from the
-Candidate Profile Parameters above and note explicitly whether relocation is acceptable.
-If the candidate indicates 'remote only,' exclude location-restricted roles from
-the Researcher's search entirely rather than flagging them as lower priority."
-
-Example -- Candidate urgency:
-"If the candidate specifies an urgent timeline (e.g., under 30 days), instruct the
-Researcher to prioritize roles with active/recent postings over passive opportunities,
-and instruct the Analyst to flag any recommended role requiring a multi-stage interview
-process as a timeline risk."
-
-Example -- Compensation-aware:
-"Treat the candidate's stated compensation floor as a hard filter, not a preference --
-instruct the Researcher to exclude roles with a listed range entirely below the floor,
-and flag roles with no listed range as 'compensation unconfirmed' rather than assuming fit."
-
-Example -- Visa/sponsorship-bound:
-"If the candidate requires sponsorship, instruct the Researcher to flag any posting that
-doesn't explicitly confirm sponsorship as 'sponsorship unconfirmed' rather than excluding
-or including it by default."
-
-Example -- Company-size restricted:
-"If the candidate has a stated company-size preference (e.g., startup vs. enterprise),
-instruct the Researcher to note company size for every result so the Analyst can weigh it." 
--->
-
-${workflowConstraints.length > 0 ? workflowConstraints.map(c => `- ${c}`).join('\n') : '<!-- No constraints defined yet -->'}
-
-[TODO: Write your own constraint-handling instructions here, following the pattern above]
+${workflowConstraints.length > 0 ? workflowConstraints.map(c => `- ${c}: ${MANAGER_CONSTRAINT_INSTRUCTIONS[c] || '[Not specified]'}`).join('\n') : '<!-- No constraints tagged yet -->'}
 
 ## Handoff Instructions
-<!-- GUIDANCE: Write the specific message the Manager passes to the Researcher -- not
-a general category, but what the Researcher actually needs to know to search effectively.
-
-Example:
-"Pass along: (1) the candidate's inferred target industries and seniority level from
-the CV, (2) any hard constraints from the Candidate Profile Parameters -- region, visa
-status, compensation floor -- explicitly labeled as non-negotiable vs. preferred, and
-(3) a note on which constraints came from the CV (inferred) vs. the Candidate Profile
-Parameters (explicit), so the Researcher knows which to treat as flexible."
--->
-
-[TODO: Write your specific handoff message here]
-${managerAttrs.hasWorkflowCritique ? WORKFLOW_CRITIQUE_GUIDANCE : ''}`;
+${managerAttrs.handoff.length > 0 ? managerAttrs.handoff.map(h => `- ${h}`).join('\n') : '- [No handoff instructions tagged]'}
+${managerAttrs.handoff.includes('Prioritize & flag constraints') ? `
+Your Strategic Brief must state, for each constraint category, both its specific value and whether it functions as a non-negotiable requirement or a preference (for example: "Compensation floor of $75,000, non-negotiable" or "Regional focus: Northeast United States, preference"). For any tagged category left without a specific value, state plainly that this is an open gap. This restatement is the only information the Researcher and Analyst receive about how to handle each constraint, so completeness here is essential.
+` : ''}${managerAttrs.hasWorkflowCritique ? WORKFLOW_CRITIQUE_GUIDANCE : ''}`;
 
     // Generate Researcher.md
     const researcherAttrs = getAttributes('researcher');
@@ -1394,28 +1360,7 @@ ${agents.researcher.tools.length > 0 ? agents.researcher.tools.map(t => `- ${t}`
 ${researcherAttrs.output || '[TODO: Define output format]'}
 
 ## Constraints
-<!-- GUIDANCE: Explain how each constraint passed down from the Manager changes what
-and how you search -- not just that it exists.
-
-Example -- Regional focus (remote only):
-"Exclude any posting requiring on-site presence unless it explicitly offers a remote
-option. Do not rely on job title alone to judge this -- check the posting's location
-field."
-
-Example -- Visa/sponsorship-bound:
-"Since sponsorship status is rarely stated clearly in postings, do not assume a role
-qualifies just because it doesn't mention visa requirements. Flag these as 'sponsorship
-unconfirmed' rather than silently including or excluding them."
-
-Example -- Compensation-aware:
-"Exclude roles with a listed compensation range entirely below the candidate's floor.
-For roles with no listed range, include them but mark as 'compensation unconfirmed.'"
--->
-
-Operate within the following constraints established by Manager:
-${workflowConstraints.length > 0 ? workflowConstraints.map(formatConstraintLine).join('\n') : '- [TODO: Reference Manager constraints]'}
-
-[TODO: Write your own constraint-handling instructions here, following the pattern above]
+Constraint-handling guidance is provided by the Manager's handoff at runtime, including each constraint's value and whether it is non-negotiable or a preference. Apply that guidance directly when filtering the database. No additional instructions are required here.
 
 ## Handoff Instructions
 <!-- GUIDANCE: Specify the exact structure the Analyst needs -- not just "pass along
@@ -1451,23 +1396,7 @@ ${agents.analyst.tools.length > 0 ? agents.analyst.tools.map(t => `- ${t}`).join
 ${analystAttrs.output || '[TODO: Define output format]'}
 
 ## Constraints
-<!-- GUIDANCE: Same pattern as Researcher -- explain how each constraint shapes your
-analysis and recommendations, not just synthesis of findings.
-
-Example -- Candidate urgency:
-"Weight roles with faster, simpler application processes higher in your recommendation
-if the candidate's timeline is urgent, even if a slower-process role is a marginally
-stronger fit."
-
-Example -- Company-size restricted:
-"If the candidate prefers startups, weight cultural/scope-of-role fit more heavily than
-brand recognition when ranking recommendations."
--->
-
-Operate within the following constraints established by Manager:
-${workflowConstraints.length > 0 ? workflowConstraints.map(formatConstraintLine).join('\n') : '- [TODO: Reference Manager constraints]'}
-
-[TODO: Write your own constraint-handling instructions here, following the pattern above]
+Constraint-handling guidance is provided by the Manager's handoff at runtime, including each constraint's value and whether it is non-negotiable or a preference. Apply that guidance directly when ranking and weighting results. No additional instructions are required here.
 
 ## Handoff Instructions
 <!-- GUIDANCE: This is your final deliverable to the candidate -- the Search Strategy.
