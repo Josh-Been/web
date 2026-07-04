@@ -538,6 +538,31 @@
       font-size: 13px;
       padding: 10px 0;
     }
+
+    .attribution-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 340px;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px 16px;
+      width: 260px;
+      font-size: 12px;
+      z-index: 50;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .attribution-text {
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .attribution-text a {
+      color: #0066cc;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -554,8 +579,8 @@
       <div class="sidebar-title">Role <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
       <div class="category-description">Define what each agent is and their primary expertise area</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Strategic planner" data-category="role" data-description="Sets overall strategy, defines objectives, and establishes rules and constraints that other agents must follow.">Strategic planner</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Data gatherer" data-category="role" data-description="Collects and searches for information from various sources. Focuses on finding raw data and evidence.">Data gatherer</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Insight synthesizer" data-category="role" data-description="Analyzes collected data, identifies patterns, and transforms raw information into actionable insights.">Insight synthesizer</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Data Curator" data-category="role" data-description="Filters and organizes information from the pre-collected database. Responsible for data quality triage, de-duplicating and normalizing aggregator listings, structured categorization, and documenting exclusions.">Data Curator</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Strategy Synthesizer" data-category="role" data-description="Analyzes curated data, identifies patterns, and transforms information into a recommended search strategy.">Strategy Synthesizer</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Quality validator" data-category="role" data-description="Reviews and validates the work of other agents, ensures quality, and flags issues or gaps. Note: this 3-agent workflow has no dedicated QA step -- assigning this role raises a good discussion question about whether a 4-agent design is needed.">Quality validator</div>
     </div>
     
@@ -593,7 +618,7 @@
       <div class="sidebar-title">Constraints <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
       <div class="category-description">Define the limits, rules, and conditions that govern this agent's behavior. Once added, click the value box on the tag in the Workflow Constraints panel to specify (or edit) details -- this is optional.</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Compensation-aware" data-category="constraint" data-description="The agent must consider and respect the candidate's salary expectations or compensation floor in all decisions.">Compensation-aware</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Time-limited" data-category="constraint" data-description="The agent operates under a specific time constraint or deadline.">Time-limited</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Candidate urgency" data-category="constraint" data-description="The candidate has a deadline to start working (e.g., needs an offer within 30 days). This affects how postings are prioritized. It does not refer to how recently a job was posted or how long the agents should take to run.">Candidate urgency</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Company-size restricted" data-category="constraint" data-description="The agent's search is limited to a specific company size range (e.g., startup vs. enterprise).">Company-size restricted</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Visa/sponsorship-bound" data-category="constraint" data-description="The agent must account for the candidate's work authorization or sponsorship needs.">Visa/sponsorship-bound</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Regional focus" data-category="constraint" data-description="The agent's search is limited to a specific geographic region, or must account for remote/relocation preferences.">Regional focus</div>
@@ -602,6 +627,7 @@
     <div class="sidebar-section">
       <div class="sidebar-title">Handoff Instructions <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
       <div class="category-description">Specify what information or format this agent must pass to the next agent</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Prioritize & flag constraints" data-category="handoff" data-description="Rank which constraints are non-negotiable versus preferred, and explicitly flag any constraint category that was tagged but left unspecified, or any gap in the underlying profile, so downstream agents know what's solid ground versus what they're inferring.">Prioritize &amp; flag constraints</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Pass structured data" data-category="handoff" data-description="The agent must organize output in a clear, structured format for the next agent to use.">Pass structured data</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Include methodology" data-category="handoff" data-description="The agent must document and explain the methods used to arrive at findings.">Include methodology</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Flag uncertainties" data-category="handoff" data-description="The agent must highlight areas of uncertainty or gaps in confidence.">Flag uncertainties</div>
@@ -637,6 +663,13 @@
       <strong>How to use:</strong> Drag tools from the sidebar onto agent nodes. Click agents to rename them. Click tools to remove them. Click the "Workflow Constraints" badge anytime to view or edit constraint details.
     </div>
     
+    <div class="attribution-panel" id="attributionPanel">
+      <div class="attribution-text">
+        This workflow builder is part of a workshop prepared by Baylor University Libraries. See the <a href="https://libguides.baylor.edu/agents" target="_blank" rel="noopener">workshop guide</a> for full materials. Developed summer 2026.
+      </div>
+      <div class="example-toggle" onclick="document.getElementById('attributionPanel').style.display='none';">Hide</div>
+    </div>
+
     <button class="export-button" id="exportButton">Export to Markdown</button>
   </div>
 </div>
@@ -673,8 +706,8 @@
   const nodeHeight = 60;
   const toolNodeRadius = 24;
 
-  const CONSTRAINT_TAGS = ['Compensation-aware', 'Time-limited', 'Company-size restricted', 'Visa/sponsorship-bound', 'Regional focus'];
-  const HANDOFF_TAGS = ['Pass structured data', 'Include methodology', 'Flag uncertainties', 'Document sources', 'Highlight assumptions', 'Include workflow critique'];
+  const CONSTRAINT_TAGS = ['Compensation-aware', 'Candidate urgency', 'Company-size restricted', 'Visa/sponsorship-bound', 'Regional focus'];
+  const HANDOFF_TAGS = ['Prioritize & flag constraints', 'Pass structured data', 'Include methodology', 'Flag uncertainties', 'Document sources', 'Highlight assumptions', 'Include workflow critique'];
   
   function drawWorkflow() {
     // Clear all existing cards / badges / overlays from DOM
@@ -845,7 +878,7 @@
       
       // Extract roles and tasks from constraints
       const role = agent.constraints.find(c => {
-        return ['Strategic planner', 'Data gatherer', 'Insight synthesizer', 'Quality validator'].includes(c);
+        return ['Strategic planner', 'Data Curator', 'Strategy Synthesizer', 'Quality validator'].includes(c);
       });
       
       const task = agent.constraints.find(c => {
@@ -916,7 +949,7 @@
         
         // Extract roles and tasks from constraints
         const role = agent.constraints.find(c => {
-          return ['Strategic planner', 'Data gatherer', 'Insight synthesizer', 'Quality validator'].includes(c);
+          return ['Strategic planner', 'Data Curator', 'Strategy Synthesizer', 'Quality validator'].includes(c);
         });
         
         const task = agent.constraints.find(c => {
@@ -1220,7 +1253,7 @@
       const agent = agents[agentKey];
       
       const role = agent.constraints.find(c => 
-        ['Strategic planner', 'Data gatherer', 'Insight synthesizer', 'Quality validator'].includes(c)
+        ['Strategic planner', 'Data Curator', 'Strategy Synthesizer', 'Quality validator'].includes(c)
       );
       
       const task = agent.constraints.find(c => 
@@ -1304,7 +1337,7 @@ Candidate Profile Parameters above and note explicitly whether relocation is acc
 If the candidate indicates 'remote only,' exclude location-restricted roles from
 the Researcher's search entirely rather than flagging them as lower priority."
 
-Example -- Time-limited:
+Example -- Candidate urgency:
 "If the candidate specifies an urgent timeline (e.g., under 30 days), instruct the
 Researcher to prioritize roles with active/recent postings over passive opportunities,
 and instruct the Analyst to flag any recommended role requiring a multi-stage interview
@@ -1421,7 +1454,7 @@ ${analystAttrs.output || '[TODO: Define output format]'}
 <!-- GUIDANCE: Same pattern as Researcher -- explain how each constraint shapes your
 analysis and recommendations, not just synthesis of findings.
 
-Example -- Time-limited:
+Example -- Candidate urgency:
 "Weight roles with faster, simpler application processes higher in your recommendation
 if the candidate's timeline is urgent, even if a slower-process role is a marginally
 stronger fit."
