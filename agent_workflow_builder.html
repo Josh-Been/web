@@ -1302,11 +1302,11 @@ team who wrote your instructions, not to the candidate. -->
     
     // Generate Manager.md
     const MANAGER_CONSTRAINT_INSTRUCTIONS = {
-      'Regional focus': 'Treat the stated region as the primary geographic scope for the search. Exclude postings that require on-site presence outside that region. Include remote postings regardless of where the company is headquartered, since remote work satisfies a regional constraint by definition. Instruct the Researcher to label every included posting with its on-site or remote status so the Analyst can weigh it.',
-      'Candidate urgency': 'Instruct the Researcher to prioritize postings with recent or active listing dates over older ones. Instruct the Analyst to flag any recommended role with a multi-stage interview process as a timeline risk. Do not exclude a role solely for having a longer process; flag it instead so the candidate can weigh the tradeoff.',
-      'Compensation-aware': 'Treat the stated compensation floor as a hard filter. Instruct the Researcher to exclude postings with a listed range entirely below the floor. For postings with no listed range, include them but label as compensation unconfirmed rather than assuming they meet the floor.',
-      'Visa/sponsorship-bound': 'Instruct the Researcher to flag any posting that does not explicitly confirm sponsorship as sponsorship unconfirmed. Do not exclude these postings by default, and do not assume sponsorship is available simply because it is not mentioned.',
-      'Company-size restricted': 'Instruct the Researcher to record company size for every posting when it is available. Exclude companies below the stated minimum employee count. For companies with no listed employee count, include them but label as company size unconfirmed rather than excluding them or assuming they meet the threshold.'
+      'Regional focus': 'Treat the stated region as the primary geographic scope for the search. Exclude postings that explicitly require on-site presence outside that region. Include remote postings regardless of where the company is headquartered, since remote work satisfies a regional constraint by definition. If a posting does not clearly state its on-site or remote status, do not exclude it. Instead include it and label its regional status as unconfirmed, so the Researcher can note it explicitly for the Analyst.',
+      'Candidate urgency': 'Instruct the Researcher to prioritize postings with recent or active listing dates over older ones. Instruct the Analyst to flag any recommended role with a multi-stage interview process as a timeline risk. Do not exclude a role solely for having a longer process, or for lacking a stated timeline; flag it instead so the candidate can weigh the tradeoff.',
+      'Compensation-aware': 'Treat the stated compensation floor as a hard filter only when a posting explicitly lists a range that falls entirely below the floor. Absence of a listed salary range is not the same as failing the floor. For postings with no listed range, include them and label the constraint status as compensation unconfirmed rather than excluding them or assuming they meet the floor.',
+      'Visa/sponsorship-bound': 'Treat this as a hard filter only when a posting explicitly states that sponsorship is unavailable. Absence of any mention of sponsorship is not the same as failing the requirement. Instruct the Researcher to flag any posting that does not explicitly confirm or deny sponsorship as sponsorship unconfirmed rather than excluding it.',
+      'Company-size restricted': 'Treat this as a hard filter only when a posting or company profile explicitly states an employee count below the stated minimum. Absence of a listed employee count is not the same as failing the requirement. Instruct the Researcher to record company size for every posting when it is available, and for postings with no listed employee count, include them and label the constraint status as company size unconfirmed rather than excluding them or assuming they meet the threshold.'
     };
     const managerAttrs = getAttributes('manager');
     const managerMd = `# Manager Agent
@@ -1340,7 +1340,7 @@ ${workflowConstraints.length > 0 ? workflowConstraints.map(c => `- ${c}: ${MANAG
 ## Handoff Instructions
 ${managerAttrs.handoff.length > 0 ? managerAttrs.handoff.map(h => `- ${h}`).join('\n') : '- [No handoff instructions tagged]'}
 ${managerAttrs.handoff.includes('Prioritize & flag constraints') ? `
-Your Strategic Brief must state, for each constraint category, both its specific value and whether it functions as a non-negotiable requirement or a preference (for example: "Compensation floor of $75,000, non-negotiable" or "Regional focus: Northeast United States, preference"). For any tagged category left without a specific value, state plainly that this is an open gap. This restatement is the only information the Researcher and Analyst receive about how to handle each constraint, so completeness here is essential.
+Your Strategic Brief must state, for each constraint category, both its specific value and whether it functions as a non-negotiable requirement or a preference (for example: "Compensation floor of $75,000, non-negotiable" or "Regional focus: Northeast United States, preference"). For any tagged category left without a specific value, state plainly that this is an open gap. Additionally, for every non-negotiable constraint, explicitly state that it should be treated as a hard filter only when a posting affirmatively fails it; when a posting simply does not state a value for that constraint, it must be treated as unconfirmed, not excluded. This restatement is the only information the Researcher and Analyst receive about how to handle each constraint, so completeness here is essential.
 ` : ''}${managerAttrs.hasWorkflowCritique ? WORKFLOW_CRITIQUE_GUIDANCE : ''}`;
 
     // Generate Researcher.md
@@ -1360,7 +1360,7 @@ ${agents.researcher.tools.length > 0 ? agents.researcher.tools.map(t => `- ${t}`
 ${researcherAttrs.output || '[TODO: Define output format]'}
 
 ## Constraints
-Constraint-handling guidance is provided by the Manager's handoff at runtime, including each constraint's value and whether it is non-negotiable or a preference. Apply that guidance directly when filtering the database. No additional instructions are required here.
+Constraint-handling guidance is provided by the Manager's handoff at runtime, including each constraint's value and whether it is non-negotiable or a preference. Apply that guidance directly when filtering the database. A posting that does not state a value for a given constraint has not failed that constraint; it is unconfirmed. Never exclude a posting solely because a value is missing. Instead, include it and label the relevant constraint status as unconfirmed so the Analyst can weigh it explicitly. Only exclude a posting when it explicitly and affirmatively fails a non-negotiable constraint. No additional instructions are required here.
 
 ## Handoff Instructions
 <!-- GUIDANCE: Specify the exact structure the Analyst needs -- not just "pass along
@@ -1396,7 +1396,7 @@ ${agents.analyst.tools.length > 0 ? agents.analyst.tools.map(t => `- ${t}`).join
 ${analystAttrs.output || '[TODO: Define output format]'}
 
 ## Constraints
-Constraint-handling guidance is provided by the Manager's handoff at runtime, including each constraint's value and whether it is non-negotiable or a preference. Apply that guidance directly when ranking and weighting results. No additional instructions are required here.
+Constraint-handling guidance is provided by the Manager's handoff at runtime, including each constraint's value and whether it is non-negotiable or a preference. Apply that guidance directly when ranking and weighting results. A posting the Researcher marked as unconfirmed for a given constraint has not failed that constraint; treat it as a genuine candidate with a noted uncertainty, not as disqualified. Reflect this distinction clearly in your recommendations and flagged uncertainties. No additional instructions are required here.
 
 ## Handoff Instructions
 <!-- GUIDANCE: This is your final deliverable to the candidate -- the Search Strategy.
