@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symposium Run-of-Show Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .card-enter {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .card-enter-active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        #current-action-container ul {
+            list-style-position: inside;
+            margin-left: 8px;
+        }
+        #current-action-container li {
+            margin-bottom: 0.75rem;
+        }
+        /* Role Colors */
+        .role-moderator { color: #0369a1; /* sky-700 */ }
+        .role-tech { color: #6c0633; /* teal-700 */ }
+        .role-team { color: #7e22ce; /* purple-700 */ }
+
+        /* Timeline Styles */
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+            padding-left: 2rem;
+            border-left: 2px solid #e2e8f0; /* slate-200 */
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -9px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #e2e8f0; /* slate-200 */
+            border: 2px solid #f8fafc; /* white */
+        }
+        .timeline-item.is-active {
+            border-left-color: #0284c7; /* sky-600 */
+        }
+        .timeline-item.is-active::before {
+            background-color: #0284c7; /* sky-600 */
+            transform: scale(1.1);
+        }
+        .timeline-item.is-complete {
+            border-left-color: #16a34a; /* green-600 */
+        }
+        .timeline-item.is-complete::before {
+            background-color: #16a34a; /* green-600 */
+            content: '✓';
+            color: white;
+            text-align: center;
+            font-size: 10px;
+            line-height: 14px;
+        }
+        .timeline-item:last-child {
+            border-left: 2px solid transparent;
+            padding-bottom: 0;
+        }
+        .session-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .session-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none; /* Ignore mouse events by default */
+            transition: opacity 0.3s ease;
+        }
+        .modal-container {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 48rem;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.is-visible {
+            opacity: 1;
+            pointer-events: auto; /* Allow mouse events when visible */
+        }
+        .modal-overlay.is-visible .modal-container {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex items-center justify-center min-h-screen p-4">
+
+    <div id="home-view" class="w-full max-w-5xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900">Texas DH Symposium: Run-of-Show</h1>
+            <p class="text-xl text-slate-600 mt-2">Select a block to begin.</p>
+            <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg inline-block px-4 py-2 mt-4">Draft for committee preview - Early structure, need to fill in additional details.</p>
+            <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="https://library.web.baylor.edu/sites/g/files/ecbvkj1806/files/2026-06/Brief%20Schedule%20-%20Texas%20DH%20Symposium%202026.pdf" target="_blank" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 inline-flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm3 1h8v2H6V6zM6 9h8v2H6V9zm8 3H6v2h8v-2z" clip-rule="evenodd" /></svg>
+                    <span>View Agenda</span>
+                </a>
+                <a href="#" target="_blank" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 inline-flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
+                    <span>View Slideshow (link TBD)</span>
+                </a>
+                 <button id="show-roles-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 inline-flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
+                    <span>View Role Responsibilities</span>
+                </button>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Session cards will be generated here -->
+        </div>
+    </div>
+
+    <div id="session-view" class="w-full max-w-6xl mx-auto hidden">
+        <!-- Header -->
+        <div class="text-center mb-8">
+             <button id="back-to-home" class="float-left bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition mb-4">&larr; All Blocks</button>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Texas DH Symposium: Run-of-Show</h1>
+            <p id="sessionTitle" class="text-lg text-slate-600 mt-1"></p>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Timeline -->
+            <div class="w-full lg:w-1/3">
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4">Block Timeline</h2>
+                    <div id="timeline-container"></div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="w-full lg:w-2/3">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
+                    <!-- Progress Bar -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm font-medium text-slate-500">
+                            <span id="progress-text">Step 1 of X</span>
+                            <span id="progress-time"></span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5">
+                            <div id="progress-bar" class="bg-sky-600 h-2.5 rounded-full transition-all duration-500 ease-in-out" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Current Action -->
+                    <div id="current-action-container" class="bg-sky-50 border-2 border-sky-200 rounded-xl p-6 min-h-[350px] flex flex-col justify-center"></div>
+
+                    <!-- Navigation -->
+                    <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+                        <div class="text-center md:text-left">
+                            <p class="font-bold text-slate-600">UP NEXT:</p>
+                            <p id="up-next-text" class="text-slate-500 text-sm italic">Loading...</p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <button id="prev-btn" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-3 px-6 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+                            <button id="next-btn" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+     <!-- Roles Modal -->
+    <div id="roles-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-slate-900">Core Role Responsibilities</h2>
+                <button id="close-roles-btn" class="text-slate-500 hover:text-slate-800">&times;</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-sky-700 mb-3">The Moderator Role</h3>
+                    <p class="mb-4 text-slate-600">As the <strong>"Face" of the Block</strong>, your job is to guide the presenters and the audience through the schedule with a warm, confident, and professional presence.</p>
+                    <ul class="list-disc pl-5 space-y-2 text-slate-700">
+                        <li><strong>Lead Communications:</strong> Deliver all scripted announcements, introduce presenters, and facilitate all Q&A sessions.</li>
+                        <li><strong>Manage the "Backstage":</strong> Greet presenters in the pre-session, confirm their details, and run tech checks to ensure they are comfortable and ready.</li>
+                        <li><strong>Keep the Show Moving:</strong> Announce breaks, manage transitions between speakers, and keep an eye on the clock to ensure the block stays on schedule.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-teal-700 mb-3">The Tech Support Role</h3>
+                    <p class="mb-4 text-slate-600">As the <strong>"Director" of the Block</strong>, you are the technical backbone of the meeting, ensuring a smooth and seamless experience for everyone.</p>
+                    <ul class="list-disc pl-5 space-y-2 text-slate-700">
+                        <li><strong>Own the Controls:</strong> Your first step is to ensure you have full Host controls in Zoom.</li>
+                        <li><strong>Run the Tech:</strong> Verify all Zoom settings, manage the waiting room, start/stop the recording, and control the countdown timer.</li>
+                        <li><strong>Manage Permissions:</strong> You are in charge of assigning and removing co-host status for presenters and ensuring they are muted when not presenting.</li>
+                        <li><strong>Support the Q&A:</strong> Handle the technical side of the Q&A, such as unmuting participants who have their hands raised.</li>
+                        <li><strong>Be the Safety Net:</strong> Monitor the chat for any attendees experiencing technical difficulties and be the first line of defense for any unexpected issues.</li>
+                        <li><strong>Master the View:</strong> Always set your Zoom view to <strong>Speaker View</strong>, not Gallery View. This ensures the final recording is polished and focused on the active speaker.</li>
+                        <li><strong>Keep the Timer Visible:</strong> You <strong>must</strong> keep your video feed on for the duration of the presentation for the timer overlay to be visible in the recording. (Pro-tip: If you prefer not to be on camera, you can cover your webcam. With a virtual background active, Zoom will display the background without you.)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    const symposiumData = {
+        "day1_am": {
+                "title": "Thursday, September 24, 2026: Morning Block",
+                "steps": [
+                        {
+                                "time": "8:45 AM",
+                                "task": "Pre-Block Technical Setup",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Start the Zoom meeting.</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Immediately enable the waiting room. If any attendees have joined, move them to the waiting room.</li><li><strong><span class=\"role-team\">[TEAM]:</span></strong> All planning committee members must update their Zoom display name to reflect their role. The required format is <code>Role: Your Name</code>. Please use one of the following:<ul class=\"list-disc pl-8 mt-2 text-sm\"><li><code>Moderator: NAME</code></li><li><code>Tech Support: NAME</code></li><li><code>Program Committee: NAME</code></li></ul></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Confirm Zoom settings (waiting room, mute/video on entry, chat routing, Q&A enabled). <em>[TBD: Zoom chat/Q&A settings pending committee decision]</em></li><li><strong><span class=\"role-team\">[TBD]:</span></strong> <em>Committee decision pending: whether to hold individual presenter tech checks before this block, or send pre-block guidance via email instead.</em></li></ul>"
+                        },
+                        {
+                                "time": "9:00 AM",
+                                "task": "Block Kick-Off",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Admit all attendees and disable the waiting room.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Deliver informal welcome: <em>\"Good morning, everyone, and welcome to the Texas Digital Humanities Symposium!\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start cloud recording & enable live transcription. State aloud: <strong>\"The recording has started.\"</strong></li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Deliver welcome & housekeeping script:<br><em>\"A very warm welcome to the Texas Digital Humanities Symposium. This is our Day 1 Morning Block.<br><br>My name is <strong>[MODERATOR NAME]</strong>, and I'm delighted to be your host.<br><br>As a quick note, this session is being recorded. <em>[TBD: recording consent language pending committee decision]</em> We will also have live transcription enabled; you can view the transcript at any time by clicking the 'Captions' button in your Zoom toolbar.<br><br>This morning we'll begin with a workshop, followed by our keynote, a State of DH Texas segment, and our first session.<br><br>For the Q&A, you can participate by submitting a question using the Q&A button, or by using the Raise Hand feature to ask live.<br><br>To help everyone stay on schedule, we will display a countdown timer for each presentation.<br><br>If you experience any technical difficulties, please send a message in the Chat to anyone with 'Tech Support:' in their name.\"</em></li></ul>"
+                        },
+                        {
+                                "time": "9:00 AM",
+                                "task": "Workshop: AI",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Joshua Been (Baylor University)</strong> presenting the AI Workshop.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>60 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "10:00 AM",
+                                "task": "Transition to Keynote",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank Joshua Been and introduce our keynote speaker, <strong>Alyssa Guzman (University of Texas at Austin)</strong>. </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "10:00 AM",
+                                "task": "Keynote Presentation",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Alyssa Guzman (University of Texas at Austin)</strong>.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>60 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "11:00 AM",
+                                "task": "Transition to State of DH Texas #1",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank Alyssa Guzman and introduce the first <strong>State of Digital Humanities in Texas</strong> segment. </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "11:00 AM",
+                                "task": "State of DH Texas: Event #1 [PLACEHOLDER]",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> <em>[PLACEHOLDER: Content/format for \"Event #1\" TBD.]</em></li></ul>"
+                        },
+                        {
+                                "time": "11:30 AM",
+                                "task": "Transition to Session 1",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank our State of DH Texas panel and introduce <strong>Akhila Gunturu (University of Texas at Austin)</strong>, presenting \"Bridging past, present, and underrepresented languages using digital tools\". </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "11:30 AM",
+                                "task": "Session 1: Gunturu",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Akhila Gunturu (University of Texas at Austin)</strong> and her presentation, \"Bridging past, present, and underrepresented languages using digital tools\". As a reminder, we will have Q&A after this presentation.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>25 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "11:55 AM",
+                                "task": "Session 1 Q&A",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn video feed back on to facilitate Q&A.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Begin Q&A: <em>\"Thank you, Akhila. We now have 5 minutes for questions. Use the Q&A button to type a question, or Raise Hand to ask live.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their hand, and re-mute after.</li></ul><p class=\"text-sm italic mt-4\"><strong>Note for Moderator:</strong> If Q&A concludes early, share the agenda slide and hold until the official start time of the next item. Do not begin early.</p>"
+                        },
+                        {
+                                "time": "12:00 PM",
+                                "task": "Lunch Break",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Announce the lunch break and share the agenda slide.</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Pause the recording.</li><li><strong><span class=\"role-team\">[TEAM]:</span></strong> Reconvene at <strong>1:00 PM</strong>.</li></ul>"
+                        }
+                ]
+        },
+        "day1_pm": {
+                "title": "Thursday, September 24, 2026: Afternoon Block",
+                "steps": [
+                        {
+                                "time": "12:45 PM",
+                                "task": "Pre-Block Technical Setup",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Start the Zoom meeting.</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Immediately enable the waiting room. If any attendees have joined, move them to the waiting room.</li><li><strong><span class=\"role-team\">[TEAM]:</span></strong> All planning committee members must update their Zoom display name to reflect their role. The required format is <code>Role: Your Name</code>. Please use one of the following:<ul class=\"list-disc pl-8 mt-2 text-sm\"><li><code>Moderator: NAME</code></li><li><code>Tech Support: NAME</code></li><li><code>Program Committee: NAME</code></li></ul></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Confirm Zoom settings (waiting room, mute/video on entry, chat routing, Q&A enabled). <em>[TBD: Zoom chat/Q&A settings pending committee decision]</em></li><li><strong><span class=\"role-team\">[TBD]:</span></strong> <em>Committee decision pending: whether to hold individual presenter tech checks before this block, or send pre-block guidance via email instead.</em></li></ul>"
+                        },
+                        {
+                                "time": "1:00 PM",
+                                "task": "Block Kick-Off",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Admit all attendees and disable the waiting room.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Deliver informal welcome: <em>\"Welcome back, everyone!\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start cloud recording & enable live transcription. State aloud: <strong>\"The recording has started.\"</strong></li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Deliver welcome & housekeeping script:<br><em>\"A very warm welcome to the Texas Digital Humanities Symposium. This is our Day 1 Afternoon Block.<br><br>My name is <strong>[MODERATOR NAME]</strong>, and I'm delighted to be your host.<br><br>As a quick note, this session is being recorded. <em>[TBD: recording consent language pending committee decision]</em> We will also have live transcription enabled; you can view the transcript at any time by clicking the 'Captions' button in your Zoom toolbar.<br><br>This afternoon we have three sessions, a sponsor presentation, and two additional sessions to close out the day.<br><br>For the Q&A, you can participate by submitting a question using the Q&A button, or by using the Raise Hand feature to ask live.<br><br>To help everyone stay on schedule, we will display a countdown timer for each presentation.<br><br>If you experience any technical difficulties, please send a message in the Chat to anyone with 'Tech Support:' in their name.\"</em></li></ul>"
+                        },
+                        {
+                                "time": "1:00 PM",
+                                "task": "Session 2: Sielaff",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Steven Sielaff (Baylor University)</strong> and his presentation, \"AIding Our Humans: Improving Workflow Efficiencies at BUIOH\". As a reminder, we will have Q&A after this presentation.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>50 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "1:50 PM",
+                                "task": "Session 2 Q&A",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn video feed back on to facilitate Q&A.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Begin Q&A: <em>\"Thank you, Steven. We now have 10 minutes for questions. Use the Q&A button to type a question, or Raise Hand to ask live.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their hand, and re-mute after.</li></ul><p class=\"text-sm italic mt-4\"><strong>Note for Moderator:</strong> If Q&A concludes early, share the agenda slide and hold until the official start time of the next item. Do not begin early.</p>"
+                        },
+                        {
+                                "time": "2:00 PM",
+                                "task": "Transition to Sponsor Presentation",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank Steven Sielaff and introduce our sponsor presentation. </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "2:00 PM",
+                                "task": "Sponsor Presentation [PLACEHOLDER]",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> <em>[PLACEHOLDER: Sponsor slot not yet confirmed. Acquisitions librarian is reaching out to sponsors to confirm which slot each will take. Script and thank-you language TBD pending committee input.]</em></li></ul>"
+                        },
+                        {
+                                "time": "2:30 PM",
+                                "task": "Transition to Session 3",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank our sponsor and introduce <strong>Bryan Tarpley et al.</strong>, presenting \"Mapping Victory: How We Created a Public Humanities Project from an Archive of WWII Souvenir Maps\". </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "2:30 PM",
+                                "task": "Session 3: Tarpley et al.",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Bryan Tarpley et al.</strong> and their presentation, \"Mapping Victory: How We Created a Public Humanities Project from an Archive of WWII Souvenir Maps\". As a reminder, we will have Q&A after this presentation.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>50 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "3:20 PM",
+                                "task": "Session 3 Q&A",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn video feed back on to facilitate Q&A.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Begin Q&A: <em>\"Thank you, Bryan and team. We now have 10 minutes for questions. Use the Q&A button to type a question, or Raise Hand to ask live.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their hand, and re-mute after.</li></ul><p class=\"text-sm italic mt-4\"><strong>Note for Moderator:</strong> If Q&A concludes early, share the agenda slide and hold until the official start time of the next item. Do not begin early.</p>"
+                        },
+                        {
+                                "time": "3:30 PM",
+                                "task": "Transition to Session 4",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank our Session 3 presenters and introduce <strong>Sean Smith et al. (Rice University)</strong>, presenting \"Directories to Data: Leveraging Generative AI and Historical Expertise to Unlock Houston's Printed Past\". </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "3:30 PM",
+                                "task": "Session 4: Smith et al.",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Sean Smith et al. (Rice University)</strong> and their presentation, \"Directories to Data: Leveraging Generative AI and Historical Expertise to Unlock Houston's Printed Past\". As a reminder, we will have Q&A after this presentation.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>25 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "3:55 PM",
+                                "task": "Session 4 Q&A",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn video feed back on to facilitate Q&A.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Begin Q&A: <em>\"Thank you, Sean and team. We now have 5 minutes for questions. Use the Q&A button to type a question, or Raise Hand to ask live.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their hand, and re-mute after.</li></ul><p class=\"text-sm italic mt-4\"><strong>Note for Moderator:</strong> If Q&A concludes early, share the agenda slide and hold until the official start time of the next item. Do not begin early.</p>"
+                        },
+                        {
+                                "time": "4:00 PM",
+                                "task": "Transition to Session 5",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank our Session 4 presenters and introduce <strong>Dan Watkins (Baylor University)</strong>, presenting \"Can Generative AI Clean Historical Documents? An Experiment with Eighteenth-Century Missionary Letters\". </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "4:00 PM",
+                                "task": "Session 5: Watkins",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Dan Watkins (Baylor University)</strong> and his presentation, \"Can Generative AI Clean Historical Documents? An Experiment with Eighteenth-Century Missionary Letters\". As a reminder, we will have Q&A after this presentation.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>25 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "4:25 PM",
+                                "task": "Session 5 Q&A",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn video feed back on to facilitate Q&A.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Begin Q&A: <em>\"Thank you, Dan. We now have 5 minutes for questions. Use the Q&A button to type a question, or Raise Hand to ask live.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their hand, and re-mute after.</li></ul><p class=\"text-sm italic mt-4\"><strong>Note for Moderator:</strong> If Q&A concludes early, share the agenda slide and hold until the official start time of the next item. Do not begin early.</p>"
+                        },
+                        {
+                                "time": "4:30 PM",
+                                "task": "End of Block",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Deliver closing script: <em>\"That concludes Day 1 of the Texas Digital Humanities Symposium! Thank you to today's presenters and to our wonderful audience. We hope to see you tomorrow starting at 9 AM Central.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Stop recording.</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> End the Zoom meeting for all participants (or leave running if immediately followed by next block).</li></ul>"
+                        }
+                ]
+        },
+        "day2_am": {
+                "title": "Friday, September 25, 2026: Morning Block",
+                "steps": [
+                        {
+                                "time": "8:45 AM",
+                                "task": "Pre-Block Technical Setup",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Start the Zoom meeting.</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Immediately enable the waiting room. If any attendees have joined, move them to the waiting room.</li><li><strong><span class=\"role-team\">[TEAM]:</span></strong> All planning committee members must update their Zoom display name to reflect their role. The required format is <code>Role: Your Name</code>. Please use one of the following:<ul class=\"list-disc pl-8 mt-2 text-sm\"><li><code>Moderator: NAME</code></li><li><code>Tech Support: NAME</code></li><li><code>Program Committee: NAME</code></li></ul></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Confirm Zoom settings (waiting room, mute/video on entry, chat routing, Q&A enabled). <em>[TBD: Zoom chat/Q&A settings pending committee decision]</em></li><li><strong><span class=\"role-team\">[TBD]:</span></strong> <em>Committee decision pending: whether to hold individual presenter tech checks before this block, or send pre-block guidance via email instead.</em></li></ul>"
+                        },
+                        {
+                                "time": "9:00 AM",
+                                "task": "Block Kick-Off",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Admit all attendees and disable the waiting room.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Deliver informal welcome: <em>\"Good morning, and welcome back!\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start cloud recording & enable live transcription. State aloud: <strong>\"The recording has started.\"</strong></li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Deliver welcome & housekeeping script:<br><em>\"A very warm welcome to the Texas Digital Humanities Symposium. This is our Day 2 Morning Block.<br><br>My name is <strong>[MODERATOR NAME]</strong>, and I'm delighted to be your host.<br><br>As a quick note, this session is being recorded. <em>[TBD: recording consent language pending committee decision]</em> We will also have live transcription enabled; you can view the transcript at any time by clicking the 'Captions' button in your Zoom toolbar.<br><br>This morning we have four sessions and a sponsor presentation.<br><br>For the Q&A, you can participate by submitting a question using the Q&A button, or by using the Raise Hand feature to ask live.<br><br>To help everyone stay on schedule, we will display a countdown timer for each presentation.<br><br>If you experience any technical difficulties, please send a message in the Chat to anyone with 'Tech Support:' in their name.\"</em></li></ul>"
+                        },
+                        {
+                                "time": "9:00 AM",
+                                "task": "Session 1: Palacios",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Albert A. Palacios (University of Texas at Austin)</strong> and his presentation, \"A Digital and Collaborative Transformation of 'Mexican Revolution' Collections\". As a reminder, we will have Q&A after this presentation.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>20 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "9:20 AM",
+                                "task": "Session 1 Q&A",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn video feed back on to facilitate Q&A.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Begin Q&A: <em>\"Thank you, Albert. We now have 10 minutes for questions. Use the Q&A button to type a question, or Raise Hand to ask live.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their hand, and re-mute after.</li></ul><p class=\"text-sm italic mt-4\"><strong>Note for Moderator:</strong> If Q&A concludes early, share the agenda slide and hold until the official start time of the next item. Do not begin early.</p>"
+                        },
+                        {
+                                "time": "9:30 AM",
+                                "task": "Transition to Session 2",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank Albert Palacios and introduce <strong>Annie Himler Cheng (Baylor University)</strong>, presenting \"Visualizing Cambodian American Lived Experiences and Journeys Across the Pacific, 1950s-2020\". </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "9:30 AM",
+                                "task": "Session 2: Cheng",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Annie Himler Cheng (Baylor University)</strong> and her presentation, \"Visualizing Cambodian American Lived Experiences and Journeys Across the Pacific, 1950s-2020\". As a reminder, we will have Q&A after this presentation.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>20 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "9:50 AM",
+                                "task": "Session 2 Q&A",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn video feed back on to facilitate Q&A.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Begin Q&A: <em>\"Thank you, Annie. We now have 10 minutes for questions. Use the Q&A button to type a question, or Raise Hand to ask live.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their hand, and re-mute after.</li></ul><p class=\"text-sm italic mt-4\"><strong>Note for Moderator:</strong> If Q&A concludes early, share the agenda slide and hold until the official start time of the next item. Do not begin early.</p>"
+                        },
+                        {
+                                "time": "10:00 AM",
+                                "task": "Transition to Sponsor Presentation",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank Annie Himler Cheng and introduce our sponsor presentation. </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "10:00 AM",
+                                "task": "Sponsor Presentation [PLACEHOLDER]",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> <em>[PLACEHOLDER: Sponsor slot not yet confirmed. Acquisitions librarian is reaching out to sponsors to confirm which slot each will take. Script and thank-you language TBD pending committee input.]</em></li></ul>"
+                        },
+                        {
+                                "time": "10:30 AM",
+                                "task": "Transition to Session 3",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank our sponsor and introduce <strong>Mikaela Selley et al.</strong>, presenting \"Documenting Latina/o Life and Death: Ethics, Data, and Community Archives in the Morales Collection\". </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "10:30 AM",
+                                "task": "Session 3: Selley et al.",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Mikaela Selley et al.</strong> and their presentation, \"Documenting Latina/o Life and Death: Ethics, Data, and Community Archives in the Morales Collection\". As a reminder, we will have Q&A after this presentation.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>50 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "11:20 AM",
+                                "task": "Session 3 Q&A",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn video feed back on to facilitate Q&A.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Begin Q&A: <em>\"Thank you, Mikaela and team. We now have 10 minutes for questions. Use the Q&A button to type a question, or Raise Hand to ask live.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their hand, and re-mute after.</li></ul><p class=\"text-sm italic mt-4\"><strong>Note for Moderator:</strong> If Q&A concludes early, share the agenda slide and hold until the official start time of the next item. Do not begin early.</p>"
+                        },
+                        {
+                                "time": "11:30 AM",
+                                "task": "Transition to Session 4",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank our Session 3 presenters and introduce <strong>James Hunt Smith (University of Michigan - Ann Arbor)</strong>, presenting \"Feeling Narrative: A Sentiment Analysis of Queer-Themed Spanish Picturebooks\". </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "11:30 AM",
+                                "task": "Session 4: Hunt Smith",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>James Hunt Smith (University of Michigan - Ann Arbor)</strong> and his presentation, \"Feeling Narrative: A Sentiment Analysis of Queer-Themed Spanish Picturebooks\". As a reminder, we will have Q&A after this presentation.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>25 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "11:55 AM",
+                                "task": "Session 4 Q&A",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn video feed back on to facilitate Q&A.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Begin Q&A: <em>\"Thank you, James. We now have 5 minutes for questions. Use the Q&A button to type a question, or Raise Hand to ask live.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their hand, and re-mute after.</li></ul><p class=\"text-sm italic mt-4\"><strong>Note for Moderator:</strong> If Q&A concludes early, share the agenda slide and hold until the official start time of the next item. Do not begin early.</p>"
+                        },
+                        {
+                                "time": "12:00 PM",
+                                "task": "Lunch Break",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Announce the lunch break and share the agenda slide.</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Pause the recording.</li><li><strong><span class=\"role-team\">[TEAM]:</span></strong> Reconvene at <strong>1:00 PM</strong>.</li></ul>"
+                        }
+                ]
+        },
+        "day2_pm": {
+                "title": "Friday, September 25, 2026: Afternoon Block",
+                "steps": [
+                        {
+                                "time": "12:45 PM",
+                                "task": "Pre-Block Technical Setup",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Start the Zoom meeting.</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Immediately enable the waiting room. If any attendees have joined, move them to the waiting room.</li><li><strong><span class=\"role-team\">[TEAM]:</span></strong> All planning committee members must update their Zoom display name to reflect their role. The required format is <code>Role: Your Name</code>. Please use one of the following:<ul class=\"list-disc pl-8 mt-2 text-sm\"><li><code>Moderator: NAME</code></li><li><code>Tech Support: NAME</code></li><li><code>Program Committee: NAME</code></li></ul></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Confirm Zoom settings (waiting room, mute/video on entry, chat routing, Q&A enabled). <em>[TBD: Zoom chat/Q&A settings pending committee decision]</em></li><li><strong><span class=\"role-team\">[TBD]:</span></strong> <em>Committee decision pending: whether to hold individual presenter tech checks before this block, or send pre-block guidance via email instead.</em></li></ul>"
+                        },
+                        {
+                                "time": "1:00 PM",
+                                "task": "Block Kick-Off",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Admit all attendees and disable the waiting room.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Deliver informal welcome: <em>\"Welcome back for our final block!\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start cloud recording & enable live transcription. State aloud: <strong>\"The recording has started.\"</strong></li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Deliver welcome & housekeeping script:<br><em>\"A very warm welcome to the Texas Digital Humanities Symposium. This is our Day 2 Afternoon Block.<br><br>My name is <strong>[MODERATOR NAME]</strong>, and I'm delighted to be your host.<br><br>As a quick note, this session is being recorded. <em>[TBD: recording consent language pending committee decision]</em> We will also have live transcription enabled; you can view the transcript at any time by clicking the 'Captions' button in your Zoom toolbar.<br><br>This afternoon we have our second State of DH Texas segment, a sponsor presentation, our final two sessions, and closing remarks.<br><br>For the Q&A, you can participate by submitting a question using the Q&A button, or by using the Raise Hand feature to ask live.<br><br>To help everyone stay on schedule, we will display a countdown timer for each presentation.<br><br>If you experience any technical difficulties, please send a message in the Chat to anyone with 'Tech Support:' in their name.\"</em></li></ul>"
+                        },
+                        {
+                                "time": "1:00 PM",
+                                "task": "State of DH Texas: Event #2 [PLACEHOLDER]",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> <em>[PLACEHOLDER: Content/format for \"Event #2\" TBD.]</em></li></ul>"
+                        },
+                        {
+                                "time": "1:30 PM",
+                                "task": "Transition to Sponsor Presentation",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank our State of DH Texas panel and introduce our sponsor presentation. </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "1:30 PM",
+                                "task": "Sponsor Presentation [PLACEHOLDER]",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> <em>[PLACEHOLDER: Sponsor slot not yet confirmed. Acquisitions librarian is reaching out to sponsors to confirm which slot each will take. Script and thank-you language TBD pending committee input.]</em></li></ul>"
+                        },
+                        {
+                                "time": "2:00 PM",
+                                "task": "Transition to Session 5",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank our sponsor and introduce <strong>Karina Sanchez (University of Texas at Austin)</strong>, presenting \"Uplifting Zines Through Digital Humanities Practices\". </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "2:00 PM",
+                                "task": "Session 5: Sanchez",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Karina Sanchez (University of Texas at Austin)</strong> and her presentation, \"Uplifting Zines Through Digital Humanities Practices\". As a reminder, we will have Q&A after this presentation.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>50 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "2:50 PM",
+                                "task": "Session 5 Q&A",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn video feed back on to facilitate Q&A.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Begin Q&A: <em>\"Thank you, Karina. We now have 10 minutes for questions. Use the Q&A button to type a question, or Raise Hand to ask live.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their hand, and re-mute after.</li></ul><p class=\"text-sm italic mt-4\"><strong>Note for Moderator:</strong> If Q&A concludes early, share the agenda slide and hold until the official start time of the next item. Do not begin early.</p>"
+                        },
+                        {
+                                "time": "3:00 PM",
+                                "task": "Transition to Session 6",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Thank Karina Sanchez and introduce <strong>Linda Garcia Merchant (University of Houston)</strong>, presenting \"The Collaborative Internship Program: SIPHDH24, DMIPP25, D&amp;DIP26\". </li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn off video feed to keep focus on presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Adjust co-host status accordingly.</li></ul>"
+                        },
+                        {
+                                "time": "3:00 PM",
+                                "task": "Session 6: Garcia Merchant",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Introduce <strong>Linda Garcia Merchant (University of Houston)</strong> and her presentation, \"The Collaborative Internship Program: SIPHDH24, DMIPP25, D&amp;DIP26\". As a reminder, we will have Q&A after this presentation.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> After introducing the speaker(s), turn off your video feed to keep the focus on the presenter(s).</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Start timer for <strong>50 minutes</strong>.</li></ul>"
+                        },
+                        {
+                                "time": "3:50 PM",
+                                "task": "Session 6 Q&A",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Turn video feed back on to facilitate Q&A.</li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Begin Q&A: <em>\"Thank you, Linda. We now have 5 minutes for questions. Use the Q&A button to type a question, or Raise Hand to ask live.\"</em></li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> For live questions, unmute the participant, lower their hand, and re-mute after.</li></ul><p class=\"text-sm italic mt-4\"><strong>Note for Moderator:</strong> If Q&A concludes early, share the agenda slide and hold until the official start time of the next item. Do not begin early.</p>"
+                        },
+                        {
+                                "time": "3:55 PM",
+                                "task": "Closing Remarks",
+                                "details": "<ul class=\"space-y-3 text-slate-600 md:text-lg\"><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Deliver closing remarks script: <em>\"And with that, we have reached the conclusion of the third annual Texas Digital Humanities Symposium. On behalf of the entire planning committee, thank you to every one of our presenters for generously sharing your time and expertise, and to our sponsors for their continued support and partnership. And to our audience, thank you for your engagement these past two days. Keep an eye out for a follow-up email with a feedback survey and information about next year's symposium. Thank you all, and we wish you the best!\"</em></li><li><strong><span class=\"role-moderator\">[MODERATOR]:</span></strong> Share closing/thank-you slide.</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> Stop recording.</li><li><strong><span class=\"role-tech\">[TECH SUPPORT]:</span></strong> End the Zoom meeting for all participants.</li></ul>"
+                        }
+                ]
+        }
+};
+
+    // --- App Logic ---
+    const homeView = document.getElementById('home-view');
+    const sessionView = document.getElementById('session-view');
+    const homeGrid = homeView.querySelector('.grid');
+    const backToHomeBtn = document.getElementById('back-to-home');
+    const sessionTitleEl = document.getElementById('sessionTitle');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const progressTime = document.getElementById('progress-time');
+    const currentActionContainer = document.getElementById('current-action-container');
+    const upNextText = document.getElementById('up-next-text');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const timelineContainer = document.getElementById('timeline-container');
+    const rolesModal = document.getElementById('roles-modal');
+    const showRolesBtn = document.getElementById('show-roles-btn');
+    const closeRolesBtn = document.getElementById('close-roles-btn');
+
+    let currentSessionSteps = [];
+    let currentStep = 0;
+
+    function renderHomePage() {
+        homeGrid.innerHTML = '';
+        Object.keys(symposiumData).forEach(key => {
+            const session = symposiumData[key];
+            const card = document.createElement('button');
+            card.className = 'session-card bg-white rounded-2xl shadow-lg p-6 text-left w-full';
+            card.dataset.sessionKey = key;
+            const day = session.title.split(',')[0];
+            const sessionName = session.title.split(': ')[1];
+            card.innerHTML = `
+                <p class="text-sm font-semibold text-sky-600">${day}</p>
+                <h3 class="text-xl font-bold text-slate-800 mt-1">${sessionName}</h3>
+            `;
+            homeGrid.appendChild(card);
+        });
+    }
+
+    function showSessionView(sessionKey) {
+        currentSessionSteps = symposiumData[sessionKey].steps;
+        sessionTitleEl.textContent = symposiumData[sessionKey].title;
+        currentStep = 0;
+        homeView.classList.add('hidden');
+        sessionView.classList.remove('hidden');
+        renderStep(currentStep);
+    }
+
+    function showHomeView() {
+        sessionView.classList.add('hidden');
+        homeView.classList.remove('hidden');
+    }
+
+    homeGrid.addEventListener('click', (e) => {
+        const card = e.target.closest('.session-card');
+        if (card) {
+            showSessionView(card.dataset.sessionKey);
+        }
+    });
+
+    backToHomeBtn.addEventListener('click', showHomeView);
+    showRolesBtn.addEventListener('click', () => rolesModal.classList.add('is-visible'));
+    closeRolesBtn.addEventListener('click', () => rolesModal.classList.remove('is-visible'));
+    rolesModal.addEventListener('click', (e) => {
+        if (e.target === rolesModal) {
+            rolesModal.classList.remove('is-visible');
+        }
+    });
+
+
+    function renderTimeline(activeIndex) {
+        timelineContainer.innerHTML = '';
+        const ol = document.createElement('ol');
+        currentSessionSteps.forEach((step, index) => {
+            const li = document.createElement('li');
+            li.className = 'timeline-item';
+            const button = document.createElement('button');
+            button.dataset.index = index;
+            button.className = 'text-left w-full hover:bg-slate-100 p-1 rounded-md transition';
+            
+            const timeSpan = `<span class="text-xs text-slate-400 font-mono float-right pt-1">${step.time}</span>`;
+
+            if (index === activeIndex) {
+                li.classList.add('is-active');
+                button.innerHTML = `<strong class="text-sky-700 font-bold">${step.task}</strong>${timeSpan}`;
+            } else if (index < activeIndex) {
+                li.classList.add('is-complete');
+                button.innerHTML = `<span class="text-slate-500 line-through">${step.task}</span>${timeSpan}`;
+            } else {
+                button.innerHTML = `<span class="text-slate-600">${step.task}</span>${timeSpan}`;
+            }
+            li.appendChild(button);
+            ol.appendChild(li);
+        });
+        timelineContainer.appendChild(ol);
+    }
+    
+    function renderStep(index) {
+        currentStep = index;
+        const step = currentSessionSteps[index];
+        currentActionContainer.classList.remove('card-enter-active');
+        currentActionContainer.classList.add('card-enter');
+        setTimeout(() => {
+            currentActionContainer.innerHTML = `
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900">${step.task}</h2>
+                    <span class="text-lg font-bold text-slate-700">${step.time}</span>
+                </div>
+                <div class="text-slate-600 md:text-lg">${step.details}</div>
+            `;
+            currentActionContainer.classList.add('card-enter-active');
+        }, 50);
+        const progressPercentage = ((index + 1) / currentSessionSteps.length) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
+        progressText.textContent = `Step ${index + 1} of ${currentSessionSteps.length}`;
+        progressTime.textContent = step.time;
+        if (index + 1 < currentSessionSteps.length) {
+            upNextText.textContent = `${currentSessionSteps[index + 1].task}`;
+        } else {
+            upNextText.textContent = 'End of block.';
+        }
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === currentSessionSteps.length - 1;
+        renderTimeline(index);
+    }
+
+    prevBtn.addEventListener('click', () => { if (currentStep > 0) renderStep(currentStep - 1); });
+    nextBtn.addEventListener('click', () => { if (currentStep < currentSessionSteps.length - 1) renderStep(currentStep + 1); });
+    timelineContainer.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-index]');
+        if (button) {
+            const index = parseInt(button.dataset.index, 10);
+            renderStep(index);
+        }
+    });
+
+    renderHomePage();
+    </script>
+</body>
+</html>
+
