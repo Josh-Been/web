@@ -563,6 +563,332 @@
       color: #0066cc;
       text-decoration: underline;
     }
+  
+
+    /* ================================================================
+       REVISED WORKSHOP UI
+       ================================================================ */
+    .sidebar {
+      width: 250px;
+    }
+
+    .sidebar-stage-title {
+      margin: 26px -20px 14px;
+      padding: 9px 20px;
+      background: #eef5f0;
+      border-top: 1px solid #d7e5db;
+      border-bottom: 1px solid #d7e5db;
+      color: #154734;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+    }
+
+    .sidebar-stage-title:first-of-type {
+      margin-top: 8px;
+    }
+
+    .project-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 325px;
+      max-height: calc(100vh - 170px);
+      overflow-y: auto;
+      background: #ffffff;
+      border: 1px solid #d8d8d8;
+      border-top: 5px solid #154734;
+      border-radius: 8px;
+      padding: 16px;
+      z-index: 55;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+
+    .project-panel-title {
+      color: #154734;
+      font-size: 16px;
+      font-weight: 750;
+      margin-bottom: 4px;
+    }
+
+    .project-panel-subtitle {
+      color: #6d6d6d;
+      font-size: 11px;
+      line-height: 1.45;
+      margin-bottom: 13px;
+    }
+
+    .project-field {
+      margin-bottom: 11px;
+    }
+
+    .project-field label {
+      display: block;
+      color: #444;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .project-field input,
+    .project-field select {
+      width: 100%;
+      padding: 8px 9px;
+      border: 1px solid #cfcfcf;
+      border-radius: 5px;
+      background: #ffffff;
+      color: #333;
+      font-size: 12px;
+    }
+
+    .project-field input:focus,
+    .project-field select:focus,
+    .constraint-value-input:focus,
+    .constraint-priority-select:focus {
+      outline: none;
+      border-color: #007a33;
+      box-shadow: 0 0 0 2px rgba(0,122,51,0.12);
+    }
+
+    .project-field input:disabled,
+    .project-field select:disabled {
+      background: #f1f1f1;
+      color: #777;
+      cursor: not-allowed;
+    }
+
+    .profile-preview {
+      margin: 4px 0 12px;
+      padding: 10px;
+      background: #f7faf8;
+      border: 1px solid #d7e5db;
+      border-radius: 6px;
+      color: #444;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .profile-preview[hidden] {
+      display: none;
+    }
+
+    .profile-preview-name {
+      color: #154734;
+      font-weight: 750;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .profile-preview-row {
+      margin-bottom: 3px;
+    }
+
+    .profile-preview details {
+      margin-top: 8px;
+    }
+
+    .profile-preview summary {
+      color: #0066cc;
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    .profile-preview ul {
+      padding-left: 18px;
+      margin-top: 6px;
+    }
+
+    .project-code-box {
+      margin-top: 10px;
+      padding: 9px;
+      background: #f7f7f7;
+      border: 1px solid #dddddd;
+      border-radius: 5px;
+    }
+
+    .project-code-label {
+      color: #777;
+      font-size: 10px;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
+    }
+
+    .project-code-value {
+      color: #154734;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+      font-weight: 650;
+      overflow-wrap: anywhere;
+    }
+
+    .project-actions {
+      display: flex;
+      gap: 7px;
+      margin-top: 11px;
+    }
+
+    .project-action-button {
+      flex: 1;
+      padding: 8px 9px;
+      border-radius: 5px;
+      border: 1px solid #bdbdbd;
+      background: #f8f8f8;
+      color: #444;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .project-action-button.primary {
+      background: #154734;
+      border-color: #154734;
+      color: #ffffff;
+    }
+
+    .project-action-button.danger {
+      color: #a52222;
+      border-color: #d5a9a9;
+      background: #fff8f8;
+    }
+
+    .project-action-button:hover {
+      filter: brightness(0.96);
+    }
+
+    .project-action-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .export-panel {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      width: 250px;
+      padding: 13px;
+      background: #ffffff;
+      border: 1px solid #d8d8d8;
+      border-radius: 8px;
+      z-index: 55;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+
+    .export-panel-title {
+      color: #333;
+      font-size: 13px;
+      font-weight: 750;
+      margin-bottom: 4px;
+    }
+
+    .export-panel-text {
+      color: #777;
+      font-size: 10px;
+      line-height: 1.4;
+      margin-bottom: 9px;
+    }
+
+    .export-action-button {
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 11px;
+      font-size: 11px;
+      font-weight: 750;
+      color: #ffffff;
+      cursor: pointer;
+      margin-top: 7px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+    }
+
+    .export-action-button.markdown {
+      background: #0066cc;
+    }
+
+    .export-action-button.zip {
+      background: #4caf50;
+    }
+
+    .export-action-button:hover {
+      filter: brightness(0.94);
+    }
+
+    .export-action-button:disabled {
+      background: #bdbdbd;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .export-status {
+      min-height: 16px;
+      margin-top: 8px;
+      color: #666;
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    .export-status.error {
+      color: #b3261e;
+    }
+
+    .export-status.success {
+      color: #2e7d32;
+    }
+
+    .workflow-constraints-overlay-row {
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .constraint-control-group {
+      display: grid;
+      grid-template-columns: minmax(150px, 1fr) 150px;
+      gap: 8px;
+      flex: 1;
+      min-width: 320px;
+    }
+
+    .constraint-priority-select {
+      width: 100%;
+      padding: 5px 6px;
+      border: 1px solid #ce93d8;
+      border-radius: 3px;
+      background: #fff;
+      color: #4a148c;
+      font-size: 11px;
+    }
+
+    .constraint-priority-note {
+      width: 100%;
+      color: #8a6a8f;
+      font-size: 10px;
+      font-style: italic;
+      padding-left: 2px;
+    }
+
+    .agent-card-constraint-summary {
+      color: #5b2a67;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .instructions {
+      max-width: 325px;
+    }
+
+    @media (max-width: 1150px) {
+      .project-panel {
+        width: 285px;
+      }
+
+      .example-panel,
+      .attribution-panel {
+        display: none;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -571,69 +897,75 @@
   <div class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-title">Agents</div>
-      <div class="category-description">Build your workflow by dragging agents onto the canvas</div>
-      <div class="tool-node" draggable="true" data-agent-slot="true" data-description="Add an agent node to your workflow. You can add up to 3 agents, and they will be positioned in sequence." style="background: #f0f4ff; border-color: #0066cc; color: #0066cc; font-weight: 600;">Agent</div>
+      <div class="category-description">Build the three-agent sequence before assigning each agent's work.</div>
+      <div class="tool-node" draggable="true" data-agent-slot="true" data-description="Add the next agent node to the workflow. Agents are added in sequence as Manager, Researcher, and Analyst." style="background: #f0f4ff; border-color: #0066cc; color: #0066cc; font-weight: 600;">Agent</div>
     </div>
-    
+
+    <div class="sidebar-stage-title">Define the Assignment</div>
+
     <div class="sidebar-section">
       <div class="sidebar-title">Role <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
-      <div class="category-description">Define what each agent is and their primary expertise area</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Strategic planner" data-category="role" data-description="Sets overall strategy, defines objectives, and establishes rules and constraints that other agents must follow.">Strategic planner</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Data Curator" data-category="role" data-description="Filters and organizes information from the pre-collected database. Responsible for data quality triage, de-duplicating and normalizing aggregator listings, structured categorization, and documenting exclusions.">Data Curator</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Strategy Synthesizer" data-category="role" data-description="Analyzes curated data, identifies patterns, and transforms information into a recommended search strategy.">Strategy Synthesizer</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Quality validator" data-category="role" data-description="Reviews and validates the work of other agents, ensures quality, and flags issues or gaps. Note: this 3-agent workflow has no dedicated QA step -- assigning this role raises a good discussion question about whether a 4-agent design is needed.">Quality validator</div>
+      <div class="category-description">Define what the agent is and the perspective it brings to the workflow.</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Strategic planner" data-category="role" data-description="Sets overall strategy, defines objectives, and establishes the rules and constraints that downstream agents must follow.">Strategic planner</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Data Curator" data-category="role" data-description="Filters and organizes information from the pre-collected database, documents exclusions, and preserves uncertainty.">Data Curator</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Strategy Synthesizer" data-category="role" data-description="Analyzes curated evidence and transforms it into a recommended job-search strategy.">Strategy Synthesizer</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Quality validator" data-category="role" data-description="Reviews and validates the work of other agents. Assigning this role raises a useful question about whether a three-agent workflow has enough dedicated quality assurance.">Quality validator</div>
     </div>
-    
+
     <div class="sidebar-section">
       <div class="sidebar-title">Primary Task <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
-      <div class="category-description">Specify the core work or responsibility this agent will perform</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Define constraints" data-category="task" data-description="Establish the boundaries, rules, budget, timeline, and other limits that guide the workflow.">Define constraints</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Gather job postings/company data" data-category="task" data-description="Filter and identify open roles, companies, and industry trends relevant to the candidate from the pre-collected listings database.">Gather job postings/company data</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Analyze role fit" data-category="task" data-description="Evaluate how well available roles match the candidate's background, constraints, and priorities.">Analyze role fit</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Synthesize insights" data-category="task" data-description="Combine data from multiple sources, identify patterns, and draw meaningful conclusions.">Synthesize insights</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Validate findings" data-category="task" data-description="Check the quality and accuracy of work, ensure all assumptions are documented.">Validate findings</div>
+      <div class="category-description">Specify the agent's central responsibility.</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Define constraints" data-category="task" data-description="Establish the boundaries, priorities, timeline, and other limits that guide the workflow.">Define constraints</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Gather job postings/company data" data-category="task" data-description="Filter and identify open roles and companies relevant to the candidate from the pre-collected job database.">Gather job postings/company data</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Analyze role fit" data-category="task" data-description="Evaluate how well available roles match the candidate's experience, goals, and constraints.">Analyze role fit</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Synthesize insights" data-category="task" data-description="Combine evidence, identify patterns, and draw actionable conclusions.">Synthesize insights</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Validate findings" data-category="task" data-description="Check the quality and accuracy of the workflow's findings and flag gaps or unsupported claims.">Validate findings</div>
     </div>
-    
-    <div class="sidebar-section">
-      <div class="sidebar-title">Tools/Capabilities <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
-      <div class="category-description">Assign specific tools or functions that enable the agent to perform its task</div>
-      <div class="tool-node" draggable="true" data-tool="Define Constraints" data-description="Allows the agent to establish and communicate rules, budgets, timelines, and other constraints.">Define Constraints</div>
-      <div class="tool-node" draggable="true" data-tool="Query Job Database" data-description="Enables the agent to search and filter the pre-collected job listings database rather than searching the live web -- supports reproducible results across runs.">Query Job Database</div>
-      <div class="tool-node" draggable="true" data-tool="Format & Synthesize" data-description="Structures data into organized formats and creates summaries from raw information.">Format & Synthesize</div>
-      <div class="tool-node" draggable="true" data-tool="Compare datasets" data-description="Analyzes multiple datasets side-by-side to identify differences, trends, and patterns.">Compare datasets</div>
-      <div class="tool-node" draggable="true" data-tool="Generate summary" data-description="Creates concise summaries of complex information for handoff to the next agent.">Generate summary</div>
-    </div>
-    
-    <div class="sidebar-section">
-      <div class="sidebar-title">Output Format <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
-      <div class="category-description">Specify the structure and format of what this agent will deliver</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Strategic brief" data-category="output" data-description="A concise document outlining strategy, objectives, and key decisions.">Strategic brief</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Data summary" data-category="output" data-description="A structured summary of collected data with sources and methodology noted.">Data summary</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Executive report" data-category="output" data-description="A professional report with findings, analysis, recommendations, and supporting evidence.">Executive report</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Structured table" data-category="output" data-description="Data organized in rows and columns for easy comparison and analysis.">Structured table</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Risk assessment" data-category="output" data-description="A document identifying potential risks, their likelihood, and mitigation strategies.">Risk assessment</div>
-    </div>
-    
+
     <div class="sidebar-section">
       <div class="sidebar-title">Constraints <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
-      <div class="category-description">Define the limits, rules, and conditions that govern this agent's behavior. Once added, click the value box on the tag in the Workflow Constraints panel to specify (or edit) details -- this is optional.</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Compensation-aware" data-category="constraint" data-description="The agent must consider and respect the candidate's salary expectations or compensation floor in all decisions.">Compensation-aware</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Candidate urgency" data-category="constraint" data-description="The candidate has a deadline to start working (e.g., needs an offer within 30 days). This affects how postings are prioritized. It does not refer to how recently a job was posted or how long the agents should take to run.">Candidate urgency</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Company-size restricted" data-category="constraint" data-description="The agent's search is limited to a specific company size range (e.g., startup vs. enterprise).">Company-size restricted</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Visa/sponsorship-bound" data-category="constraint" data-description="The agent must account for the candidate's work authorization or sponsorship needs.">Visa/sponsorship-bound</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Regional focus" data-category="constraint" data-description="The agent's search is limited to a specific geographic region, or must account for remote/relocation preferences.">Regional focus</div>
+      <div class="category-description">Define the boundaries governing the workflow. After adding one, use the Workflow Constraints panel to enter a value and classify it as Required, Preferred, or Manager determines.</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Compensation-aware" data-category="constraint" data-description="The workflow must consider the candidate's salary expectations or compensation floor.">Compensation-aware</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Candidate urgency" data-category="constraint" data-description="The candidate has a target timeline for obtaining or starting a new role. This affects prioritization, not how quickly the agents run.">Candidate urgency</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Company-size restricted" data-category="constraint" data-description="The search is limited or weighted toward a particular company-size range.">Company-size restricted</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Visa/sponsorship-bound" data-category="constraint" data-description="The workflow must account for the candidate's work authorization or sponsorship needs.">Visa/sponsorship-bound</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Regional focus" data-category="constraint" data-description="The search must account for geography, remote work, hybrid work, or relocation preferences.">Regional focus</div>
     </div>
-    
+
+    <div class="sidebar-stage-title">Equip the Agent</div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Tools / Capabilities <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
+      <div class="category-description">Assign the resources the agent needs to complete its bounded task.</div>
+      <div class="tool-node" draggable="true" data-tool="Define Constraints" data-description="Allows the agent to establish and communicate priorities, timelines, and other workflow boundaries.">Define Constraints</div>
+      <div class="tool-node" draggable="true" data-tool="Query Job Database" data-description="Enables the agent to search and filter the pre-collected job listings database for reproducible results.">Query Job Database</div>
+      <div class="tool-node" draggable="true" data-tool="Format & Synthesize" data-description="Structures evidence into organized formats and creates useful summaries.">Format &amp; Synthesize</div>
+      <div class="tool-node" draggable="true" data-tool="Compare datasets" data-description="Analyzes multiple sets of evidence side by side to identify differences and patterns.">Compare datasets</div>
+      <div class="tool-node" draggable="true" data-tool="Generate summary" data-description="Creates concise summaries for a downstream agent or final audience.">Generate summary</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Output Format <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
+      <div class="category-description">Choose the broad type of deliverable. The workshop supplies the exact Researcher and Analyst structures.</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Strategic brief" data-category="output" data-description="A concise document outlining strategy, objectives, constraints, and key decisions.">Strategic brief</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Data summary" data-category="output" data-description="A structured summary of collected evidence with methodology and uncertainty documented.">Data summary</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Executive report" data-category="output" data-description="A professional report containing findings, recommendations, and supporting evidence.">Executive report</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Structured table" data-category="output" data-description="Evidence organized into standardized rows and columns for comparison.">Structured table</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Risk assessment" data-category="output" data-description="A document identifying risks, uncertainties, and practical responses.">Risk assessment</div>
+    </div>
+
+    <div class="sidebar-stage-title">Connect the Workflow</div>
+
     <div class="sidebar-section">
       <div class="sidebar-title">Handoff Instructions <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
-      <div class="category-description">Specify what information or format this agent must pass to the next agent</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Prioritize & flag constraints" data-category="handoff" data-description="Rank which constraints are non-negotiable versus preferred, and explicitly flag any constraint category that was tagged but left unspecified, or any gap in the underlying profile, so downstream agents know what's solid ground versus what they're inferring.">Prioritize &amp; flag constraints</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Pass structured data" data-category="handoff" data-description="The agent must organize output in a clear, structured format for the next agent to use.">Pass structured data</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Include methodology" data-category="handoff" data-description="The agent must document and explain the methods used to arrive at findings.">Include methodology</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Flag uncertainties" data-category="handoff" data-description="The agent must highlight areas of uncertainty or gaps in confidence.">Flag uncertainties</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Document sources" data-category="handoff" data-description="The agent must provide full attribution and sources for all information used.">Document sources</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Highlight assumptions" data-category="handoff" data-description="The agent must clearly state all assumptions made in the analysis.">Highlight assumptions</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Include workflow critique" data-category="handoff" data-description="A handoff for the humans, not the next agent. Instructs this agent to also evaluate the team's own instructions across the workflow -- were they clear enough, did they leave gaps, what would this agent recommend changing -- in addition to its primary output. Designed for the Analyst, but can be dragged onto any agent to explore what that would mean.">Include workflow critique</div>
+      <div class="category-description">Specify what the agent must preserve or communicate for the next stage. Exact table and report schemas are standardized by the workshop.</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Prioritize & flag constraints" data-category="handoff" data-description="Preserve each constraint's value and team-selected priority, and flag missing details or delegated judgments.">Prioritize &amp; flag constraints</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Pass structured data" data-category="handoff" data-description="Organize the evidence clearly so the next agent can use it without reconstructing the earlier work.">Pass structured data</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Include methodology" data-category="handoff" data-description="Document the method used to reach the findings.">Include methodology</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Flag uncertainties" data-category="handoff" data-description="Identify missing, ambiguous, or unconfirmed information.">Flag uncertainties</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Document sources" data-category="handoff" data-description="Preserve exact source attribution and links.">Document sources</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Highlight assumptions" data-category="handoff" data-description="State assumptions explicitly rather than allowing them to disappear into the result.">Highlight assumptions</div>
+      <div class="tool-node constraint-node" draggable="true" data-constraint="Include workflow critique" data-category="handoff" data-description="Add a separate critique of the team's own SOP design: what was clear, what was ambiguous, and what should change next time. Designed primarily for the Analyst.">Include workflow critique</div>
     </div>
   </div>
   
@@ -651,16 +983,46 @@
       <button id="removeAgentBtn" style="width: 100%; margin-top: 8px; padding: 6px; background: #ffebee; border: 1px solid #ef5350; border-radius: 4px; color: #c62828; cursor: pointer; font-size: 12px; font-weight: 500;">Remove Agent</button>
     </div>
     
+    <div class="project-panel" id="projectPanel">
+      <div class="project-panel-title">Project Setup</div>
+      <div class="project-panel-subtitle">Name the team project, select one synthetic applicant, and lock the setup to create a stable project code.</div>
+
+      <div class="project-field">
+        <label for="projectNameInput">Project Name</label>
+        <input id="projectNameInput" type="text" maxlength="50" placeholder="e.g., Career Compass" autocomplete="off" />
+      </div>
+
+      <div class="project-field">
+        <label for="profileSelect">Synthetic Candidate Profile</label>
+        <select id="profileSelect">
+          <option value="">Select a profile...</option>
+        </select>
+      </div>
+
+      <div class="profile-preview" id="profilePreview" hidden></div>
+
+      <div class="project-code-box">
+        <div class="project-code-label">Project Code</div>
+        <div class="project-code-value" id="projectCodeDisplay">Lock setup to generate</div>
+      </div>
+
+      <div class="project-actions">
+        <button class="project-action-button primary" id="lockProjectButton" type="button">Lock Setup</button>
+        <button class="project-action-button" id="editProjectButton" type="button" disabled>Edit Setup</button>
+        <button class="project-action-button danger" id="resetProjectButton" type="button">Reset</button>
+      </div>
+    </div>
+
     <div class="example-panel" id="examplePanel">
       <div class="example-title">Example workflow</div>
       <div class="example-text">
-        Manager defines candidate constraints → Researcher identifies matching job postings and company data → Analyst synthesizes findings into a Search Strategy.
+        Manager defines and prioritizes candidate constraints → Researcher curates standardized job evidence → Analyst produces the standardized Search Strategy.
       </div>
       <div class="example-toggle" onclick="document.getElementById('examplePanel').style.display='none';">Hide</div>
     </div>
     
     <div class="instructions">
-      <strong>How to use:</strong> Drag tools from the sidebar onto agent nodes. Click agents to rename them. Click tools to remove them. Click the "Workflow Constraints" badge anytime to view or edit constraint details.
+      <strong>How to use:</strong> Lock the project setup, add three agents, then work from top to bottom in the sidebar. Click an agent to assign its workflow name. Click an item on an agent card to remove it. Use the Workflow Constraints badge to enter each value and priority.
     </div>
     
     <div class="attribution-panel" id="attributionPanel">
@@ -670,15 +1032,33 @@
       <div class="example-toggle" onclick="document.getElementById('attributionPanel').style.display='none';">Hide</div>
     </div>
 
-    <button class="export-button" id="exportButton">Export to Markdown</button>
+    <div class="export-panel" id="exportPanel">
+      <div class="export-panel-title">Export Finished Workflow</div>
+      <div class="export-panel-text">The Markdown files are complete SOPs. The ZIP contains the same four files under the standard names required by the Box processing queue.</div>
+      <button class="export-action-button markdown" id="downloadMarkdownButton" type="button">Download 4 Markdown Files</button>
+      <button class="export-action-button zip" id="downloadZipButton" type="button">Download ZIP for Box</button>
+      <div class="export-status" id="exportStatus"></div>
+    </div>
   </div>
 </div>
 
+<!-- Save jszip.min.js in this same directory. See the official JSZip distribution. -->
+<script src="./jszip.min.js"></script>
 <script>
   const svg = document.getElementById('workflowSvg');
   const canvas = document.getElementById('canvas');
   const agentDropdown = document.getElementById('agentDropdown');
   const agentSelect = document.getElementById('agentSelect');
+  const projectNameInput = document.getElementById('projectNameInput');
+  const profileSelect = document.getElementById('profileSelect');
+  const profilePreview = document.getElementById('profilePreview');
+  const projectCodeDisplay = document.getElementById('projectCodeDisplay');
+  const lockProjectButton = document.getElementById('lockProjectButton');
+  const editProjectButton = document.getElementById('editProjectButton');
+  const resetProjectButton = document.getElementById('resetProjectButton');
+  const downloadMarkdownButton = document.getElementById('downloadMarkdownButton');
+  const downloadZipButton = document.getElementById('downloadZipButton');
+  const exportStatus = document.getElementById('exportStatus');
   
   let canvasWidth = canvas.offsetWidth;
   let canvasHeight = canvas.offsetHeight;
@@ -689,9 +1069,224 @@
     analyst: { name: '', x: 150, y: 440, tools: [], constraints: [], active: false }
   };
 
-  // Workflow-level constraint values (specific details students optionally add per constraint)
-  // Keyed by constraint name, e.g. constraintValues['Regional focus'] = 'Remote, US only'
+  // Workflow-level constraint values entered by the team.
   let constraintValues = {};
+
+  // Team-selected priority for each workflow constraint:
+  // required, preferred, or manager (delegate the classification to the Manager).
+  let constraintPriorities = {};
+
+  const projectState = {
+    name: '',
+    profileId: '',
+    code: '',
+    generatedAt: '',
+    locked: false
+  };
+
+  // All people and organizations below are fictional and created solely for this workshop.
+  const CANDIDATE_PROFILES = [
+    {
+      id: 'P01',
+      name: 'Jordan Lee',
+      headline: 'Operations manager moving toward business analytics',
+      currentRole: 'Regional Operations Manager',
+      experience: '8 years in retail operations, workforce planning, and process improvement',
+      education: ['MBA, Baylor University', 'BBA in Management'],
+      workHistory: [
+        'Regional Operations Manager: led 14 locations, managed labor planning, and improved service-level performance.',
+        'Operations Analyst: built Excel dashboards, standardized weekly reporting, and supported inventory forecasting.'
+      ],
+      skills: ['Operations management', 'Excel', 'Power BI', 'Process improvement', 'Workforce planning', 'Stakeholder communication'],
+      objective: 'Transition into business analytics, operations analytics, or supply-chain analytics without returning to an entry-level role.',
+      location: 'Texas preferred; open to fully remote roles in the United States.',
+      compensation: '$95,000 target; minimum acceptable compensation is not explicitly stated.',
+      authorization: 'Authorized to work in the United States; sponsorship not required.',
+      companySize: 'Open to mid-sized or enterprise organizations.',
+      urgency: 'Would like to begin a new role within four months.',
+      ambiguity: 'The profile does not state whether Jordan would accept a lower title to complete the career transition.'
+    },
+    {
+      id: 'P02',
+      name: 'Priya Shah',
+      headline: 'Financial analyst seeking corporate strategy work',
+      currentRole: 'Senior Financial Analyst',
+      experience: '6 years in budgeting, forecasting, variance analysis, and executive reporting',
+      education: ['MBA, Baylor University', 'BS in Finance'],
+      workHistory: [
+        'Senior Financial Analyst: owned annual planning for a $120M business unit and presented performance drivers to executives.',
+        'Financial Analyst: developed forecasting models and supported pricing decisions.'
+      ],
+      skills: ['Financial modeling', 'Forecasting', 'SQL fundamentals', 'Tableau', 'Executive presentations', 'Scenario planning'],
+      objective: 'Move into corporate strategy, strategic finance, or business planning.',
+      location: 'Dallas-Fort Worth preferred; hybrid work strongly preferred.',
+      compensation: 'Seeks at least $110,000 base salary.',
+      authorization: 'Authorized to work in the United States; sponsorship not required.',
+      companySize: 'Prefers organizations with more than 1,000 employees.',
+      urgency: 'No fixed deadline, but interested in changing roles during the next six months.',
+      ambiguity: 'The profile does not specify whether frequent travel is acceptable.'
+    },
+    {
+      id: 'P03',
+      name: 'Miguel Torres',
+      headline: 'Supply-chain specialist pursuing operations leadership',
+      currentRole: 'Supply Chain Program Specialist',
+      experience: '7 years in procurement, logistics, supplier performance, and cross-functional project delivery',
+      education: ['MBA candidate', 'BS in Supply Chain Management'],
+      workHistory: [
+        'Supply Chain Program Specialist: coordinated supplier scorecards and reduced late deliveries across a national network.',
+        'Procurement Analyst: supported sourcing events and contract-performance reporting.'
+      ],
+      skills: ['Supplier management', 'Procurement', 'Logistics', 'ERP systems', 'Project management', 'Negotiation'],
+      objective: 'Advance into supply-chain management, operations program management, or procurement leadership.',
+      location: 'Open to Texas, Oklahoma, or remote roles; relocation outside the region is not preferred.',
+      compensation: '$100,000 preferred; willing to evaluate total compensation.',
+      authorization: 'Authorized to work in the United States; sponsorship not required.',
+      companySize: 'No stated preference.',
+      urgency: 'Wants to secure a role before graduating in five months.',
+      ambiguity: 'The desired balance between individual-contributor and people-management responsibilities is unclear.'
+    },
+    {
+      id: 'P04',
+      name: 'Nia Robinson',
+      headline: 'Healthcare administrator moving into product operations',
+      currentRole: 'Clinic Operations Supervisor',
+      experience: '9 years in healthcare operations, scheduling, compliance, and service improvement',
+      education: ['MBA, Baylor University', 'BS in Health Administration'],
+      workHistory: [
+        'Clinic Operations Supervisor: managed a 28-person team and redesigned patient scheduling workflows.',
+        'Healthcare Project Coordinator: supported EHR implementation and staff training.'
+      ],
+      skills: ['People leadership', 'Healthcare operations', 'Change management', 'Process mapping', 'Compliance', 'EHR implementation'],
+      objective: 'Transition into product operations, implementation management, or customer success operations in health technology.',
+      location: 'Remote preferred; willing to commute within Central Texas for hybrid work.',
+      compensation: 'Would like $105,000 or more, but may accept less for a strong technology transition opportunity.',
+      authorization: 'Authorized to work in the United States; sponsorship not required.',
+      companySize: 'Open to startups through enterprise companies.',
+      urgency: 'Moderate urgency; would like an offer within six months.',
+      ambiguity: 'Direct experience with product-management software is not documented.'
+    },
+    {
+      id: 'P05',
+      name: 'Cameron Reed',
+      headline: 'Enterprise salesperson targeting revenue operations',
+      currentRole: 'Senior Account Executive',
+      experience: '7 years in B2B software sales, pipeline management, and account strategy',
+      education: ['MBA candidate', 'BA in Communication'],
+      workHistory: [
+        'Senior Account Executive: exceeded annual quota, managed complex sales cycles, and mentored new representatives.',
+        'Sales Development Representative: generated enterprise pipeline and maintained CRM data.'
+      ],
+      skills: ['Salesforce', 'Pipeline forecasting', 'B2B sales', 'Account strategy', 'CRM governance', 'Executive communication'],
+      objective: 'Move from quota-carrying sales into revenue operations, sales operations, or go-to-market strategy.',
+      location: 'Remote within the United States; not willing to relocate.',
+      compensation: 'Requires at least $115,000 base salary and values predictable compensation over commission upside.',
+      authorization: 'Authorized to work in the United States; sponsorship not required.',
+      companySize: 'Prefers growth-stage or enterprise software companies.',
+      urgency: 'High urgency because the current employer is restructuring; seeks an offer within 60 days.',
+      ambiguity: 'The profile does not indicate advanced analytics experience beyond CRM reporting.'
+    },
+    {
+      id: 'P06',
+      name: 'Samira Hassan',
+      headline: 'Nonprofit program leader pursuing ESG or social-impact strategy',
+      currentRole: 'Director of Community Programs',
+      experience: '10 years in program management, partnerships, grant stewardship, and impact measurement',
+      education: ['MBA, Baylor University', 'BA in Sociology'],
+      workHistory: [
+        'Director of Community Programs: managed a $4M portfolio and partnerships across public, nonprofit, and corporate organizations.',
+        'Program Manager: designed outcome measures and led grant reporting.'
+      ],
+      skills: ['Program strategy', 'Partnership development', 'Impact measurement', 'Budget oversight', 'Grant management', 'Facilitation'],
+      objective: 'Move into ESG strategy, corporate social responsibility, foundation operations, or social-impact consulting.',
+      location: 'Austin, Houston, Dallas, or remote; open to limited travel.',
+      compensation: '$100,000 target with flexibility for mission alignment.',
+      authorization: 'Authorized to work in the United States; sponsorship not required.',
+      companySize: 'No fixed preference, but values organizations with established social-impact programs.',
+      urgency: 'Low urgency; prioritizes fit over speed.',
+      ambiguity: 'The profile does not define how much private-sector experience employers may require.'
+    },
+    {
+      id: 'P07',
+      name: 'Wei Chen',
+      headline: 'Product analyst seeking fintech product strategy roles',
+      currentRole: 'Product Data Analyst',
+      experience: '5 years in digital-product analytics, experimentation, and customer-behavior reporting',
+      education: ['MBA candidate', 'MS in Information Systems', 'BS in Economics'],
+      workHistory: [
+        'Product Data Analyst: designed KPI dashboards and analyzed product experiments for a consumer application.',
+        'Business Intelligence Analyst: built SQL queries and recurring performance reports.'
+      ],
+      skills: ['SQL', 'Python', 'A/B testing', 'Product analytics', 'Tableau', 'Requirements gathering'],
+      objective: 'Advance into product strategy, product operations, or analytics leadership within fintech.',
+      location: 'Remote or major Texas metro; open to relocation for an exceptional role.',
+      compensation: 'Targets $125,000 or higher.',
+      authorization: 'Currently authorized to work in the United States and will require employer sponsorship in the future.',
+      companySize: 'Prefers organizations with mature data teams; company size itself is flexible.',
+      urgency: 'Needs to identify a sponsorship-capable employer within five months.',
+      ambiguity: 'The profile does not specify the exact date on which new sponsorship will be required.'
+    },
+    {
+      id: 'P08',
+      name: 'Taylor Brooks',
+      headline: 'Military logistics leader transitioning to civilian project management',
+      currentRole: 'Logistics Officer',
+      experience: '11 years leading logistics, readiness, budgeting, and distributed teams',
+      education: ['MBA, Baylor University', 'BS in Logistics'],
+      workHistory: [
+        'Logistics Officer: directed multi-site operations, asset accountability, and contingency planning.',
+        'Operations Planner: coordinated schedules, risk assessments, and executive briefings.'
+      ],
+      skills: ['Program management', 'Risk management', 'Team leadership', 'Logistics', 'Budgeting', 'Operational planning'],
+      objective: 'Enter civilian program management, operations management, or supply-chain leadership.',
+      location: 'San Antonio or remote preferred; willing to travel up to 25 percent.',
+      compensation: 'Seeks total compensation comparable to current military benefits; exact floor is not stated.',
+      authorization: 'Authorized to work in the United States; sponsorship not required.',
+      companySize: 'Open to organizations of any size that provide structured onboarding for military transitions.',
+      urgency: 'Must begin civilian employment within 90 days of separation.',
+      ambiguity: 'The profile does not translate military rank directly into civilian seniority.'
+    },
+    {
+      id: 'P09',
+      name: 'Elena Garcia',
+      headline: 'HR generalist moving into people analytics',
+      currentRole: 'Human Resources Business Partner',
+      experience: '8 years in employee relations, workforce planning, talent programs, and HR reporting',
+      education: ['MBA candidate', 'BS in Human Resource Management'],
+      workHistory: [
+        'HR Business Partner: advised leaders across a 900-employee division and supported workforce planning.',
+        'HR Generalist: managed recruiting coordination, employee relations, and compliance reporting.'
+      ],
+      skills: ['Workforce planning', 'HRIS reporting', 'Employee relations', 'Talent management', 'Excel', 'Change communication'],
+      objective: 'Transition into people analytics, workforce strategy, or HR operations.',
+      location: 'Texas or remote; hybrid is acceptable.',
+      compensation: 'Minimum preferred salary is $105,000, but the profile does not identify whether this is non-negotiable.',
+      authorization: 'Authorized to work in the United States; sponsorship not required.',
+      companySize: 'Prefers organizations with at least 500 employees and an established HRIS.',
+      urgency: 'Interested in changing roles within the next four to eight months.',
+      ambiguity: 'Technical depth in SQL or statistical analysis is not specified.'
+    },
+    {
+      id: 'P10',
+      name: 'Avery Morgan',
+      headline: 'Digital marketer pursuing brand and growth strategy',
+      currentRole: 'Digital Marketing Manager',
+      experience: '6 years in paid media, campaign analytics, content strategy, and agency management',
+      education: ['MBA, Baylor University', 'BA in Marketing'],
+      workHistory: [
+        'Digital Marketing Manager: managed a seven-figure media budget and integrated campaign reporting across channels.',
+        'Marketing Specialist: supported email, social, content, and event campaigns.'
+      ],
+      skills: ['Campaign strategy', 'Google Analytics', 'Paid media', 'Budget management', 'Content strategy', 'Agency management'],
+      objective: 'Move into brand strategy, growth strategy, or integrated marketing leadership.',
+      location: 'Dallas, Austin, or remote; willing to travel occasionally.',
+      compensation: '$100,000 target; open to evaluating bonus and advancement potential.',
+      authorization: 'Authorized to work in the United States; sponsorship not required.',
+      companySize: 'Prefers consumer brands or technology companies; size is not specified.',
+      urgency: 'No immediate deadline.',
+      ambiguity: 'The profile does not state whether Avery wants to remain hands-on with campaign execution or focus primarily on strategy.'
+    }
+  ];
 
   // Whether the Workflow Constraints overlay panel is currently open
   let constraintsPanelOpen = false;
@@ -708,6 +1303,183 @@
 
   const CONSTRAINT_TAGS = ['Compensation-aware', 'Candidate urgency', 'Company-size restricted', 'Visa/sponsorship-bound', 'Regional focus'];
   const HANDOFF_TAGS = ['Prioritize & flag constraints', 'Pass structured data', 'Include methodology', 'Flag uncertainties', 'Document sources', 'Highlight assumptions', 'Include workflow critique'];
+  const ROLE_TAGS = ['Strategic planner', 'Data Curator', 'Strategy Synthesizer', 'Quality validator'];
+  const TASK_TAGS = ['Define constraints', 'Gather job postings/company data', 'Analyze role fit', 'Synthesize insights', 'Validate findings'];
+  const OUTPUT_TAGS = ['Strategic brief', 'Data summary', 'Executive report', 'Structured table', 'Risk assessment'];
+  const CATEGORY_TAGS = {
+    role: ROLE_TAGS,
+    task: TASK_TAGS,
+    output: OUTPUT_TAGS
+  };
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function getSelectedProfile() {
+    return CANDIDATE_PROFILES.find(profile => profile.id === projectState.profileId) || null;
+  }
+
+  function sanitizeProjectName(name) {
+    const sanitized = name
+      .trim()
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 40);
+    return sanitized || 'mba-agent-project';
+  }
+
+  function formatLocalTimestamp(date) {
+    const pad = value => String(value).padStart(2, '0');
+    return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
+  }
+
+  function priorityLabel(value) {
+    if (value === 'required') return 'Required';
+    if (value === 'preferred') return 'Preferred';
+    return 'Manager determines';
+  }
+
+  function populateProfileSelect() {
+    CANDIDATE_PROFILES.forEach(profile => {
+      const option = document.createElement('option');
+      option.value = profile.id;
+      option.textContent = `${profile.id} – ${profile.name}: ${profile.headline}`;
+      profileSelect.appendChild(option);
+    });
+  }
+
+  function renderProfilePreview() {
+    const profile = getSelectedProfile();
+    if (!profile) {
+      profilePreview.hidden = true;
+      profilePreview.innerHTML = '';
+      return;
+    }
+
+    profilePreview.hidden = false;
+    profilePreview.innerHTML = `
+      <div class="profile-preview-name">${escapeHtml(profile.id)} – ${escapeHtml(profile.name)}</div>
+      <div class="profile-preview-row"><strong>Current:</strong> ${escapeHtml(profile.currentRole)}</div>
+      <div class="profile-preview-row"><strong>Target:</strong> ${escapeHtml(profile.objective)}</div>
+      <div class="profile-preview-row"><strong>Location:</strong> ${escapeHtml(profile.location)}</div>
+      <div class="profile-preview-row"><strong>Authorization:</strong> ${escapeHtml(profile.authorization)}</div>
+      <details>
+        <summary>View full synthetic profile</summary>
+        <ul>
+          <li><strong>Experience:</strong> ${escapeHtml(profile.experience)}</li>
+          <li><strong>Compensation:</strong> ${escapeHtml(profile.compensation)}</li>
+          <li><strong>Company size:</strong> ${escapeHtml(profile.companySize)}</li>
+          <li><strong>Urgency:</strong> ${escapeHtml(profile.urgency)}</li>
+          <li><strong>Intentional ambiguity:</strong> ${escapeHtml(profile.ambiguity)}</li>
+        </ul>
+      </details>
+    `;
+  }
+
+  function setProjectSetupLocked(isLocked) {
+    projectState.locked = isLocked;
+    projectNameInput.disabled = isLocked;
+    profileSelect.disabled = isLocked;
+    lockProjectButton.disabled = isLocked;
+    editProjectButton.disabled = !isLocked;
+    projectCodeDisplay.textContent = projectState.code || 'Lock setup to generate';
+  }
+
+  function lockProjectSetup() {
+    const name = projectNameInput.value.trim();
+    const profileId = profileSelect.value;
+
+    if (name.length < 3) {
+      alert('Please enter a project name with at least three characters.');
+      projectNameInput.focus();
+      return;
+    }
+    if (!profileId) {
+      alert('Please select a synthetic candidate profile.');
+      profileSelect.focus();
+      return;
+    }
+
+    const now = new Date();
+    projectState.name = name;
+    projectState.profileId = profileId;
+    projectState.generatedAt = now.toISOString();
+    projectState.code = `${sanitizeProjectName(name)}__${profileId.toLowerCase()}__${formatLocalTimestamp(now)}`;
+    setProjectSetupLocked(true);
+    setExportStatus('Project setup locked. The project code will remain stable until you edit or reset the setup.', 'success');
+  }
+
+  function editProjectSetup() {
+    if (!confirm('Editing the setup will clear the current project code. A new code and timestamp will be created when you lock it again. Continue?')) {
+      return;
+    }
+    projectState.code = '';
+    projectState.generatedAt = '';
+    setProjectSetupLocked(false);
+    setExportStatus('Project setup unlocked. Lock it again before exporting.', '');
+  }
+
+  function resetEntireProject() {
+    if (!confirm('Reset the project setup and remove all agents, tools, constraints, and handoff choices?')) {
+      return;
+    }
+
+    projectState.name = '';
+    projectState.profileId = '';
+    projectState.code = '';
+    projectState.generatedAt = '';
+    projectNameInput.value = '';
+    profileSelect.value = '';
+    renderProfilePreview();
+    setProjectSetupLocked(false);
+
+    agents = {
+      manager: { name: '', x: 150, y: 120, tools: [], constraints: [], active: false },
+      researcher: { name: '', x: 150, y: 280, tools: [], constraints: [], active: false },
+      analyst: { name: '', x: 150, y: 440, tools: [], constraints: [], active: false }
+    };
+    constraintValues = {};
+    constraintPriorities = {};
+    constraintsPanelOpen = false;
+    selectedAgent = null;
+    agentDropdown.classList.remove('show');
+    setExportStatus('Project reset.', '');
+    drawWorkflow();
+  }
+
+  function setExportStatus(message, type = '') {
+    exportStatus.textContent = message;
+    exportStatus.className = `export-status${type ? ` ${type}` : ''}`;
+  }
+
+  function initializeProjectSetup() {
+    populateProfileSelect();
+    profileSelect.addEventListener('change', () => {
+      projectState.profileId = profileSelect.value;
+      renderProfilePreview();
+    });
+    projectNameInput.addEventListener('input', () => {
+      projectState.name = projectNameInput.value;
+    });
+    lockProjectButton.addEventListener('click', lockProjectSetup);
+    editProjectButton.addEventListener('click', editProjectSetup);
+    resetProjectButton.addEventListener('click', resetEntireProject);
+    setProjectSetupLocked(false);
+
+    if (typeof JSZip === 'undefined') {
+      downloadZipButton.disabled = true;
+      setExportStatus('ZIP export is unavailable until jszip.min.js is saved beside this HTML file.', 'error');
+    }
+  }
   
   function drawWorkflow() {
     // Clear all existing cards / badges / overlays from DOM
@@ -772,13 +1544,20 @@
           ${allConstraints.length > 0 ? allConstraints.map(constraint => `
             <div class="workflow-constraints-overlay-row">
               <span class="constraint-remove-label agent-card-constraint-tag" data-constraint="${constraint}" style="cursor:pointer;">${constraint}</span>
-              <input type="text"
-                     class="constraint-value-input"
-                     data-constraint-value="${constraint}"
-                     value="${(constraintValues[constraint] || '').replace(/"/g, '&quot;')}"
-                     placeholder="add detail (optional)"
-                     size="20"
-                     style="font-size:12px; border:1px solid #ce93d8; border-radius:3px; padding:4px 6px; flex:1; background:#fff; color:#4a148c; min-width:0;" />
+              <div class="constraint-control-group">
+                <input type="text"
+                       class="constraint-value-input"
+                       data-constraint-value="${constraint}"
+                       value="${escapeHtml(constraintValues[constraint] || '')}"
+                       placeholder="add detail (optional)"
+                       style="font-size:12px; border:1px solid #ce93d8; border-radius:3px; padding:5px 7px; width:100%; background:#fff; color:#4a148c; min-width:0;" />
+                <select class="constraint-priority-select" data-constraint-priority="${constraint}" aria-label="Priority for ${constraint}">
+                  <option value="required" ${(constraintPriorities[constraint] || 'manager') === 'required' ? 'selected' : ''}>Required</option>
+                  <option value="preferred" ${(constraintPriorities[constraint] || 'manager') === 'preferred' ? 'selected' : ''}>Preferred</option>
+                  <option value="manager" ${(constraintPriorities[constraint] || 'manager') === 'manager' ? 'selected' : ''}>Manager determines</option>
+                </select>
+              </div>
+              <div class="constraint-priority-note">Required may exclude only an affirmative failure. Preferred affects ranking. Manager determines delegates the classification.</div>
             </div>
           `).join('') : '<div class="workflow-constraints-empty">No constraints tagged yet. Drag a Constraint tile onto an agent to get started.</div>'}
         </div>
@@ -798,6 +1577,7 @@
             agents[agentKey].constraints = agents[agentKey].constraints.filter(c => c !== constraintText);
           });
           delete constraintValues[constraintText];
+          delete constraintPriorities[constraintText];
           drawWorkflow();
         });
       });
@@ -807,6 +1587,15 @@
         input.addEventListener('input', (e) => {
           const constraintText = e.target.dataset.constraintValue;
           constraintValues[constraintText] = e.target.value;
+        });
+      });
+
+      overlay.querySelectorAll('.constraint-priority-select').forEach(select => {
+        select.addEventListener('click', (e) => e.stopPropagation());
+        select.addEventListener('change', (e) => {
+          const constraintText = e.target.dataset.constraintPriority;
+          constraintPriorities[constraintText] = e.target.value;
+          drawWorkflow();
         });
       });
     }
@@ -1030,6 +1819,15 @@
             </div>
           </div>
           
+          ${agentConstraints.length > 0 ? `
+          <div class="agent-card-row">
+            <div class="agent-card-label">Constraints:</div>
+            <div class="agent-card-value agent-card-constraint-summary">
+              ${agentConstraints.map(constraint => `${constraint} (${priorityLabel(constraintPriorities[constraint] || 'manager')})`).join('<br>')}
+            </div>
+          </div>
+          ` : ''}
+
           ${handoffInstructions.length > 0 ? `
           <div class="agent-card-row">
             <div class="agent-card-label">Handoff:</div>
@@ -1148,7 +1946,7 @@
       for (let key of agentOrder) {
         if (!agents[key].active) {
           agents[key].active = true;
-          agents[key].name = '';
+          agents[key].name = key.charAt(0).toUpperCase() + key.slice(1);
           drawWorkflow();
           break;
         }
@@ -1162,8 +1960,19 @@
         if (!agents[key].active) return;
         const agent = agents[key];
         const dist = Math.sqrt(Math.pow(x - canvasWidth/2, 2) + Math.pow(y - agent.y, 2));
-        if (dist < 120 && !agent.constraints.includes(draggedConstraint.text)) {
-          agent.constraints.push(draggedConstraint.text);
+        if (dist < 120) {
+          // Role, Primary Task, and Output Format are true single-select categories.
+          if (CATEGORY_TAGS[draggedConstraint.category]) {
+            agent.constraints = agent.constraints.filter(item => !CATEGORY_TAGS[draggedConstraint.category].includes(item));
+          }
+
+          if (!agent.constraints.includes(draggedConstraint.text)) {
+            agent.constraints.push(draggedConstraint.text);
+          }
+
+          if (draggedConstraint.category === 'constraint' && !constraintPriorities[draggedConstraint.text]) {
+            constraintPriorities[draggedConstraint.text] = 'manager';
+          }
           drawWorkflow();
         }
       });
@@ -1223,222 +2032,205 @@
     drawWorkflow();
   });
   
-  // Export to Markdown function
-  function generateMarkdownFiles() {
-    const activeAgents = ['manager', 'researcher', 'analyst'].filter(key => agents[key].active);
-    
-    if (activeAgents.length === 0) {
-      alert('Please add at least one agent to export.');
-      return;
-    }
-    
-    // Get all workflow-level constraints
+  // Build and validate the complete four-file submission package.
+  function getAttributes(agentKey) {
+    const agent = agents[agentKey];
+    const role = agent.constraints.find(item => ROLE_TAGS.includes(item));
+    const task = agent.constraints.find(item => TASK_TAGS.includes(item));
+    const output = agent.constraints.find(item => OUTPUT_TAGS.includes(item));
+    const handoff = agent.constraints.filter(item => HANDOFF_TAGS.includes(item));
+    const workflowConstraints = agent.constraints.filter(item => CONSTRAINT_TAGS.includes(item));
+    return {
+      role,
+      task,
+      output,
+      handoff,
+      workflowConstraints,
+      hasWorkflowCritique: handoff.includes('Include workflow critique')
+    };
+  }
+
+  function getWorkflowConstraints() {
     const workflowConstraints = [];
     Object.keys(agents).forEach(key => {
-      agents[key].constraints.forEach(c => {
-        if (CONSTRAINT_TAGS.includes(c) && !workflowConstraints.includes(c)) {
-          workflowConstraints.push(c);
+      agents[key].constraints.forEach(item => {
+        if (CONSTRAINT_TAGS.includes(item) && !workflowConstraints.includes(item)) {
+          workflowConstraints.push(item);
         }
       });
     });
-
-    // Helper to format a constraint with its optional value
-    function formatConstraintLine(c) {
-      const val = (constraintValues[c] || '').trim();
-      return `- ${c}: ${val ? val : '[Not specified]'}`;
-    }
-    
-    // Helper function to extract attributes
-    function getAttributes(agentKey) {
-      const agent = agents[agentKey];
-      
-      const role = agent.constraints.find(c => 
-        ['Strategic planner', 'Data Curator', 'Strategy Synthesizer', 'Quality validator'].includes(c)
-      );
-      
-      const task = agent.constraints.find(c => 
-        ['Define constraints', 'Gather job postings/company data', 'Analyze role fit', 'Synthesize insights', 'Validate findings'].includes(c)
-      );
-      
-      const output = agent.constraints.find(c => 
-        ['Strategic brief', 'Data summary', 'Executive report', 'Structured table', 'Risk assessment'].includes(c)
-      );
-      
-      const handoff = agent.constraints.filter(c => HANDOFF_TAGS.includes(c));
-
-      const hasWorkflowCritique = handoff.includes('Include workflow critique');
-      
-      return { role, task, output, handoff, hasWorkflowCritique };
-    }
-
-    // Shared guidance block appended to any agent that received the "Include workflow critique" tag
-    const WORKFLOW_CRITIQUE_GUIDANCE = `
-## Workflow Critique (Handoff for the Humans)
-<!-- GUIDANCE: This section is not a handoff to another agent -- it is a handoff to your
-own team and the class. Because this agent received the "Include workflow critique" tag,
-its output must include a clearly labeled second section, separate from its primary
-output, that reflects on the workflow's own design rather than the candidate's search.
-
-In that section, this agent should address:
-1. Where the instructions it received (from this file and any upstream handoff) were
-   clear enough to act on confidently, versus where it had to make an assumption.
-2. Any constraint category that was tagged but left with "[Not specified]" as its value --
-   did that absence of detail create a real problem, or did the agent reason around it fine?
-3. One concrete change to an upstream agent's instructions that would have improved this
-   agent's ability to do its job.
-
-Example framing:
-"Workflow Critique: The Manager's handoff clearly specified a hard compensation floor,
-which made filtering straightforward. However, 'Regional focus' was tagged but left
-unspecified, so I could not tell whether relocation was acceptable and defaulted to
-treating all locations as viable -- a future iteration should require a value for this
-constraint whenever it is tagged."
-
-FINAL CRITICAL INSTRUCTION: Write this section in your own voice, addressed to the
-team who wrote your instructions, not to the candidate. -->
-
-[TODO: Write guidance here for how this agent should structure its workflow critique, if you want to shape it further beyond the default guidance above.]
-`;
-    
-    // Generate Manager.md
-    const MANAGER_CONSTRAINT_INSTRUCTIONS = {
-      'Regional focus': 'Treat the stated region as the primary geographic scope for the search. Exclude postings that explicitly require on-site presence outside that region. Include remote postings regardless of where the company is headquartered, since remote work satisfies a regional constraint by definition. If a posting does not clearly state its on-site or remote status, do not exclude it. Instead include it and label its regional status as unconfirmed, so the Researcher can note it explicitly for the Analyst.',
-      'Candidate urgency': 'Instruct the Researcher to prioritize postings with recent or active listing dates over older ones. Instruct the Analyst to flag any recommended role with a multi-stage interview process as a timeline risk. Do not exclude a role solely for having a longer process, or for lacking a stated timeline; flag it instead so the candidate can weigh the tradeoff.',
-      'Compensation-aware': 'Treat the stated compensation floor as a hard filter only when a posting explicitly lists a range that falls entirely below the floor. Absence of a listed salary range is not the same as failing the floor. For postings with no listed range, include them and label the constraint status as compensation unconfirmed rather than excluding them or assuming they meet the floor.',
-      'Visa/sponsorship-bound': 'Treat this as a hard filter only when a posting explicitly states that sponsorship is unavailable. Absence of any mention of sponsorship is not the same as failing the requirement. Instruct the Researcher to flag any posting that does not explicitly confirm or deny sponsorship as sponsorship unconfirmed rather than excluding it.',
-      'Company-size restricted': 'Treat this as a hard filter only when a posting or company profile explicitly states an employee count below the stated minimum. Absence of a listed employee count is not the same as failing the requirement. Instruct the Researcher to record company size for every posting when it is available, and for postings with no listed employee count, include them and label the constraint status as company size unconfirmed rather than excluding them or assuming they meet the threshold.'
-    };
-    const managerAttrs = getAttributes('manager');
-    const managerMd = `# Manager Agent
-
-## Role
-${managerAttrs.role || '[TODO: Define role]'}
-
-## Primary Task
-${managerAttrs.task || '[TODO: Define primary task]'}
-
-## Tools/Capabilities
-${agents.manager.tools.length > 0 ? agents.manager.tools.map(t => `- ${t}`).join('\n') : '- [TODO: Add tools]'}
-
-## Output Format
-${managerAttrs.output || '[TODO: Define output format]'}
-
-## Candidate Profile Parameters
-<!-- GUIDANCE: These values come directly from the workflow-level Constraints your team
-tagged in the Workflow Builder. A blank/[Not specified] value is a valid choice your team
-made -- it means you tagged the category but decided not to give the Manager a specific
-detail to work with. Think about what that choice means for how confidently the Manager
-can reason about that category. -->
-
-${workflowConstraints.length > 0 ? workflowConstraints.map(formatConstraintLine).join('\n') : '<!-- No constraints tagged yet -->'}
-
-## Constraints
-Apply the following pre-defined reasoning for each constraint category tagged in this workflow. These instructions are final and require no further drafting.
-
-${workflowConstraints.length > 0 ? workflowConstraints.map(c => `- ${c}: ${MANAGER_CONSTRAINT_INSTRUCTIONS[c] || '[Not specified]'}`).join('\n') : '<!-- No constraints tagged yet -->'}
-
-## Handoff Instructions
-${managerAttrs.handoff.length > 0 ? managerAttrs.handoff.map(h => `- ${h}`).join('\n') : '- [No handoff instructions tagged]'}
-${managerAttrs.handoff.includes('Prioritize & flag constraints') ? `
-Your Strategic Brief must state, for each constraint category, both its specific value and whether it functions as a non-negotiable requirement or a preference (for example: "Compensation floor of $75,000, non-negotiable" or "Regional focus: Northeast United States, preference"). For any tagged category left without a specific value, state plainly that this is an open gap. Additionally, for every non-negotiable constraint, explicitly state that it should be treated as a hard filter only when a posting affirmatively fails it; when a posting simply does not state a value for that constraint, it must be treated as unconfirmed, not excluded. This restatement is the only information the Researcher and Analyst receive about how to handle each constraint, so completeness here is essential.
-` : ''}${managerAttrs.hasWorkflowCritique ? WORKFLOW_CRITIQUE_GUIDANCE : ''}`;
-
-    // Generate Researcher.md
-    const researcherAttrs = getAttributes('researcher');
-    const researcherMd = `# Researcher Agent
-
-## Role
-${researcherAttrs.role || '[TODO: Define role]'}
-
-## Primary Task
-${researcherAttrs.task || '[TODO: Define primary task]'}
-
-## Tools/Capabilities
-${agents.researcher.tools.length > 0 ? agents.researcher.tools.map(t => `- ${t}`).join('\n') : '- [TODO: Add tools]'}
-
-## Output Format
-${researcherAttrs.output || '[TODO: Define output format]'}
-
-## Constraints
-Constraint-handling guidance is provided by the Manager's handoff at runtime, including each constraint's value and whether it is non-negotiable or a preference. Apply that guidance directly when filtering the database. A posting that does not state a value for a given constraint has not failed that constraint; it is unconfirmed. Never exclude a posting solely because a value is missing. Instead, include it and label the relevant constraint status as unconfirmed so the Analyst can weigh it explicitly. Only exclude a posting when it explicitly and affirmatively fails a non-negotiable constraint. No additional instructions are required here.
-
-## Handoff Instructions
-<!-- GUIDANCE: Specify the exact structure the Analyst needs -- not just "pass along
-findings," but what fields, in what format, and what you flag as uncertain.
-
-Example:
-"For each role found, pass: job title, company, location/remote status, listed
-compensation (or 'not listed'), and a one-line note on any constraint that couldn't
-be fully verified from the posting (e.g., sponsorship, exact seniority level). Group
-findings by how well they match the candidate's stated constraints -- strong fit,
-partial fit, uncertain -- so the Analyst isn't re-doing your filtering work."
--->
-
-${researcherAttrs.handoff.length > 0 ? researcherAttrs.handoff.map(h => `- ${h}`).join('\n') : '- [TODO: Define handoff requirements]'}
-
-[TODO: Describe the exact format and content expected in your data handoff]
-${researcherAttrs.hasWorkflowCritique ? WORKFLOW_CRITIQUE_GUIDANCE : ''}`;
-
-    // Generate Analyst.md
-    const analystAttrs = getAttributes('analyst');
-    const analystMd = `# Analyst Agent
-
-## Role
-${analystAttrs.role || '[TODO: Define role]'}
-
-## Primary Task
-${analystAttrs.task || '[TODO: Define primary task]'}
-
-## Tools/Capabilities
-${agents.analyst.tools.length > 0 ? agents.analyst.tools.map(t => `- ${t}`).join('\n') : '- [TODO: Add tools]'}
-
-## Output Format
-${analystAttrs.output || '[TODO: Define output format]'}
-
-## Constraints
-Constraint-handling guidance is provided by the Manager's handoff at runtime, including each constraint's value and whether it is non-negotiable or a preference. Apply that guidance directly when ranking and weighting results. A posting the Researcher marked as unconfirmed for a given constraint has not failed that constraint; treat it as a genuine candidate with a noted uncertainty, not as disqualified. Reflect this distinction clearly in your recommendations and flagged uncertainties. No additional instructions are required here.
-
-## Handoff Instructions
-<!-- GUIDANCE: This is your final deliverable to the candidate -- the Search Strategy.
-This is NOT just a formatted list of findings. It should include a recommendation and
-narrative guidance, similar to what a career advisor would hand a client.
-
-Example structure to build from:
-1. Top 2-3 recommended roles, with a one-sentence reason each ties back to the
-   candidate's background or stated priorities
-2. Any gaps the candidate should address before applying (e.g., "consider highlighting
-   X experience more prominently for these roles")
-3. Flagged uncertainties the candidate should verify themselves (sponsorship, exact
-   compensation, etc.)
-4. A suggested order of outreach/application if timeline is a factor
--->
-
-Produce a Search Strategy that includes:
-${analystAttrs.handoff.length > 0 ? analystAttrs.handoff.filter(h => h !== 'Include workflow critique').map(h => `- ${h}`).join('\n') : '- Clear recommendations\n- Supporting evidence\n- Flagged uncertainties'}
-
-[TODO: Define the specific structure and content of your Search Strategy, following the pattern above]
-${analystAttrs.hasWorkflowCritique ? WORKFLOW_CRITIQUE_GUIDANCE : ''}`;
-
-    // Download files
-    downloadMarkdownFile('manager.md', managerMd);
-    downloadMarkdownFile('researcher.md', researcherMd);
-    downloadMarkdownFile('analyst.md', analystMd);
+    return workflowConstraints;
   }
-  
+
+  function validateWorkflowForExport() {
+    const errors = [];
+    if (!projectState.locked || !projectState.code) {
+      errors.push('Lock the Project Setup to create a stable project code.');
+    }
+    if (!getSelectedProfile()) {
+      errors.push('Select a synthetic candidate profile.');
+    }
+
+    const requiredAgents = ['manager', 'researcher', 'analyst'];
+    if (!requiredAgents.every(key => agents[key].active)) {
+      errors.push('Add all three agents: Manager, Researcher, and Analyst.');
+    }
+
+    requiredAgents.forEach(key => {
+      if (!agents[key].active) return;
+      const label = key.charAt(0).toUpperCase() + key.slice(1);
+      const attrs = getAttributes(key);
+      if (!agents[key].name) errors.push(`${label}: assign the workflow name.`);
+      if (!attrs.role) errors.push(`${label}: assign one Role.`);
+      if (!attrs.task) errors.push(`${label}: assign one Primary Task.`);
+      if (agents[key].tools.length === 0) errors.push(`${label}: assign at least one Tool / Capability.`);
+      if (!attrs.output) errors.push(`${label}: assign one Output Format.`);
+      if (attrs.handoff.length === 0) errors.push(`${label}: assign at least one Handoff Instruction.`);
+    });
+
+    return errors;
+  }
+
+  function formatProjectMetadata() {
+    const profile = getSelectedProfile();
+    const generated = projectState.generatedAt
+      ? new Date(projectState.generatedAt).toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'long' })
+      : 'Not available';
+    return `- Project Name: ${projectState.name}\n- Project Code: ${projectState.code}\n- Candidate Profile: ${profile.id} – ${profile.name}\n- Generated: ${generated}`;
+  }
+
+  function formatConstraintRegister() {
+    const constraints = getWorkflowConstraints();
+    if (constraints.length === 0) {
+      return 'No workflow constraints were selected by the team. The Manager must rely on the candidate profile and explicitly disclose that no additional workflow constraints were configured.';
+    }
+    return constraints.map(constraint => {
+      const value = (constraintValues[constraint] || '').trim() || 'Not specified';
+      const priority = priorityLabel(constraintPriorities[constraint] || 'manager');
+      return `- ${constraint}\n  - Team-provided value: ${value}\n  - Priority decision: ${priority}`;
+    }).join('\n');
+  }
+
+  function buildWorkflowCritiqueInstructions(includeCritique) {
+    if (!includeCritique) {
+      return `## Workflow Critique\nThe team did not select the Include workflow critique handoff instruction. Do not add a workflow critique to the primary deliverable.`;
+    }
+    return `## Workflow Critique (Handoff for the Humans)\nAfter completing the primary deliverable, add a clearly labeled Workflow Critique addressed to the student team, not to the candidate. Use exactly these subsections:\n\n### What Worked\nIdentify the instruction or handoff that gave you the clearest basis for action.\n\n### Ambiguities or Gaps\nIdentify any missing value, unclear responsibility, conflicting instruction, or evidence gap that required an assumption.\n\n### Recommended Revision\nRecommend one or two concrete changes to the team's SOP design. Name the upstream agent and the instruction that should change.\n\nKeep this critique separate from the candidate-facing Search Strategy.`;
+  }
+
+  const MANAGER_CONSTRAINT_INSTRUCTIONS = {
+    'Regional focus': 'Evaluate explicit location, remote, hybrid, and relocation evidence. A Required regional constraint may exclude only a posting that affirmatively requires an incompatible location or work arrangement. Missing or unclear location evidence is Unconfirmed, not Failed. A Preferred regional constraint affects ranking rather than eligibility.',
+    'Candidate urgency': 'Use the stated timeline to prioritize active and recently posted roles and to flag likely process risks. Do not exclude a role merely because its interview timeline is unstated. If this constraint is Required, exclude only postings that explicitly cannot meet the stated timing.',
+    'Compensation-aware': 'A Required compensation constraint may exclude only a posting whose entire stated range is below the required floor. A missing salary range is Unconfirmed, not Failed. A Preferred compensation constraint affects ranking and tradeoff analysis rather than automatic exclusion.',
+    'Visa/sponsorship-bound': 'A Required sponsorship constraint may exclude only a posting that explicitly states sponsorship is unavailable or the candidate is ineligible. Silence is Unconfirmed, not Failed. A Preferred designation affects ranking and verification urgency.',
+    'Company-size restricted': 'A Required company-size constraint may exclude only when reliable evidence explicitly places the employer outside the required range. Missing size evidence is Unconfirmed, not Failed. A Preferred company-size constraint affects ranking.'
+  };
+
+  function buildManagerMarkdown() {
+    const attrs = getAttributes('manager');
+    const constraints = getWorkflowConstraints();
+    const handoffRequirements = attrs.handoff.length > 0 ? attrs.handoff.map(item => `- ${item}`).join('\n') : '- No additional handoff behaviors selected';
+    const constraintInstructions = constraints.length > 0
+      ? constraints.map(constraint => `### ${constraint}\n- Team priority: ${priorityLabel(constraintPriorities[constraint] || 'manager')}\n- Team value: ${(constraintValues[constraint] || '').trim() || 'Not specified'}\n- Operational rule: ${MANAGER_CONSTRAINT_INSTRUCTIONS[constraint]}`).join('\n\n')
+      : 'No additional workflow constraints were selected.';
+
+    return `# Manager Agent SOP\n\n## Project Metadata\n${formatProjectMetadata()}\n\n## Role\n${attrs.role}\n\n## Primary Task\n${attrs.task}\n\n## Tools / Capabilities\n${agents.manager.tools.map(item => `- ${item}`).join('\n')}\n\n## Output Format\n${attrs.output}\n\n## Input Contract\nYou receive the complete synthetic candidate profile and the workflow decisions recorded below. You are the only agent permitted to reason directly over the raw candidate profile. The Researcher and Analyst receive your Strategic Brief, not the raw profile.\n\n## Team-Configured Constraint Register\n${formatConstraintRegister()}\n\n## Constraint Priority Rules\n- Required: Treat as a hard requirement, but exclude a posting only when reliable evidence affirmatively fails it. Missing evidence is Unconfirmed.\n- Preferred: Use it to rank and explain tradeoffs. Do not exclude solely for failing a preference.\n- Manager determines: Classify the constraint as Required or Preferred after reviewing the candidate profile and team-entered value. State the classification and rationale explicitly.\n\n## Constraint-Specific Operating Rules\n${constraintInstructions}\n\n## Required Strategic Brief Structure\nProduce the Strategic Brief with exactly these sections:\n\n### 1. Candidate Goal and Positioning\nSummarize the candidate's target direction, transferable strengths, and material limitations.\n\n### 2. Constraint Register\nUse a Markdown table with columns:\n| Constraint | Value | Priority | Evidence from Profile or Team | Downstream Handling |\n\nFor Manager determines items, replace that label with your Required or Preferred classification and provide the rationale in Downstream Handling. For any value that remains unavailable, write Not specified and flag the gap.\n\n### 3. Target Role Families and Keywords\nIdentify role families, likely title variants, industry or company signals, and search keywords grounded in the candidate profile.\n\n### 4. Search Objectives\nExplain what the Researcher should optimize, what it must verify, and what tradeoffs it may surface.\n\n### 5. Researcher Handoff\nRestate every constraint, value, final priority, affirmative-failure rule, and unresolved gap. The Researcher must be able to operate without seeing the raw candidate profile.\n\n## Team-Selected Handoff Requirements\n${handoffRequirements}\n\n${buildWorkflowCritiqueInstructions(attrs.hasWorkflowCritique)}\n`;
+  }
+
+  function buildResearcherMarkdown() {
+    const attrs = getAttributes('researcher');
+    const handoffRequirements = attrs.handoff.length > 0 ? attrs.handoff.map(item => `- ${item}`).join('\n') : '- No additional handoff behaviors selected';
+
+    return `# Researcher Agent SOP\n\n## Project Metadata\n${formatProjectMetadata()}\n\n## Role\n${attrs.role}\n\n## Primary Task\n${attrs.task}\n\n## Tools / Capabilities\n${agents.researcher.tools.map(item => `- ${item}`).join('\n')}\n\n## Output Format\n${attrs.output}\n\n## Input Contract\nYou receive only the Manager's Strategic Brief and the job records supplied by the deterministic Python pipeline. You do not receive the raw candidate profile. Treat the Manager's final constraint classifications and search objectives as authoritative.\n\n## Universal Constraint Rule\nA posting fails a Required constraint only when the available evidence affirmatively shows failure. Missing, silent, or ambiguous evidence is Unconfirmed, not Failed. Never exclude a posting solely because a value is absent. Preferred constraints guide ranking and tradeoff explanations.\n\n## Three-Stage Operating Procedure\n\n### Stage 1: Query Construction\nConstruct three tiered query specifications from the Manager's brief: Specific, Moderate, and Broad.\n\n- Specific: narrowest relevant keywords; preserve every Required constraint.\n- Moderate: broaden titles and transferable-skill keywords; preserve every Required constraint.\n- Broad: broaden keywords further. Only this tier may set relax_region to true, and only when needed to recover enough potentially relevant postings. No other Required constraint may be silently relaxed.\n\nEnd your Stage 1 response with exactly one valid JSON object in this structure and no text after it:\n\n{\n  "specific": {\n    "region_terms": ["term"],\n    "remote_acceptable": true,\n    "keyword_terms": ["term"],\n    "relax_region": false\n  },\n  "moderate": {\n    "region_terms": ["term"],\n    "remote_acceptable": true,\n    "keyword_terms": ["term"],\n    "relax_region": false\n  },\n  "broad": {\n    "region_terms": ["term"],\n    "remote_acceptable": true,\n    "keyword_terms": ["term"],\n    "relax_region": true\n  }\n}\n\nUse only strings, arrays, booleans, and the exact keys shown.\n\n### Stage 2: Lightweight Review\nReview the filtered postings containing title, company, location, link, and posting date. Select up to the stated maximum number of links for full review. Prioritize probable fit, evidence quality, recency when urgency matters, and diversity across plausible role families. Preserve the priority order in your array.\n\nEnd your Stage 2 response with exactly one valid JSON array containing only source links and no text after it:\n\n["https://example.com/job-1", "https://example.com/job-2"]\n\n### Stage 3: Final Curation\nReview the full records selected in Stage 2. Preserve company names, job titles, and source links exactly as supplied. Do not invent compensation, sponsorship, company size, work arrangement, or other facts.\n\n## Required Evidence Handoff\nProduce one standardized Markdown table with exactly these columns:\n\n| Priority Rank | Job Title | Company | Location | Work Arrangement | Compensation | Constraint Fit | Match Rationale | Key Uncertainty | Source Link |\n\nRules for the table:\n- Use the exact source Job Title, Company, and Source Link.\n- Work Arrangement must be Remote, Hybrid, Onsite, or Unconfirmed.\n- Compensation must reproduce the listed evidence or say Not provided.\n- Constraint Fit must distinguish Required constraints passed, failed, or unconfirmed and note relevant Preferred tradeoffs.\n- Match Rationale must be concise and grounded in the Manager's brief and posting evidence.\n- Key Uncertainty must name the most consequential missing or ambiguous fact.\n\nAfter the table, include exactly these sections:\n\n### Search Methodology\nState which filter tier produced the records, how the postings were narrowed, and whether any constraint was relaxed.\n\n### Exclusions and Unconfirmed Information\nSeparate affirmative Required-constraint failures from missing or unconfirmed information. Do not collapse the two categories.\n\n### Handoff Notes for the Analyst\nSummarize strongest patterns, meaningful tradeoffs, and risks that the Analyst should consider.\n\n## Team-Selected Handoff Requirements\n${handoffRequirements}\n\n${buildWorkflowCritiqueInstructions(attrs.hasWorkflowCritique)}\n`;
+  }
+
+  function buildAnalystMarkdown() {
+    const attrs = getAttributes('analyst');
+    const handoffRequirements = attrs.handoff.filter(item => item !== 'Include workflow critique');
+    const selectedRequirements = handoffRequirements.length > 0 ? handoffRequirements.map(item => `- ${item}`).join('\n') : '- No additional candidate-facing handoff behaviors selected';
+
+    return `# Analyst Agent SOP\n\n## Project Metadata\n${formatProjectMetadata()}\n\n## Role\n${attrs.role}\n\n## Primary Task\n${attrs.task}\n\n## Tools / Capabilities\n${agents.analyst.tools.map(item => `- ${item}`).join('\n')}\n\n## Output Format\n${attrs.output}\n\n## Input Contract\nYou receive the Manager's Strategic Brief and the Researcher's standardized evidence handoff. You do not receive the raw candidate profile or the full source database. Preserve the distinction between evidence, inference, affirmative failure, and unconfirmed information.\n\n## Universal Constraint Rule\n- Required constraints govern eligibility only when an affirmative failure is documented.\n- Unconfirmed does not mean Failed. Keep a posting eligible while clearly identifying the verification need.\n- Preferred constraints affect ranking and tradeoff analysis rather than automatic exclusion.\n- Never invent missing compensation, sponsorship, company-size, location, or work-arrangement facts.\n\n## Required Final Search Strategy\nProduce the candidate-facing report using exactly these sections:\n\n### 1. Executive Summary\nState the strongest search direction, the overall quality of the available matches, and the most important constraint shaping the search.\n\n### 2. Recommended Opportunities\nUse a ranked Markdown table with exactly these columns:\n\n| Rank | Job Title | Company | Location / Arrangement | Overall Fit | Why It Fits | Constraint Considerations | Main Risk or Uncertainty | Recommended Action | Source Link |\n\nUse Strong, Moderate, or Exploratory for Overall Fit. Recommended Action must be Apply now, Investigate, Monitor, or Deprioritize. Preserve source titles, company names, and links exactly.\n\n### 3. Search Strategy\nExplain:\n- role families and title variants to prioritize;\n- industries or company types showing the strongest fit;\n- keywords for future searches;\n- geographic, remote, or relocation strategy;\n- recommended application sequence.\n\n### 4. Candidate Positioning\nExplain strengths to emphasize, experience that may need reframing, skills or evidence gaps, and useful résumé or interview themes.\n\n### 5. Constraint and Uncertainty Review\nSummarize Required constraints satisfied, Required constraints affirmatively failed, Preferred constraints satisfied or traded off, remaining Unconfirmed information, and any workflow relaxation disclosed by the Researcher.\n\n## Team-Selected Handoff Requirements\n${selectedRequirements}\n\n${buildWorkflowCritiqueInstructions(attrs.hasWorkflowCritique)}\n`;
+  }
+
+  function buildCandidateProfileMarkdown() {
+    const profile = getSelectedProfile();
+    return `# Synthetic Candidate Profile\n\n> This profile is entirely fictional and was created solely for the Baylor University Libraries MBA AI Agent Workshop.\n\n## Project Metadata\n${formatProjectMetadata()}\n\n## Candidate\n- Name: ${profile.name}\n- Current Role: ${profile.currentRole}\n- Professional Headline: ${profile.headline}\n- Experience Summary: ${profile.experience}\n\n## Education\n${profile.education.map(item => `- ${item}`).join('\n')}\n\n## Work History\n${profile.workHistory.map(item => `- ${item}`).join('\n')}\n\n## Skills\n${profile.skills.map(item => `- ${item}`).join('\n')}\n\n## Career Objective\n${profile.objective}\n\n## Candidate-Provided Preferences and Conditions\n- Location / Work Arrangement: ${profile.location}\n- Compensation: ${profile.compensation}\n- Work Authorization: ${profile.authorization}\n- Company Size: ${profile.companySize}\n- Search Urgency: ${profile.urgency}\n\n## Information Requiring Manager Judgment\n${profile.ambiguity}\n`;
+  }
+
+  function buildSubmissionFiles() {
+    const errors = validateWorkflowForExport();
+    if (errors.length > 0) {
+      setExportStatus(`Cannot export: ${errors.join(' ')}`, 'error');
+      alert(`Please complete the following before exporting:\n\n• ${errors.join('\n• ')}`);
+      return null;
+    }
+
+    return {
+      'manager.md': buildManagerMarkdown(),
+      'researcher.md': buildResearcherMarkdown(),
+      'analyst.md': buildAnalystMarkdown(),
+      'candidate_profile.md': buildCandidateProfileMarkdown()
+    };
+  }
+
+  function downloadIndividualMarkdownFiles() {
+    const files = buildSubmissionFiles();
+    if (!files) return;
+
+    Object.entries(files).forEach(([standardName, content], index) => {
+      const descriptiveName = `${projectState.code}__${standardName}`;
+      // Stagger downloads slightly to reduce browser collisions.
+      setTimeout(() => downloadMarkdownFile(descriptiveName, content), index * 180);
+    });
+    setExportStatus('Four complete Markdown files generated. Your browser may ask permission for multiple downloads.', 'success');
+  }
+
+  async function downloadZipPackage() {
+    const files = buildSubmissionFiles();
+    if (!files) return;
+    if (typeof JSZip === 'undefined') {
+      setExportStatus('ZIP export requires jszip.min.js in the same directory as this HTML file.', 'error');
+      return;
+    }
+
+    try {
+      downloadZipButton.disabled = true;
+      setExportStatus('Building ZIP package...', '');
+      const zip = new JSZip();
+      Object.entries(files).forEach(([filename, content]) => zip.file(filename, content));
+      const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+      downloadBlob(`${projectState.code}.zip`, blob);
+      setExportStatus(`ZIP ready: ${projectState.code}.zip`, 'success');
+    } catch (error) {
+      console.error(error);
+      setExportStatus(`ZIP creation failed: ${error.message}`, 'error');
+    } finally {
+      downloadZipButton.disabled = typeof JSZip === 'undefined';
+    }
+  }
+
   function downloadMarkdownFile(filename, content) {
+    const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+    downloadBlob(filename, blob);
+  }
+
+  function downloadBlob(filename, blob) {
+    const url = URL.createObjectURL(blob);
     const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
-    element.setAttribute('download', filename);
+    element.href = url;
+    element.download = filename;
     element.style.display = 'none';
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+
+  downloadMarkdownButton.addEventListener('click', downloadIndividualMarkdownFiles);
+  downloadZipButton.addEventListener('click', downloadZipPackage);
   
-  // Export button click handler
-  document.getElementById('exportButton').addEventListener('click', generateMarkdownFiles);
-  
-  // Initial draw
+  // Initial setup and draw
+  initializeProjectSetup();
   drawWorkflow();
 </script>
 
