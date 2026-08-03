@@ -626,6 +626,81 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.12);
     }
 
+    .project-panel[hidden],
+    .project-setup-chip[hidden] {
+      display: none;
+    }
+
+    .project-panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .project-panel-collapse-button {
+      flex-shrink: 0;
+      padding: 5px 8px;
+      border: 1px solid #bfd0c5;
+      border-radius: 5px;
+      background: #f4f8f5;
+      color: #154734;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .project-panel-collapse-button:hover,
+    .project-panel-collapse-button:focus {
+      background: #e8f1eb;
+    }
+
+    .project-setup-chip {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      max-width: min(260px, calc(100% - 40px));
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border: 2px solid #154734;
+      border-radius: 22px;
+      background: #ffffff;
+      color: #154734;
+      cursor: pointer;
+      z-index: 55;
+      box-shadow: 0 3px 9px rgba(0,0,0,0.14);
+      font-size: 12px;
+      font-weight: 750;
+      text-align: left;
+    }
+
+    .project-setup-chip:hover,
+    .project-setup-chip:focus {
+      background: #f1f7f3;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.18);
+    }
+
+    .project-setup-chip-icon {
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .project-setup-chip-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .project-setup-chip-status {
+      color: #4f6f5c;
+      font-size: 10px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
     .project-panel-title {
       color: #154734;
       font-size: 16px;
@@ -901,7 +976,11 @@
 
     @media (max-width: 1150px) {
       .project-panel {
-        width: 285px;
+        width: min(285px, calc(100% - 40px));
+      }
+
+      .project-setup-chip-status {
+        display: none;
       }
 
       .example-panel,
@@ -986,7 +1065,6 @@
       <div class="tool-node constraint-node" draggable="true" data-constraint="Flag uncertainties" data-category="handoff" data-description="Identify missing, ambiguous, or unconfirmed information.">Flag uncertainties</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Document sources" data-category="handoff" data-description="Preserve exact source attribution and links.">Document sources</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Highlight assumptions" data-category="handoff" data-description="State assumptions explicitly rather than allowing them to disappear into the result.">Highlight assumptions</div>
-      <div class="tool-node constraint-node" draggable="true" data-constraint="Include workflow critique" data-category="handoff" data-description="Add a separate critique of the team's own SOP design: what was clear, what was ambiguous, and what should change next time. Designed primarily for the Analyst.">Include workflow critique</div>
     </div>
   </div>
   
@@ -1005,7 +1083,15 @@
     </div>
     
     <div class="project-panel" id="projectPanel">
-      <div class="project-panel-title">Project Setup</div>
+      <div class="project-panel-header">
+        <div class="project-panel-title">Project Setup</div>
+        <button class="project-panel-collapse-button"
+                id="collapseProjectButton"
+                type="button"
+                aria-controls="projectPanel"
+                aria-expanded="true"
+                hidden>Collapse</button>
+      </div>
       <div class="project-panel-subtitle">Name the team project, select one synthetic applicant, and lock the setup to create a stable project code.</div>
 
       <div class="project-field">
@@ -1033,6 +1119,18 @@
         <button class="project-action-button danger" id="resetProjectButton" type="button">Reset</button>
       </div>
     </div>
+
+    <button class="project-setup-chip"
+            id="projectSetupChip"
+            type="button"
+            aria-controls="projectPanel"
+            aria-expanded="false"
+            title="Open the locked Project Setup"
+            hidden>
+      <span class="project-setup-chip-icon" aria-hidden="true">🔒</span>
+      <span class="project-setup-chip-label" id="projectSetupChipLabel">Project Setup</span>
+      <span class="project-setup-chip-status">Locked</span>
+    </button>
 
     <div class="example-panel" id="examplePanel">
       <div class="example-title">Example workflow</div>
@@ -1071,6 +1169,10 @@
   const canvas = document.getElementById('canvas');
   const agentDropdown = document.getElementById('agentDropdown');
   const agentSelect = document.getElementById('agentSelect');
+  const projectPanel = document.getElementById('projectPanel');
+  const projectSetupChip = document.getElementById('projectSetupChip');
+  const projectSetupChipLabel = document.getElementById('projectSetupChipLabel');
+  const collapseProjectButton = document.getElementById('collapseProjectButton');
   const projectNameInput = document.getElementById('projectNameInput');
   const profileSelect = document.getElementById('profileSelect');
   const profilePreview = document.getElementById('profilePreview');
@@ -1106,6 +1208,10 @@
     generatedAt: '',
     locked: false
   };
+
+  // The setup remains expanded until it is successfully locked.
+  // A locked setup can be collapsed and reopened without changing its values.
+  let projectSetupExpanded = true;
 
   // All people and organizations below are fictional and created solely for this workshop.
   const CANDIDATE_PROFILES = [
@@ -1325,7 +1431,7 @@
   const toolNodeRadius = 24;
 
   const CONSTRAINT_TAGS = ['Compensation-aware', 'Candidate urgency', 'Company-size restricted', 'Visa/sponsorship-bound', 'Regional focus'];
-  const HANDOFF_TAGS = ['Prioritize & flag constraints', 'Pass structured data', 'Include methodology', 'Flag uncertainties', 'Document sources', 'Highlight assumptions', 'Include workflow critique'];
+  const HANDOFF_TAGS = ['Prioritize & flag constraints', 'Pass structured data', 'Include methodology', 'Flag uncertainties', 'Document sources', 'Highlight assumptions'];
   const ROLE_TAGS = ['Strategic planner', 'Data Curator', 'Strategy Synthesizer', 'Quality validator'];
   const TASK_TAGS = ['Define constraints', 'Gather job postings/company data', 'Analyze role fit', 'Synthesize insights', 'Validate findings'];
   const OUTPUT_TAGS = ['Strategic brief', 'Data summary', 'Executive report', 'Structured table', 'Risk assessment'];
@@ -1408,6 +1514,35 @@
     `;
   }
 
+  function renderProjectSetupVisibility() {
+    // Unlocked setup is always fully visible so students cannot hide required fields.
+    if (!projectState.locked) {
+      projectSetupExpanded = true;
+    }
+
+    projectPanel.hidden = !projectSetupExpanded;
+    projectSetupChip.hidden = !projectState.locked || projectSetupExpanded;
+    collapseProjectButton.hidden = !projectState.locked;
+
+    const expandedValue = projectSetupExpanded ? 'true' : 'false';
+    projectSetupChip.setAttribute('aria-expanded', expandedValue);
+    collapseProjectButton.setAttribute('aria-expanded', expandedValue);
+
+    const compactName = (projectState.name || 'Project Setup').trim();
+    projectSetupChipLabel.textContent = compactName.length > 28
+      ? `${compactName.slice(0, 27)}…`
+      : compactName;
+    projectSetupChip.title = `Open locked Project Setup: ${compactName}`;
+  }
+
+  function setProjectSetupExpanded(isExpanded) {
+    if (!projectState.locked && !isExpanded) {
+      return;
+    }
+    projectSetupExpanded = isExpanded;
+    renderProjectSetupVisibility();
+  }
+
   function setProjectSetupLocked(isLocked) {
     projectState.locked = isLocked;
     projectNameInput.disabled = isLocked;
@@ -1415,6 +1550,7 @@
     lockProjectButton.disabled = isLocked;
     editProjectButton.disabled = !isLocked;
     projectCodeDisplay.textContent = projectState.code || 'Lock setup to generate';
+    renderProjectSetupVisibility();
   }
 
   function lockProjectSetup() {
@@ -1437,8 +1573,9 @@
     projectState.profileId = profileId;
     projectState.generatedAt = now.toISOString();
     projectState.code = `${sanitizeProjectName(name)}__${profileId.toLowerCase()}__${formatLocalTimestamp(now)}`;
+    projectSetupExpanded = false;
     setProjectSetupLocked(true);
-    setExportStatus('Project setup locked. The project code will remain stable until you edit or reset the setup.', 'success');
+    setExportStatus('Project setup locked and collapsed. Use the locked Project Setup control to review it.', 'success');
   }
 
   function editProjectSetup() {
@@ -1447,6 +1584,7 @@
     }
     projectState.code = '';
     projectState.generatedAt = '';
+    projectSetupExpanded = true;
     setProjectSetupLocked(false);
     setExportStatus('Project setup unlocked. Lock it again before exporting.', '');
   }
@@ -1486,6 +1624,7 @@
           'Compensation-aware',
           'Candidate urgency',
           'Visa/sponsorship-bound',
+          'Company-size restricted',
           'Prioritize & flag constraints',
           'Highlight assumptions',
           'Flag uncertainties'
@@ -1505,6 +1644,7 @@
           'Compensation-aware',
           'Candidate urgency',
           'Visa/sponsorship-bound',
+          'Company-size restricted',
           'Pass structured data',
           'Include methodology',
           'Document sources',
@@ -1525,27 +1665,31 @@
           'Compensation-aware',
           'Candidate urgency',
           'Visa/sponsorship-bound',
+          'Company-size restricted',
           'Highlight assumptions',
           'Flag uncertainties',
-          'Include workflow critique'
+          'Document sources'
         ]
       }
     };
 
-    // Values remain blank so the selected synthetic profile and Manager reasoning
-    // determine the actual details rather than embedding an answer key in the demo.
+    // Instructor/demo mode supplies concrete details from the selected fictional
+    // profile. Students still choose and enter their own values during normal use.
+    const selectedProfile = getSelectedProfile();
     constraintValues = {
-      'Regional focus': '',
-      'Compensation-aware': '',
-      'Candidate urgency': '',
-      'Visa/sponsorship-bound': ''
+      'Regional focus': selectedProfile.location,
+      'Compensation-aware': selectedProfile.compensation,
+      'Candidate urgency': selectedProfile.urgency,
+      'Visa/sponsorship-bound': selectedProfile.authorization,
+      'Company-size restricted': selectedProfile.companySize
     };
 
     constraintPriorities = {
-      'Regional focus': 'preferred',
+      'Regional focus': 'manager',
       'Compensation-aware': 'manager',
       'Candidate urgency': 'preferred',
-      'Visa/sponsorship-bound': 'required'
+      'Visa/sponsorship-bound': 'manager',
+      'Company-size restricted': 'preferred'
     };
 
     constraintsPanelOpen = false;
@@ -1553,7 +1697,7 @@
     agentDropdown.classList.remove('show');
     agentCount = 3;
     drawWorkflow();
-    setExportStatus('Instructor demo workflow loaded. Students should not use this backup configuration for submitted projects.', 'success');
+    setExportStatus('Instructor demo workflow loaded with constraint details from the selected profile. Students should not use this backup configuration for submitted projects.', 'success');
   }
 
   function resetEntireProject() {
@@ -1568,6 +1712,7 @@
     projectNameInput.value = '';
     profileSelect.value = '';
     renderProfilePreview();
+    projectSetupExpanded = true;
     setProjectSetupLocked(false);
 
     agents = {
@@ -1600,6 +1745,8 @@
     });
     lockProjectButton.addEventListener('click', lockProjectSetup);
     editProjectButton.addEventListener('click', editProjectSetup);
+    collapseProjectButton.addEventListener('click', () => setProjectSetupExpanded(false));
+    projectSetupChip.addEventListener('click', () => setProjectSetupExpanded(true));
     resetProjectButton.addEventListener('click', resetEntireProject);
     loadInstructorDemoButton.addEventListener('click', loadInstructorDemoWorkflow);
     setProjectSetupLocked(false);
@@ -2174,8 +2321,7 @@
       task,
       output,
       handoff,
-      workflowConstraints,
-      hasWorkflowCritique: handoff.includes('Include workflow critique')
+      workflowConstraints
     };
   }
 
@@ -2240,18 +2386,11 @@
     }).join('\n');
   }
 
-  function buildWorkflowCritiqueInstructions(includeCritique) {
-    if (!includeCritique) {
-      return `## Workflow Critique\nThe team did not select the Include workflow critique handoff instruction. Do not add a workflow critique to the primary deliverable.`;
-    }
-    return `## Workflow Critique (Handoff for the Humans)\nAfter completing the primary deliverable, add a clearly labeled Workflow Critique addressed to the student team, not to the candidate. Use exactly these subsections:\n\n### What Worked\nIdentify the instruction or handoff that gave you the clearest basis for action.\n\n### Ambiguities or Gaps\nIdentify any missing value, unclear responsibility, conflicting instruction, or evidence gap that required an assumption.\n\n### Recommended Revision\nRecommend one or two concrete changes to the team's SOP design. Name the upstream agent and the instruction that should change.\n\nKeep this critique separate from the candidate-facing Search Strategy.`;
-  }
-
   const MANAGER_CONSTRAINT_INSTRUCTIONS = {
     'Regional focus': 'Evaluate explicit location, remote, hybrid, and relocation evidence. A Required regional constraint may exclude only a posting that affirmatively requires an incompatible location or work arrangement. Missing or unclear location evidence is Unconfirmed, not Failed. A Preferred regional constraint affects ranking rather than eligibility.',
     'Candidate urgency': 'Use the stated timeline to prioritize active and recently posted roles and to flag likely process risks. Do not exclude a role merely because its interview timeline is unstated. If this constraint is Required, exclude only postings that explicitly cannot meet the stated timing.',
     'Compensation-aware': 'A Required compensation constraint may exclude only a posting whose entire stated range is below the required floor. A missing salary range is Unconfirmed, not Failed. A Preferred compensation constraint affects ranking and tradeoff analysis rather than automatic exclusion.',
-    'Visa/sponsorship-bound': 'A Required sponsorship constraint may exclude only a posting that explicitly states sponsorship is unavailable or the candidate is ineligible. Silence is Unconfirmed, not Failed. A Preferred designation affects ranking and verification urgency.',
+    'Visa/sponsorship-bound': 'Interpret the candidate condition before judging a posting. If the candidate is already authorized and does not need sponsorship, employer silence about sponsorship is compatible and is not a verification risk; exclude only when the posting states an incompatible work-authorization restriction. If the candidate needs sponsorship, a Required constraint may exclude only when the posting explicitly says sponsorship is unavailable or the candidate is ineligible. In that case, silence is Unconfirmed, not Failed.',
     'Company-size restricted': 'A Required company-size constraint may exclude only when reliable evidence explicitly places the employer outside the required range. Missing size evidence is Unconfirmed, not Failed. A Preferred company-size constraint affects ranking.'
   };
 
@@ -2263,22 +2402,23 @@
       ? constraints.map(constraint => `### ${constraint}\n- Team priority: ${priorityLabel(constraintPriorities[constraint] || 'manager')}\n- Team value: ${(constraintValues[constraint] || '').trim() || 'Not specified'}\n- Operational rule: ${MANAGER_CONSTRAINT_INSTRUCTIONS[constraint]}`).join('\n\n')
       : 'No additional workflow constraints were selected.';
 
-    return `# Manager Agent SOP\n\n## Project Metadata\n${formatProjectMetadata()}\n\n## Role\n${attrs.role}\n\n## Primary Task\n${attrs.task}\n\n## Tools / Capabilities\n${agents.manager.tools.map(item => `- ${item}`).join('\n')}\n\n## Output Format\n${attrs.output}\n\n## Input Contract\nYou receive the complete synthetic candidate profile and the workflow decisions recorded below. You are the only agent permitted to reason directly over the raw candidate profile. The Researcher and Analyst receive your Strategic Brief, not the raw profile.\n\n## Team-Configured Constraint Register\n${formatConstraintRegister()}\n\n## Constraint Priority Rules\n- Required: Treat as a hard requirement, but exclude a posting only when reliable evidence affirmatively fails it. Missing evidence is Unconfirmed.\n- Preferred: Use it to rank and explain tradeoffs. Do not exclude solely for failing a preference.\n- Manager determines: Classify the constraint as Required or Preferred after reviewing the candidate profile and team-entered value. State the classification and rationale explicitly.\n\n## Constraint-Specific Operating Rules\n${constraintInstructions}\n\n## Required Strategic Brief Structure\nProduce the Strategic Brief with exactly these sections:\n\n### 1. Candidate Goal and Positioning\nSummarize the candidate's target direction, transferable strengths, and material limitations.\n\n### 2. Constraint Register\nUse a Markdown table with columns:\n| Constraint | Value | Priority | Evidence from Profile or Team | Downstream Handling |\n\nFor Manager determines items, replace that label with your Required or Preferred classification and provide the rationale in Downstream Handling. For any value that remains unavailable, write Not specified and flag the gap.\n\n### 3. Target Role Families and Keywords\nIdentify role families, likely title variants, industry or company signals, and search keywords grounded in the candidate profile.\n\n### 4. Search Objectives\nExplain what the Researcher should optimize, what it must verify, and what tradeoffs it may surface.\n\n### 5. Researcher Handoff\nRestate every constraint, value, final priority, affirmative-failure rule, and unresolved gap. The Researcher must be able to operate without seeing the raw candidate profile.\n\n## Team-Selected Handoff Requirements\n${handoffRequirements}\n\n${buildWorkflowCritiqueInstructions(attrs.hasWorkflowCritique)}\n`;
+    return `# Manager Agent SOP\n\n## Project Metadata\n${formatProjectMetadata()}\n\n## Role\n${attrs.role}\n\n## Primary Task\n${attrs.task}\n\n## Tools / Capabilities\n${agents.manager.tools.map(item => `- ${item}`).join('\n')}\n\n## Output Format\n${attrs.output}\n\n## Input Contract\nYou receive the complete synthetic candidate profile and the workflow decisions recorded below. You are the only agent permitted to reason directly over the raw candidate profile. The Researcher and Analyst receive your Strategic Brief, not the raw profile.\n\n## Team-Configured Constraint Register\n${formatConstraintRegister()}\n\n## Constraint Priority Rules\n- Required: Treat as a hard requirement, but exclude a posting only when reliable evidence affirmatively fails it. Missing evidence is Unconfirmed.\n- Preferred: Use it to rank and explain tradeoffs. Do not exclude solely for failing a preference.\n- Manager determines: Classify the constraint as Required or Preferred after reviewing the candidate profile and team-entered value. State the classification and rationale explicitly.\n\n## Constraint-Specific Operating Rules\n${constraintInstructions}\n\n## Required Strategic Brief Structure\nProduce the Strategic Brief with exactly these sections:\n\n### 1. Candidate Goal and Positioning\nSummarize the candidate's target direction, transferable strengths, and material limitations.\n\n### 2. Constraint Register\nUse a Markdown table with columns:\n| Constraint | Value | Priority | Evidence from Profile or Team | Downstream Handling |\n\nFor Manager determines items, replace that label with your Required or Preferred classification and provide the rationale in Downstream Handling. For any value that remains unavailable, write Not specified and flag the gap.\n\n### 3. Target Role Families and Keywords\nIdentify role families, likely title variants, industry or company signals, and search keywords grounded in the candidate profile.\n\n### 4. Search Objectives\nExplain what the Researcher should optimize, what it must verify, and what tradeoffs it may surface.\n\n### 5. Researcher Handoff\nRestate every constraint, value, final priority, affirmative-failure rule, and unresolved gap. The Researcher must be able to operate without seeing the raw candidate profile.\n\n## Team-Selected Handoff Requirements\n${handoffRequirements}\n`;
   }
 
   function buildResearcherMarkdown() {
     const attrs = getAttributes('researcher');
     const handoffRequirements = attrs.handoff.length > 0 ? attrs.handoff.map(item => `- ${item}`).join('\n') : '- No additional handoff behaviors selected';
 
-    return `# Researcher Agent SOP\n\n## Project Metadata\n${formatProjectMetadata()}\n\n## Role\n${attrs.role}\n\n## Primary Task\n${attrs.task}\n\n## Tools / Capabilities\n${agents.researcher.tools.map(item => `- ${item}`).join('\n')}\n\n## Output Format\n${attrs.output}\n\n## Input Contract\nYou receive only the Manager's Strategic Brief and the job records supplied by the deterministic Python pipeline. You do not receive the raw candidate profile. Treat the Manager's final constraint classifications and search objectives as authoritative.\n\n## Universal Constraint Rule\nA posting fails a Required constraint only when the available evidence affirmatively shows failure. Missing, silent, or ambiguous evidence is Unconfirmed, not Failed. Never exclude a posting solely because a value is absent. Preferred constraints guide ranking and tradeoff explanations.\n\n## Three-Stage Operating Procedure\n\n### Stage 1: Query Construction\nConstruct three tiered query specifications from the Manager's brief: Specific, Moderate, and Broad.\n\n- Specific: narrowest relevant keywords; preserve every Required constraint.\n- Moderate: broaden titles and transferable-skill keywords; preserve every Required constraint.\n- Broad: broaden keywords further. Only this tier may set relax_region to true, and only when needed to recover enough potentially relevant postings. No other Required constraint may be silently relaxed.\n\nEnd your Stage 1 response with exactly one valid JSON object in this structure and no text after it:\n\n{\n  "specific": {\n    "region_terms": ["term"],\n    "remote_acceptable": true,\n    "keyword_terms": ["term"],\n    "relax_region": false\n  },\n  "moderate": {\n    "region_terms": ["term"],\n    "remote_acceptable": true,\n    "keyword_terms": ["term"],\n    "relax_region": false\n  },\n  "broad": {\n    "region_terms": ["term"],\n    "remote_acceptable": true,\n    "keyword_terms": ["term"],\n    "relax_region": true\n  }\n}\n\nUse only strings, arrays, booleans, and the exact keys shown.\n\n### Stage 2: Lightweight Review\nReview the filtered postings containing title, company, location, link, and posting date. Select up to the stated maximum number of links for full review. Prioritize probable fit, evidence quality, recency when urgency matters, and diversity across plausible role families. Preserve the priority order in your array.\n\nEnd your Stage 2 response with exactly one valid JSON array containing only source links and no text after it:\n\n["https://example.com/job-1", "https://example.com/job-2"]\n\n### Stage 3: Final Curation\nReview the full records selected in Stage 2. Preserve company names, job titles, and source links exactly as supplied. Do not invent compensation, sponsorship, company size, work arrangement, or other facts.\n\n## Required Evidence Handoff\nProduce one standardized Markdown table with exactly these columns:\n\n| Priority Rank | Job Title | Company | Location | Work Arrangement | Compensation | Constraint Fit | Match Rationale | Key Uncertainty | Source Link |\n\nRules for the table:\n- Use the exact source Job Title, Company, and Source Link.\n- Work Arrangement must be Remote, Hybrid, Onsite, or Unconfirmed.\n- Compensation must reproduce the listed evidence or say Not provided.\n- Constraint Fit must distinguish Required constraints passed, failed, or unconfirmed and note relevant Preferred tradeoffs.\n- Match Rationale must be concise and grounded in the Manager's brief and posting evidence.\n- Key Uncertainty must name the most consequential missing or ambiguous fact.\n\nAfter the table, include exactly these sections:\n\n### Search Methodology\nState which filter tier produced the records, how the postings were narrowed, and whether any constraint was relaxed.\n\n### Exclusions and Unconfirmed Information\nSeparate affirmative Required-constraint failures from missing or unconfirmed information. Do not collapse the two categories.\n\n### Handoff Notes for the Analyst\nSummarize strongest patterns, meaningful tradeoffs, and risks that the Analyst should consider.\n\n## Team-Selected Handoff Requirements\n${handoffRequirements}\n\n${buildWorkflowCritiqueInstructions(attrs.hasWorkflowCritique)}\n`;
+    return `# Researcher Agent SOP\n\n## Project Metadata\n${formatProjectMetadata()}\n\n## Role\n${attrs.role}\n\n## Primary Task\n${attrs.task}\n\n## Tools / Capabilities\n${agents.researcher.tools.map(item => `- ${item}`).join('\n')}\n\n## Output Format\n${attrs.output}\n\n## Input Contract\nYou receive only the Manager's Strategic Brief and the job records supplied by the deterministic Python pipeline. You do not receive the raw candidate profile. Treat the Manager's final constraint classifications and search objectives as authoritative.\n\n## Universal Constraint Rule\nA posting fails a Required constraint only when the available evidence affirmatively shows failure. Missing, silent, or ambiguous evidence is Unconfirmed, not Failed. Never exclude a posting solely because a value is absent. Preferred constraints guide ranking and tradeoff explanations.\n\n## Three-Stage Operating Procedure\n\n### Stage 1: Query Construction\nConstruct three tiered query specifications from the Manager's brief: Specific, Moderate, and Broad.\n\n- Specific: narrowest relevant keywords; preserve every Required constraint.\n- Moderate: broaden titles and transferable-skill keywords; preserve every Required constraint.\n- Broad: broaden keywords further. Only this tier may set relax_region to true, and only when needed to recover enough potentially relevant postings. No other Required constraint may be silently relaxed.\n\nEnd your Stage 1 response with exactly one valid JSON object in this structure and no text after it:\n\n{\n  "specific": {\n    "region_terms": ["term"],\n    "remote_acceptable": true,\n    "keyword_terms": ["term"],\n    "relax_region": false\n  },\n  "moderate": {\n    "region_terms": ["term"],\n    "remote_acceptable": true,\n    "keyword_terms": ["term"],\n    "relax_region": false\n  },\n  "broad": {\n    "region_terms": ["term"],\n    "remote_acceptable": true,\n    "keyword_terms": ["term"],\n    "relax_region": true\n  }\n}\n\nUse only strings, arrays, booleans, and the exact keys shown.\n\n### Stage 2: Lightweight Review\nReview the filtered postings containing title, company, location, link, and posting date. Select up to the stated maximum number of links for full review. Prioritize probable fit, evidence quality, recency when urgency matters, and diversity across plausible role families. Preserve the priority order in your array.\n\nEnd your Stage 2 response with exactly one valid JSON array containing only source links and no text after it:\n\n["https://example.com/job-1", "https://example.com/job-2"]\n\n### Stage 3: Final Curation\nReview the full records selected in Stage 2. Preserve company names, job titles, and source links exactly as supplied. Do not invent compensation, sponsorship, company size, work arrangement, or other facts.\n\n## Required Evidence Handoff\nProduce one standardized Markdown table with exactly these columns:\n\n| Priority Rank | Job Title | Company | Location | Work Arrangement | Compensation | Constraint Fit | Match Rationale | Key Uncertainty | Source Link |\n\nRules for the table:\n- Use the exact source Job Title, Company, and Source Link.\n- Work Arrangement must be Remote, Hybrid, Onsite, or Unconfirmed.\n- Compensation must reproduce the listed evidence or say Not provided.\n- Constraint Fit must distinguish Required constraints passed, failed, or unconfirmed and note relevant Preferred tradeoffs.\n- Match Rationale must be concise and grounded in the Manager's brief and posting evidence.\n- Key Uncertainty must name the most consequential missing or ambiguous fact.\n- Work authorization must follow the Manager's candidate-specific rule. When the candidate is already authorized and needs no sponsorship, a posting's silence about sponsorship is not a failure and must not be shown as proof that sponsorship is offered. When the candidate needs sponsorship, silence remains Unconfirmed.\n\nAfter the table, include exactly these sections:\n\n### Search Methodology\nState which filter tier produced the records, how the postings were narrowed, and whether any constraint was relaxed.\n\n### Exclusions and Unconfirmed Information\nSeparate affirmative Required-constraint failures from missing or unconfirmed information. Do not collapse the two categories.\n\n### Handoff Notes for the Analyst\nSummarize strongest patterns, meaningful tradeoffs, and risks that the Analyst should consider.\n\n## Team-Selected Handoff Requirements\n${handoffRequirements}\n`;
   }
 
   function buildAnalystMarkdown() {
     const attrs = getAttributes('analyst');
-    const handoffRequirements = attrs.handoff.filter(item => item !== 'Include workflow critique');
-    const selectedRequirements = handoffRequirements.length > 0 ? handoffRequirements.map(item => `- ${item}`).join('\n') : '- No additional candidate-facing handoff behaviors selected';
+    const selectedRequirements = attrs.handoff.length > 0
+      ? attrs.handoff.map(item => `- ${item}`).join('\n')
+      : '- No additional candidate-facing handoff behaviors selected';
 
-    return `# Analyst Agent SOP\n\n## Project Metadata\n${formatProjectMetadata()}\n\n## Role\n${attrs.role}\n\n## Primary Task\n${attrs.task}\n\n## Tools / Capabilities\n${agents.analyst.tools.map(item => `- ${item}`).join('\n')}\n\n## Output Format\n${attrs.output}\n\n## Input Contract\nYou receive the Manager's Strategic Brief and the Researcher's standardized evidence handoff. You do not receive the raw candidate profile or the full source database. Preserve the distinction between evidence, inference, affirmative failure, and unconfirmed information.\n\n## Universal Constraint Rule\n- Required constraints govern eligibility only when an affirmative failure is documented.\n- Unconfirmed does not mean Failed. Keep a posting eligible while clearly identifying the verification need.\n- Preferred constraints affect ranking and tradeoff analysis rather than automatic exclusion.\n- Never invent missing compensation, sponsorship, company-size, location, or work-arrangement facts.\n\n## Required Final Search Strategy\nProduce the candidate-facing report using exactly these sections:\n\n### 1. Executive Summary\nState the strongest search direction, the overall quality of the available matches, and the most important constraint shaping the search.\n\n### 2. Recommended Opportunities\nUse a ranked Markdown table with exactly these columns:\n\n| Rank | Job Title | Company | Location / Arrangement | Overall Fit | Why It Fits | Constraint Considerations | Main Risk or Uncertainty | Recommended Action | Source Link |\n\nUse Strong, Moderate, or Exploratory for Overall Fit. Recommended Action must be Apply now, Investigate, Monitor, or Deprioritize. Preserve source titles, company names, and links exactly.\n\n### 3. Search Strategy\nExplain:\n- role families and title variants to prioritize;\n- industries or company types showing the strongest fit;\n- keywords for future searches;\n- geographic, remote, or relocation strategy;\n- recommended application sequence.\n\n### 4. Candidate Positioning\nExplain strengths to emphasize, experience that may need reframing, skills or evidence gaps, and useful résumé or interview themes.\n\n### 5. Constraint and Uncertainty Review\nSummarize Required constraints satisfied, Required constraints affirmatively failed, Preferred constraints satisfied or traded off, remaining Unconfirmed information, and any workflow relaxation disclosed by the Researcher.\n\n## Team-Selected Handoff Requirements\n${selectedRequirements}\n\n${buildWorkflowCritiqueInstructions(attrs.hasWorkflowCritique)}\n`;
+    return `# Analyst Agent SOP\n\n## Project Metadata\n${formatProjectMetadata()}\n\n## Role\n${attrs.role}\n\n## Primary Task\n${attrs.task}\n\n## Tools / Capabilities\n${agents.analyst.tools.map(item => `- ${item}`).join('\n')}\n\n## Output Format\n${attrs.output}\n\n## Input Contract\nYou receive the Manager's Strategic Brief and the Researcher's standardized evidence handoff. You do not receive the raw candidate profile or the full source database. Preserve the distinction between evidence, inference, affirmative failure, and unconfirmed information.\n\n## Universal Constraint Rule\n- Required constraints govern eligibility only when an affirmative failure is documented.\n- Unconfirmed does not mean Failed. Keep a posting eligible while clearly identifying the verification need.\n- Preferred constraints affect ranking and tradeoff analysis rather than automatic exclusion.\n- Never invent missing compensation, sponsorship, company-size, location, or work-arrangement facts.\n- Interpret work authorization from the Manager's candidate-specific rule. Employer silence about sponsorship is not affirmative evidence that sponsorship is offered. When the candidate is already authorized and needs no sponsorship, silence is ordinarily compatible rather than a candidate risk. When sponsorship is needed, silence is Unconfirmed.\n\n## Required Final Search Strategy\nProduce the candidate-facing report using exactly these sections:\n\n### 1. Executive Summary\nState the strongest search direction, the overall quality of the available matches, and the most important constraint shaping the search.\n\n### 2. Recommended Opportunities\nUse a ranked Markdown table with exactly these columns:\n\n| Rank | Job Title | Company | Location / Arrangement | Overall Fit | Why It Fits | Constraint Considerations | Main Risk or Uncertainty | Recommended Action | Source Link |\n\nUse Strong, Moderate, or Exploratory for Overall Fit. Recommended Action must be Apply now, Investigate, Monitor, or Deprioritize. Preserve source titles, company names, and links exactly.\n\n### 3. Search Strategy\nExplain:\n- role families and title variants to prioritize;\n- industries or company types showing the strongest fit;\n- keywords for future searches;\n- geographic, remote, or relocation strategy;\n- recommended application sequence.\n\n### 4. Candidate Positioning\nExplain strengths to emphasize, experience that may need reframing, skills or evidence gaps, and useful résumé or interview themes.\n\n### 5. Constraint and Uncertainty Review\nSummarize Required constraints satisfied, Required constraints affirmatively failed, Preferred constraints satisfied or traded off, remaining Unconfirmed information, and any workflow relaxation disclosed by the Researcher.\n\n## Team-Selected Handoff Requirements\n${selectedRequirements}\n`;
   }
 
   function buildCandidateProfileMarkdown() {
