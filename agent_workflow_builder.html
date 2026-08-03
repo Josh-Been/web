@@ -563,6 +563,27 @@
       color: #0066cc;
       text-decoration: underline;
     }
+
+
+    .instructor-demo-link {
+      display: inline-block;
+      margin-top: 7px;
+      color: #9a9a9a;
+      font-size: 10px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: color 0.2s, opacity 0.2s;
+    }
+
+    .instructor-demo-link:hover,
+    .instructor-demo-link:focus {
+      color: #666;
+      opacity: 1;
+      text-decoration: underline;
+      outline: none;
+    }
   
 
     /* ================================================================
@@ -1030,6 +1051,7 @@
         This workflow builder is part of a workshop prepared by Baylor University Libraries. See the <a href="https://libguides.baylor.edu/agents" target="_blank" rel="noopener">workshop guide</a> for full materials. Developed summer 2026.
       </div>
       <div class="example-toggle" onclick="document.getElementById('attributionPanel').style.display='none';">Hide</div>
+      <button class="instructor-demo-link" id="loadInstructorDemoButton" type="button" title="Instructor/testing backup only. Students should design their own workflow.">Instructor demo tools</button>
     </div>
 
     <div class="export-panel" id="exportPanel">
@@ -1059,6 +1081,7 @@
   const downloadMarkdownButton = document.getElementById('downloadMarkdownButton');
   const downloadZipButton = document.getElementById('downloadZipButton');
   const exportStatus = document.getElementById('exportStatus');
+  const loadInstructorDemoButton = document.getElementById('loadInstructorDemoButton');
   
   let canvasWidth = canvas.offsetWidth;
   let canvasHeight = canvas.offsetHeight;
@@ -1428,6 +1451,111 @@
     setExportStatus('Project setup unlocked. Lock it again before exporting.', '');
   }
 
+  function loadInstructorDemoWorkflow() {
+    if (!projectState.locked || !projectState.code || !getSelectedProfile()) {
+      alert('Instructor demo setup requires a locked Project Name and selected Candidate Profile first. Complete and lock Project Setup, then return to Instructor demo tools.');
+      return;
+    }
+
+    const warning = [
+      'INSTRUCTOR / TESTING BACKUP ONLY',
+      '',
+      'This loads a complete conservative demonstration workflow and replaces every current canvas selection.',
+      '',
+      'Students should NOT use this feature for their submitted projects. The exercise is designed for each team to make and defend its own workflow decisions.',
+      '',
+      'Continue and replace the current workflow?'
+    ].join('\n');
+
+    if (!confirm(warning)) {
+      return;
+    }
+
+    agents = {
+      manager: {
+        name: 'Manager',
+        x: 150,
+        y: 120,
+        active: true,
+        tools: ['Define Constraints', 'Generate summary'],
+        constraints: [
+          'Strategic planner',
+          'Define constraints',
+          'Strategic brief',
+          'Regional focus',
+          'Compensation-aware',
+          'Candidate urgency',
+          'Visa/sponsorship-bound',
+          'Prioritize & flag constraints',
+          'Highlight assumptions',
+          'Flag uncertainties'
+        ]
+      },
+      researcher: {
+        name: 'Researcher',
+        x: 150,
+        y: 280,
+        active: true,
+        tools: ['Query Job Database', 'Compare datasets', 'Format & Synthesize'],
+        constraints: [
+          'Data Curator',
+          'Gather job postings/company data',
+          'Structured table',
+          'Regional focus',
+          'Compensation-aware',
+          'Candidate urgency',
+          'Visa/sponsorship-bound',
+          'Pass structured data',
+          'Include methodology',
+          'Document sources',
+          'Flag uncertainties'
+        ]
+      },
+      analyst: {
+        name: 'Analyst',
+        x: 150,
+        y: 440,
+        active: true,
+        tools: ['Compare datasets', 'Format & Synthesize', 'Generate summary'],
+        constraints: [
+          'Strategy Synthesizer',
+          'Analyze role fit',
+          'Executive report',
+          'Regional focus',
+          'Compensation-aware',
+          'Candidate urgency',
+          'Visa/sponsorship-bound',
+          'Highlight assumptions',
+          'Flag uncertainties',
+          'Include workflow critique'
+        ]
+      }
+    };
+
+    // Values remain blank so the selected synthetic profile and Manager reasoning
+    // determine the actual details rather than embedding an answer key in the demo.
+    constraintValues = {
+      'Regional focus': '',
+      'Compensation-aware': '',
+      'Candidate urgency': '',
+      'Visa/sponsorship-bound': ''
+    };
+
+    constraintPriorities = {
+      'Regional focus': 'preferred',
+      'Compensation-aware': 'manager',
+      'Candidate urgency': 'preferred',
+      'Visa/sponsorship-bound': 'required'
+    };
+
+    constraintsPanelOpen = false;
+    selectedAgent = null;
+    agentDropdown.classList.remove('show');
+    agentCount = 3;
+    drawWorkflow();
+    setExportStatus('Instructor demo workflow loaded. Students should not use this backup configuration for submitted projects.', 'success');
+  }
+
   function resetEntireProject() {
     if (!confirm('Reset the project setup and remove all agents, tools, constraints, and handoff choices?')) {
       return;
@@ -1473,6 +1601,7 @@
     lockProjectButton.addEventListener('click', lockProjectSetup);
     editProjectButton.addEventListener('click', editProjectSetup);
     resetProjectButton.addEventListener('click', resetEntireProject);
+    loadInstructorDemoButton.addEventListener('click', loadInstructorDemoWorkflow);
     setProjectSetupLocked(false);
 
     if (typeof JSZip === 'undefined') {
