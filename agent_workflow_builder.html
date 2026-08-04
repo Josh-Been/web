@@ -11,6 +11,11 @@
       box-sizing: border-box;
     }
     
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: #f5f5f5;
@@ -73,12 +78,25 @@
     
     .canvas-area {
       flex: 1;
+      min-width: 0;
       position: relative;
       background: #fafafa;
-      overflow: hidden;
+      overflow: auto;
+      scrollbar-gutter: stable both-edges;
+      overscroll-behavior: contain;
+    }
+
+    .workflow-surface {
+      position: relative;
+      width: max(100%, 900px);
+      min-height: 100%;
+      height: 720px;
+      background: #fff;
     }
     
-    svg {
+    .workflow-surface > svg {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       background: #fff;
@@ -324,7 +342,7 @@
       padding: 12px;
       font-size: 12px;
       line-height: 1.6;
-      width: 240px;
+      width: 260px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       z-index: 10;
     }
@@ -989,7 +1007,41 @@
       }
     }
 
-  </style>
+  
+    /* ================================================================
+       RESPONSIVE UTILITY TOOLBAR LAYOUT
+       ================================================================ */
+    .utility-toolbar { position:sticky; top:12px; z-index:90; display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; width:max-content; max-width:calc(100% - 24px); margin:12px 20px -50px auto; pointer-events:none; }
+    .utility-toolbar > * { pointer-events:auto; }
+    .utility-button { min-height:38px; padding:8px 13px; border:1px solid #bfd0c5; border-radius:999px; background:#fff; color:#154734; font:inherit; font-size:12px; font-weight:700; cursor:pointer; box-shadow:0 2px 7px rgba(0,0,0,.12); display:inline-flex; gap:7px; align-items:center; }
+    .utility-button:hover,.utility-button:focus { background:#f4f8f5; }
+    .utility-button[aria-expanded="true"] { background:#eaf4ed; border-color:#154734; }
+    .project-setup-chip.utility-button { position:static; transform:none; width:auto; max-width:260px; }
+    .utility-panel { position:absolute; top:68px; right:20px; z-index:89; width:min(360px, calc(100% - 40px)); max-height:calc(100vh - 100px); overflow:auto; background:#fff; border:1px solid #d8d8d8; border-top:5px solid #154734; border-radius:8px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.18); }
+    .utility-panel[hidden]{display:none}
+    .utility-panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .utility-panel-title{font-size:15px;font-weight:800;color:#154734}
+    .utility-panel-subtitle{font-size:11px;color:#777;margin-top:3px}
+    .utility-panel-close{width:30px;height:30px;border:1px solid #ddd;border-radius:5px;background:#f7f7f7;cursor:pointer;font-size:18px;line-height:1}
+    .utility-panel details{border-top:1px solid #e5e5e5;padding:10px 0}
+    .utility-panel details:first-of-type{border-top:0}
+    .utility-panel summary{cursor:pointer;font-weight:700;color:#154734}
+    .utility-panel p{font-size:12px;line-height:1.55;color:#555;margin:8px 0}
+    .project-panel{top:20px;left:20px}
+    .example-panel,.instructions,.attribution-panel,.export-panel{display:none!important}
+    @media (max-width: 900px){
+      .utility-toolbar{max-width:calc(100% - 24px);top:10px;margin:10px 12px -48px auto}
+      .utility-panel{top:60px;right:12px;width:min(340px,calc(100% - 24px));max-height:calc(100vh - 76px)}
+      .project-panel{top:64px;left:12px;width:min(325px,calc(100% - 24px));max-height:calc(100vh - 88px)}
+      .workflow-constraints-badge{top:72px}
+    }
+    @media (max-width: 560px){
+      .utility-button-label,.project-setup-chip-status{display:none}
+      .utility-button{padding:8px 11px;min-width:38px;justify-content:center}
+      .project-setup-chip-label{max-width:120px}
+    }
+
+</style>
 </head>
 <body>
 
@@ -1070,8 +1122,30 @@
   
   <div class="tooltip-box" id="tooltip"></div>
   
-  <div class="canvas-area" id="canvas">
-    <svg id="workflowSvg"></svg>
+  <div class="canvas-area" id="workflowWorkspace">
+    <div class="utility-toolbar" id="utilityToolbar" aria-label="Workflow utilities">
+      <button class="project-setup-chip utility-button"
+              id="projectSetupChip"
+              type="button"
+              aria-controls="projectPanel"
+              aria-expanded="false"
+              title="Open the locked Project Setup"
+              hidden>
+        <span class="project-setup-chip-icon" aria-hidden="true">🔒</span>
+        <span class="project-setup-chip-label" id="projectSetupChipLabel">Setup</span>
+        <span class="project-setup-chip-status">Locked</span>
+      </button>
+      <button class="utility-button" id="helpUtilityButton" type="button" aria-controls="helpUtilityPanel" aria-expanded="false">
+        <span aria-hidden="true">?</span><span class="utility-button-label">Help</span>
+      </button>
+      <button class="utility-button" id="exportUtilityButton" type="button" aria-controls="exportUtilityPanel" aria-expanded="false">
+        <span aria-hidden="true">⇩</span><span class="utility-button-label">Export</span>
+      </button>
+    </div>
+
+
+    <div class="workflow-surface" id="canvas">
+      <svg id="workflowSvg"></svg>
     
     <div class="agent-dropdown" id="agentDropdown">
       <select id="agentSelect">
@@ -1085,34 +1159,13 @@
     <div class="project-panel" id="projectPanel">
       <div class="project-panel-header">
         <div class="project-panel-title">Project Setup</div>
-        <button class="project-panel-collapse-button"
-                id="collapseProjectButton"
-                type="button"
-                aria-controls="projectPanel"
-                aria-expanded="true"
-                hidden>Collapse</button>
+        <button class="project-panel-collapse-button" id="collapseProjectButton" type="button" aria-controls="projectPanel" aria-expanded="true" hidden>Collapse</button>
       </div>
       <div class="project-panel-subtitle">Name the team project, select one synthetic applicant, and lock the setup to create a stable project code.</div>
-
-      <div class="project-field">
-        <label for="projectNameInput">Project Name</label>
-        <input id="projectNameInput" type="text" maxlength="50" placeholder="e.g., Career Compass" autocomplete="off" />
-      </div>
-
-      <div class="project-field">
-        <label for="profileSelect">Synthetic Candidate Profile</label>
-        <select id="profileSelect">
-          <option value="">Select a profile...</option>
-        </select>
-      </div>
-
+      <div class="project-field"><label for="projectNameInput">Project Name</label><input id="projectNameInput" type="text" maxlength="50" placeholder="e.g., Career Compass" autocomplete="off" /></div>
+      <div class="project-field"><label for="profileSelect">Synthetic Candidate Profile</label><select id="profileSelect"><option value="">Select a profile...</option></select></div>
       <div class="profile-preview" id="profilePreview" hidden></div>
-
-      <div class="project-code-box">
-        <div class="project-code-label">Project Code</div>
-        <div class="project-code-value" id="projectCodeDisplay">Lock setup to generate</div>
-      </div>
-
+      <div class="project-code-box"><div class="project-code-label">Project Code</div><div class="project-code-value" id="projectCodeDisplay">Lock setup to generate</div></div>
       <div class="project-actions">
         <button class="project-action-button primary" id="lockProjectButton" type="button">Lock Setup</button>
         <button class="project-action-button" id="editProjectButton" type="button" disabled>Edit Setup</button>
@@ -1120,53 +1173,31 @@
       </div>
     </div>
 
-    <button class="project-setup-chip"
-            id="projectSetupChip"
-            type="button"
-            aria-controls="projectPanel"
-            aria-expanded="false"
-            title="Open the locked Project Setup"
-            hidden>
-      <span class="project-setup-chip-icon" aria-hidden="true">🔒</span>
-      <span class="project-setup-chip-label" id="projectSetupChipLabel">Project Setup</span>
-      <span class="project-setup-chip-status">Locked</span>
-    </button>
-
-    <div class="example-panel" id="examplePanel">
-      <div class="example-title">Example workflow</div>
-      <div class="example-text">
-        Manager defines and prioritizes candidate constraints → Researcher curates standardized job evidence → Analyst produces the standardized Search Strategy.
-      </div>
-      <div class="example-toggle" onclick="document.getElementById('examplePanel').style.display='none';">Hide</div>
-    </div>
-    
-    <div class="instructions">
-      <strong>How to use:</strong> Lock the project setup, add three agents, then work from top to bottom in the sidebar. Click an agent to assign its workflow name. Click an item on an agent card to remove it. Use the Workflow Constraints badge to enter each value and priority.
-    </div>
-    
-    <div class="attribution-panel" id="attributionPanel">
-      <div class="attribution-text">
-        This workflow builder is part of a workshop prepared by Baylor University Libraries. See the <a href="https://libguides.baylor.edu/agents" target="_blank" rel="noopener">workshop guide</a> for full materials. Developed summer 2026.
-      </div>
-      <div class="example-toggle" onclick="document.getElementById('attributionPanel').style.display='none';">Hide</div>
-      <button class="instructor-demo-link" id="loadInstructorDemoButton" type="button" title="Instructor/testing backup only. Students should design their own workflow.">Instructor demo tools</button>
+    <div class="utility-panel" id="helpUtilityPanel" hidden>
+      <div class="utility-panel-header"><div><div class="utility-panel-title">Help and Workshop Information</div><div class="utility-panel-subtitle">Open only what you need, then return to the canvas.</div></div><button class="utility-panel-close" type="button" data-close-utility aria-label="Close help panel">×</button></div>
+      <details open><summary>How to use the builder</summary><p>Lock the project setup, add three agents, then work from top to bottom in the sidebar. Click an agent to assign its workflow name. Click an item on an agent card to remove it. Use the Workflow Constraints badge on the canvas to enter each value and priority.</p></details>
+      <details><summary>Example workflow</summary><p>Manager defines and prioritizes candidate constraints → Researcher curates standardized job evidence → Analyst produces the standardized Search Strategy.</p></details>
+      <details><summary>About this workshop</summary><p>This workflow builder is part of a workshop prepared by Baylor University Libraries. See the <a href="https://libguides.baylor.edu/agents" target="_blank" rel="noopener">workshop guide</a> for full materials. Developed summer 2026.</p><button class="instructor-demo-link" id="loadInstructorDemoButton" type="button" title="Instructor/testing backup only. Students should design their own workflow.">Instructor demo tools</button></details>
     </div>
 
-    <div class="export-panel" id="exportPanel">
-      <div class="export-panel-title">Export Finished Workflow</div>
-      <div class="export-panel-text">The Markdown files are complete SOPs. The ZIP contains the same four files under the standard names required by the Box processing queue.</div>
+    <div class="utility-panel" id="exportUtilityPanel" hidden>
+      <div class="utility-panel-header"><div><div class="utility-panel-title">Export Finished Workflow</div><div class="utility-panel-subtitle">Download after all three agents are complete.</div></div><button class="utility-panel-close" type="button" data-close-utility aria-label="Close export panel">×</button></div>
+      <p>The Markdown files are complete SOPs. The ZIP contains the same four files under the standard names required by the Box processing queue.</p>
       <button class="export-action-button markdown" id="downloadMarkdownButton" type="button">Download 4 Markdown Files</button>
       <button class="export-action-button zip" id="downloadZipButton" type="button">Download ZIP for Box</button>
-      <div class="export-status" id="exportStatus"></div>
+      <div class="export-status" id="exportStatus" aria-live="polite"></div>
     </div>
   </div>
 </div>
+
+  </div><!-- /.canvas-area -->
 
 <!-- Save jszip.min.js in this same directory. See the official JSZip distribution. -->
 <script src="./jszip.min.js"></script>
 <script>
   const svg = document.getElementById('workflowSvg');
   const canvas = document.getElementById('canvas');
+  const workflowWorkspace = document.getElementById('workflowWorkspace');
   const agentDropdown = document.getElementById('agentDropdown');
   const agentSelect = document.getElementById('agentSelect');
   const projectPanel = document.getElementById('projectPanel');
@@ -1183,10 +1214,15 @@
   const downloadMarkdownButton = document.getElementById('downloadMarkdownButton');
   const downloadZipButton = document.getElementById('downloadZipButton');
   const exportStatus = document.getElementById('exportStatus');
+  const helpUtilityButton = document.getElementById('helpUtilityButton');
+  const exportUtilityButton = document.getElementById('exportUtilityButton');
+  const helpUtilityPanel = document.getElementById('helpUtilityPanel');
+  const exportUtilityPanel = document.getElementById('exportUtilityPanel');
   const loadInstructorDemoButton = document.getElementById('loadInstructorDemoButton');
   
   let canvasWidth = canvas.offsetWidth;
   let canvasHeight = canvas.offsetHeight;
+  let canvasResizeScheduled = false;
   
   let agents = {
     manager: { name: '', x: 150, y: 120, tools: [], constraints: [], active: false },
@@ -1734,6 +1770,24 @@
     exportStatus.className = `export-status${type ? ` ${type}` : ''}`;
   }
 
+  function closeUtilityPanels() {
+    helpUtilityPanel.hidden = true;
+    exportUtilityPanel.hidden = true;
+    helpUtilityButton.setAttribute('aria-expanded', 'false');
+    exportUtilityButton.setAttribute('aria-expanded', 'false');
+  }
+
+  function toggleUtilityPanel(panelName) {
+    const targetPanel = panelName === 'help' ? helpUtilityPanel : exportUtilityPanel;
+    const targetButton = panelName === 'help' ? helpUtilityButton : exportUtilityButton;
+    const shouldOpen = targetPanel.hidden;
+    closeUtilityPanels();
+    if (shouldOpen) {
+      targetPanel.hidden = false;
+      targetButton.setAttribute('aria-expanded', 'true');
+    }
+  }
+
   function initializeProjectSetup() {
     populateProfileSelect();
     profileSelect.addEventListener('change', () => {
@@ -1749,6 +1803,10 @@
     projectSetupChip.addEventListener('click', () => setProjectSetupExpanded(true));
     resetProjectButton.addEventListener('click', resetEntireProject);
     loadInstructorDemoButton.addEventListener('click', loadInstructorDemoWorkflow);
+    helpUtilityButton.addEventListener('click', () => toggleUtilityPanel('help'));
+    exportUtilityButton.addEventListener('click', () => toggleUtilityPanel('export'));
+    document.querySelectorAll('[data-close-utility]').forEach(button => button.addEventListener('click', closeUtilityPanels));
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') closeUtilityPanels(); });
     setProjectSetupLocked(false);
 
     if (typeof JSZip === 'undefined') {
@@ -1757,45 +1815,145 @@
     }
   }
   
+  function scheduleWorkflowRedraw() {
+    if (canvasResizeScheduled) return;
+    canvasResizeScheduled = true;
+    requestAnimationFrame(() => {
+      canvasResizeScheduled = false;
+      drawWorkflow();
+    });
+  }
+
+  function getAgentCardData(agentKey) {
+    const agent = agents[agentKey];
+    return {
+      role: agent.constraints.find(c => ROLE_TAGS.includes(c)),
+      task: agent.constraints.find(c => TASK_TAGS.includes(c)),
+      output: agent.constraints.find(c => OUTPUT_TAGS.includes(c)),
+      workflowConstraints: agent.constraints.filter(c => CONSTRAINT_TAGS.includes(c)),
+      handoffInstructions: agent.constraints.filter(c => HANDOFF_TAGS.includes(c))
+    };
+  }
+
+  function createAgentCard(agentKey) {
+    const agent = agents[agentKey];
+    const data = getAgentCardData(agentKey);
+    const card = document.createElement('div');
+    card.className = 'agent-card';
+    card.dataset.agentCard = agentKey;
+    card.innerHTML = `
+      <div class="agent-card-title">${agent.name || '(Unnamed Agent)'}</div>
+
+      <div class="agent-card-row">
+        <div class="agent-card-label">Role:</div>
+        <div class="agent-card-value ${!data.role ? 'agent-card-empty' : ''}">
+          ${data.role ? `<span class="agent-card-clickable" data-agent="${agentKey}" data-item="${data.role}" data-type="constraint">${data.role}</span>` : 'Not assigned'}
+        </div>
+      </div>
+
+      <div class="agent-card-row">
+        <div class="agent-card-label">Task:</div>
+        <div class="agent-card-value ${!data.task ? 'agent-card-empty' : ''}">
+          ${data.task ? `<span class="agent-card-clickable" data-agent="${agentKey}" data-item="${data.task}" data-type="constraint">${data.task}</span>` : 'Not assigned'}
+        </div>
+      </div>
+
+      <div class="agent-card-row">
+        <div class="agent-card-label">Tools:</div>
+        <div class="agent-card-value">
+          ${agent.tools.length > 0 ? `<div class="agent-card-list">${agent.tools.map(tool => `<span class="agent-card-tag" data-agent="${agentKey}" data-item="${tool}" data-type="tool">${tool}</span>`).join('')}</div>` : '<span class="agent-card-empty">None assigned</span>'}
+        </div>
+      </div>
+
+      <div class="agent-card-row">
+        <div class="agent-card-label">Output:</div>
+        <div class="agent-card-value ${!data.output ? 'agent-card-empty' : ''}">
+          ${data.output ? `<span class="agent-card-clickable" data-agent="${agentKey}" data-item="${data.output}" data-type="constraint">${data.output}</span>` : 'Not assigned'}
+        </div>
+      </div>
+
+      ${data.workflowConstraints.length > 0 ? `
+      <div class="agent-card-row">
+        <div class="agent-card-label">Constraints:</div>
+        <div class="agent-card-value agent-card-constraint-summary">
+          ${data.workflowConstraints.map(constraint => `${constraint} (${priorityLabel(constraintPriorities[constraint] || 'manager')})`).join('<br>')}
+        </div>
+      </div>
+      ` : ''}
+
+      ${data.handoffInstructions.length > 0 ? `
+      <div class="agent-card-row">
+        <div class="agent-card-label">Handoff:</div>
+        <div class="agent-card-value">
+          <div class="agent-card-list">${data.handoffInstructions.map(handoff => `<span class="agent-card-constraint-tag" data-agent="${agentKey}" data-item="${handoff}" data-type="constraint">${handoff}</span>`).join('')}</div>
+        </div>
+      </div>
+      ` : ''}
+    `;
+
+    card.querySelectorAll('[data-item]').forEach(item => {
+      item.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const targetAgent = item.dataset.agent;
+        const itemText = item.dataset.item;
+        const itemType = item.dataset.type;
+
+        if (itemType === 'tool') {
+          agents[targetAgent].tools = agents[targetAgent].tools.filter(tool => tool !== itemText);
+        } else {
+          agents[targetAgent].constraints = agents[targetAgent].constraints.filter(constraint => constraint !== itemText);
+        }
+        drawWorkflow();
+      });
+    });
+
+    return card;
+  }
+
+  function getAgentCardLeft(agentIndex, activeCount) {
+    const cardWidth = 260;
+    const cardGap = 24;
+    const centerX = canvasWidth / 2;
+
+    if (activeCount === 3 && agentIndex === 1) {
+      return Math.max(20, centerX - (nodeWidth / 2) - cardGap - cardWidth);
+    }
+
+    return centerX + (nodeWidth / 2) + cardGap;
+  }
+
   function drawWorkflow() {
-    // Clear all existing cards / badges / overlays from DOM
     document.querySelectorAll('.agent-card').forEach(card => card.remove());
-    document.querySelectorAll('.workflow-constraints-badge').forEach(el => el.remove());
-    document.querySelectorAll('.workflow-constraints-overlay').forEach(el => el.remove());
-    document.querySelectorAll('.workflow-constraints-overlay-backdrop').forEach(el => el.remove());
-    
+    document.querySelectorAll('.workflow-constraints-badge').forEach(element => element.remove());
+    document.querySelectorAll('.workflow-constraints-overlay').forEach(element => element.remove());
+    document.querySelectorAll('.workflow-constraints-overlay-backdrop').forEach(element => element.remove());
     svg.innerHTML = '';
-    
-    const padding = 40;
-    const inputY = 40;
-    const outputY = canvasHeight - 40;
-    
-    // Determine all workflow-level constraints across agents
+
+    canvasWidth = Math.ceil(Math.max(workflowWorkspace.clientWidth, 900));
+    canvas.style.width = `${canvasWidth}px`;
+
     const allConstraints = [];
     Object.keys(agents).forEach(key => {
-      agents[key].constraints.forEach(c => {
-        if (CONSTRAINT_TAGS.includes(c) && !allConstraints.includes(c)) {
-          allConstraints.push(c);
+      agents[key].constraints.forEach(constraint => {
+        if (CONSTRAINT_TAGS.includes(constraint) && !allConstraints.includes(constraint)) {
+          allConstraints.push(constraint);
         }
       });
     });
 
-    // Small, fixed-size badge -- always visible, never grows, never collides with canvas nodes
     const badge = document.createElement('div');
     badge.className = 'workflow-constraints-badge';
     badge.innerHTML = `
       <span>⚙️ Workflow Constraints (${allConstraints.length})</span>
       <span class="badge-caret">${constraintsPanelOpen ? '▲' : '▼'}</span>
     `;
-    badge.addEventListener('click', (e) => {
-      e.stopPropagation();
+    badge.addEventListener('click', (event) => {
+      event.stopPropagation();
       constraintsPanelOpen = !constraintsPanelOpen;
       drawWorkflow();
     });
     canvas.appendChild(badge);
 
-    // Overlay panel -- only rendered when open, sits on its own fixed layer above everything,
-    // fully decoupled from the canvas/SVG layout so it can never overlap an agent node.
     if (constraintsPanelOpen) {
       const backdrop = document.createElement('div');
       backdrop.className = 'workflow-constraints-overlay-backdrop';
@@ -1807,7 +1965,7 @@
 
       const overlay = document.createElement('div');
       overlay.className = 'workflow-constraints-overlay';
-      overlay.addEventListener('click', (e) => e.stopPropagation());
+      overlay.addEventListener('click', event => event.stopPropagation());
       overlay.innerHTML = `
         <div class="workflow-constraints-overlay-header">
           <div>
@@ -1846,11 +2004,11 @@
       });
 
       overlay.querySelectorAll('.constraint-remove-label').forEach(item => {
-        item.addEventListener('click', (e) => {
-          e.stopPropagation();
+        item.addEventListener('click', event => {
+          event.stopPropagation();
           const constraintText = item.dataset.constraint;
           Object.keys(agents).forEach(agentKey => {
-            agents[agentKey].constraints = agents[agentKey].constraints.filter(c => c !== constraintText);
+            agents[agentKey].constraints = agents[agentKey].constraints.filter(constraint => constraint !== constraintText);
           });
           delete constraintValues[constraintText];
           delete constraintPriorities[constraintText];
@@ -1859,299 +2017,131 @@
       });
 
       overlay.querySelectorAll('.constraint-value-input').forEach(input => {
-        input.addEventListener('click', (e) => e.stopPropagation());
-        input.addEventListener('input', (e) => {
-          const constraintText = e.target.dataset.constraintValue;
-          constraintValues[constraintText] = e.target.value;
+        input.addEventListener('click', event => event.stopPropagation());
+        input.addEventListener('input', event => {
+          constraintValues[event.target.dataset.constraintValue] = event.target.value;
         });
       });
 
       overlay.querySelectorAll('.constraint-priority-select').forEach(select => {
-        select.addEventListener('click', (e) => e.stopPropagation());
-        select.addEventListener('change', (e) => {
-          const constraintText = e.target.dataset.constraintPriority;
-          constraintPriorities[constraintText] = e.target.value;
+        select.addEventListener('click', event => event.stopPropagation());
+        select.addEventListener('change', event => {
+          constraintPriorities[event.target.dataset.constraintPriority] = event.target.value;
           drawWorkflow();
         });
       });
     }
-    
-    // Input node
-    svg.innerHTML += `
-      <rect class="flow-input" x="${canvasWidth/2 - 80}" y="${inputY - 20}" width="160" height="40" rx="20" />
-      <text class="flow-text" x="${canvasWidth/2}" y="${inputY + 5}">Candidate Profile</text>
-    `;
-    
-    // Get active agents in order
+
     const activeAgents = ['manager', 'researcher', 'analyst'].filter(key => agents[key].active);
-    
+    const isNarrowLayout = window.matchMedia('(max-width: 900px)').matches;
+    const badgeTop = isNarrowLayout ? 72 : 20;
+    const inputY = badgeTop + 92;
+    const nodeSequenceGap = 118;
+    const sameSideCardGap = 44;
+    const nodeAnchorFromCardTop = 46;
+    const bottomPadding = 88;
+
+    const cards = activeAgents.map((agentKey, agentIndex) => {
+      const card = createAgentCard(agentKey);
+      card.style.left = `${getAgentCardLeft(agentIndex, activeAgents.length)}px`;
+      card.style.top = '0px';
+      card.style.visibility = 'hidden';
+      canvas.appendChild(card);
+      return card;
+    });
+
+    const measuredHeights = cards.map(card => Math.ceil(card.getBoundingClientRect().height));
+    const sideBottoms = { left: inputY + 20, right: inputY + 20 };
+    let previousNodeY = inputY;
+    let lowestCardBottom = inputY + 20;
+
+    activeAgents.forEach((agentKey, index) => {
+      const cardHeight = measuredHeights[index];
+      const agent = agents[agentKey];
+      const side = activeAgents.length === 3 && index === 1 ? 'left' : 'right';
+
+      let nodeY = previousNodeY + nodeSequenceGap;
+      let cardTop = nodeY - nodeAnchorFromCardTop;
+      const earliestTopOnSide = sideBottoms[side] + sameSideCardGap;
+
+      if (cardTop < earliestTopOnSide) {
+        const shift = earliestTopOnSide - cardTop;
+        cardTop += shift;
+        nodeY += shift;
+      }
+
+      agent.y = nodeY;
+      cards[index].style.top = `${cardTop}px`;
+      cards[index].style.visibility = 'visible';
+
+      const cardBottom = cardTop + cardHeight;
+      sideBottoms[side] = cardBottom;
+      lowestCardBottom = Math.max(lowestCardBottom, cardBottom);
+      previousNodeY = nodeY;
+    });
+
+    const outputY = activeAgents.length > 0
+      ? Math.max(previousNodeY + nodeSequenceGap, lowestCardBottom + 72)
+      : inputY + 150;
+    const minimumHeight = Math.max(workflowWorkspace.clientHeight, 720);
+    canvasHeight = Math.ceil(Math.max(minimumHeight, outputY + bottomPadding));
+    canvas.style.height = `${canvasHeight}px`;
+
+    let svgMarkup = `
+      <rect class="flow-input" x="${canvasWidth / 2 - 80}" y="${inputY - 20}" width="160" height="40" rx="20" />
+      <text class="flow-text" x="${canvasWidth / 2}" y="${inputY + 5}">Candidate Profile</text>
+    `;
+
     if (activeAgents.length > 0) {
-      // Calculate vertical spacing based on number of agents
-      const totalHeight = outputY - inputY - 80;
-      const agentSpacing = totalHeight / (activeAgents.length + 1);
-      
-      // Draw connection from input to first agent
-      const firstAgentY = inputY + agentSpacing;
-      svg.innerHTML += `
-        <line class="connection-line" x1="${canvasWidth/2}" y1="${inputY + 20}" x2="${canvasWidth/2}" y2="${firstAgentY - nodeHeight/2}" />
+      svgMarkup += `
+        <line class="connection-line" x1="${canvasWidth / 2}" y1="${inputY + 20}" x2="${canvasWidth / 2}" y2="${agents[activeAgents[0]].y - nodeHeight / 2}" />
       `;
-      
-      // Draw agent nodes
-      activeAgents.forEach((key, idx) => {
-        const agent = agents[key];
-        const y = inputY + (idx + 1) * agentSpacing;
-        agent.y = y;
-        
-        const isSelected = selectedAgent === key;
-        const rectClass = isSelected ? 'agent-node-rect selected' : 'agent-node-rect';
-        
-        svg.innerHTML += `
-          <g class="agent-group" data-agent="${key}">
-            <rect class="${rectClass}" 
-                  x="${canvasWidth/2 - nodeWidth/2}" y="${y - nodeHeight/2}" 
-                  width="${nodeWidth}" height="${nodeHeight}" rx="6" 
-                  style="cursor: pointer;" />
-            <text class="agent-node-text" x="${canvasWidth/2}" y="${y - 10}">${agent.name || '(Unnamed)'}</text>
-            <text class="agent-node-label" x="${canvasWidth/2}" y="${y + 15}">${agent.tools.length + agent.constraints.length} item${agent.tools.length + agent.constraints.length !== 1 ? 's' : ''}</text>
+
+      activeAgents.forEach((agentKey, index) => {
+        const agent = agents[agentKey];
+        const selectedClass = selectedAgent === agentKey ? 'agent-node-rect selected' : 'agent-node-rect';
+        svgMarkup += `
+          <g class="agent-group" data-agent="${agentKey}">
+            <rect class="${selectedClass}"
+                  x="${canvasWidth / 2 - nodeWidth / 2}" y="${agent.y - nodeHeight / 2}"
+                  width="${nodeWidth}" height="${nodeHeight}" rx="6"
+                  style="cursor:pointer;" />
+            <text class="agent-node-text" x="${canvasWidth / 2}" y="${agent.y - 10}">${agent.name || '(Unnamed)'}</text>
+            <text class="agent-node-label" x="${canvasWidth / 2}" y="${agent.y + 15}">${agent.tools.length + agent.constraints.length} item${agent.tools.length + agent.constraints.length !== 1 ? 's' : ''}</text>
           </g>
         `;
-        
-        // Connection to next agent or output
-        if (idx < activeAgents.length - 1) {
-          const nextAgentY = inputY + (idx + 2) * agentSpacing;
-          svg.innerHTML += `
-            <line class="connection-line" x1="${canvasWidth/2}" y1="${y + nodeHeight/2}" 
-                  x2="${canvasWidth/2}" y2="${nextAgentY - nodeHeight/2}" />
-          `;
-        } else {
-          svg.innerHTML += `
-            <line class="connection-line" x1="${canvasWidth/2}" y1="${y + nodeHeight/2}" 
-                  x2="${canvasWidth/2}" y2="${outputY - 20}" />
-          `;
-        }
+
+        const nextY = index < activeAgents.length - 1
+          ? agents[activeAgents[index + 1]].y - nodeHeight / 2
+          : outputY - 20;
+        svgMarkup += `
+          <line class="connection-line" x1="${canvasWidth / 2}" y1="${agent.y + nodeHeight / 2}" x2="${canvasWidth / 2}" y2="${nextY}" />
+        `;
       });
     } else {
-      // No agents yet, connect input directly to output
-      svg.innerHTML += `
-        <line class="connection-line" x1="${canvasWidth/2}" y1="${inputY + 20}" x2="${canvasWidth/2}" y2="${outputY - 20}" />
+      svgMarkup += `
+        <line class="connection-line" x1="${canvasWidth / 2}" y1="${inputY + 20}" x2="${canvasWidth / 2}" y2="${outputY - 20}" />
       `;
     }
-    
-    // Draw tool nodes attached to each agent
-    activeAgents.forEach(agentKey => {
-      const agent = agents[agentKey];
-      
-      // Extract roles and tasks from constraints
-      const role = agent.constraints.find(c => {
-        return ['Strategic planner', 'Data Curator', 'Strategy Synthesizer', 'Quality validator'].includes(c);
-      });
-      
-      const task = agent.constraints.find(c => {
-        return ['Define constraints', 'Gather job postings/company data', 'Analyze role fit', 'Synthesize insights', 'Validate findings'].includes(c);
-      });
-      
-      const output = agent.constraints.find(c => {
-        return ['Strategic brief', 'Data summary', 'Executive report', 'Structured table', 'Risk assessment'].includes(c);
-      });
-      
-      const agentConstraints = agent.constraints.filter(c => CONSTRAINT_TAGS.includes(c));
-      
-      const handoffInstructions = agent.constraints.filter(c => HANDOFF_TAGS.includes(c));
-      
-      // Create HTML card
-      const cardY = agent.y;
-      const cardX = canvasWidth/2 + nodeWidth/2 + 20;
-      
-      const cardHtml = `
-        <div class="agent-card" style="left: ${cardX}px; top: ${cardY - 100}px;">
-          <div class="agent-card-title">${agent.name || '(Unnamed Agent)'}</div>
-          
-          <div class="agent-card-row">
-            <div class="agent-card-label">Role:</div>
-            <div class="agent-card-value ${!role ? 'agent-card-empty' : ''}">${role || 'Not assigned'}</div>
-          </div>
-          
-          <div class="agent-card-row">
-            <div class="agent-card-label">Task:</div>
-            <div class="agent-card-value ${!task ? 'agent-card-empty' : ''}">${task || 'Not assigned'}</div>
-          </div>
-          
-          <div class="agent-card-row">
-            <div class="agent-card-label">Tools:</div>
-            <div class="agent-card-value ${agent.tools.length === 0 ? 'agent-card-empty' : ''}">${agent.tools.length > 0 ? agent.tools.join(', ') : 'None assigned'}</div>
-          </div>
-          
-          <div class="agent-card-row">
-            <div class="agent-card-label">Output:</div>
-            <div class="agent-card-value ${!output ? 'agent-card-empty' : ''}">${output || 'Not assigned'}</div>
-          </div>
-          
-          ${agentConstraints.length > 0 ? `
-          <div class="agent-card-row">
-            <div class="agent-card-label">Constraints:</div>
-            <div class="agent-card-value">${agentConstraints.join(', ')}</div>
-          </div>
-          ` : ''}
-          
-          ${handoffInstructions.length > 0 ? `
-          <div class="agent-card-row">
-            <div class="agent-card-label">Handoff:</div>
-            <div class="agent-card-value">${handoffInstructions.join(', ')}</div>
-          </div>
-          ` : ''}
-        </div>
-      `;
-      
-      // Insert card into canvas area (not SVG)
-      const existingCards = document.querySelectorAll('.agent-card');
-      existingCards.forEach(card => card.remove()); // Clear old cards
-    });
-    
-    // Add all cards after SVG is done rendering
-    setTimeout(() => {
-      activeAgents.forEach((agentKey, agentIndex) => {
-        const agent = agents[agentKey];
-        
-        // Extract roles and tasks from constraints
-        const role = agent.constraints.find(c => {
-          return ['Strategic planner', 'Data Curator', 'Strategy Synthesizer', 'Quality validator'].includes(c);
-        });
-        
-        const task = agent.constraints.find(c => {
-          return ['Define constraints', 'Gather job postings/company data', 'Analyze role fit', 'Synthesize insights', 'Validate findings'].includes(c);
-        });
-        
-        const output = agent.constraints.find(c => {
-          return ['Strategic brief', 'Data summary', 'Executive report', 'Structured table', 'Risk assessment'].includes(c);
-        });
-        
-        const agentConstraints = agent.constraints.filter(c => CONSTRAINT_TAGS.includes(c));
-        
-        const handoffInstructions = agent.constraints.filter(c => HANDOFF_TAGS.includes(c));
-        
-        const cardY = agent.y;
-        
-        // Position cards: middle on left, top and bottom on right
-        let cardX;
-        let topOffset;
-        
-        if (activeAgents.length === 1) {
-          // Single agent - put on right
-          cardX = canvasWidth/2 + nodeWidth/2 + 20;
-          topOffset = cardY - 100;
-        } else if (activeAgents.length === 2) {
-          // Two agents - both on right, staggered
-          cardX = canvasWidth/2 + nodeWidth/2 + 20;
-          topOffset = cardY - 100;
-        } else if (activeAgents.length === 3) {
-          // Three agents - middle on left, top and bottom on right
-          if (agentIndex === 0) {
-            // Top agent - right side, higher up
-            cardX = canvasWidth/2 + nodeWidth/2 + 20;
-            topOffset = cardY - 50;
-          } else if (agentIndex === 1) {
-            // Middle agent - left side, further out
-            cardX = canvasWidth/2 - nodeWidth/2 - 280;
-            topOffset = cardY - 100;
-          } else {
-            // Bottom agent - right side, lower down
-            cardX = canvasWidth/2 + nodeWidth/2 + 20;
-            topOffset = cardY - 50;
-          }
-        }
-        
-        const card = document.createElement('div');
-        card.className = 'agent-card';
-        card.style.left = cardX + 'px';
-        card.style.top = topOffset + 'px';
-        card.innerHTML = `
-          <div class="agent-card-title">${agent.name || '(Unnamed Agent)'}</div>
-          
-          <div class="agent-card-row">
-            <div class="agent-card-label">Role:</div>
-            <div class="agent-card-value ${!role ? 'agent-card-empty' : ''}">
-              ${role ? `<span class="agent-card-clickable" data-agent="${agentKey}" data-item="${role}" data-type="constraint">${role}</span>` : 'Not assigned'}
-            </div>
-          </div>
-          
-          <div class="agent-card-row">
-            <div class="agent-card-label">Task:</div>
-            <div class="agent-card-value ${!task ? 'agent-card-empty' : ''}">
-              ${task ? `<span class="agent-card-clickable" data-agent="${agentKey}" data-item="${task}" data-type="constraint">${task}</span>` : 'Not assigned'}
-            </div>
-          </div>
-          
-          <div class="agent-card-row">
-            <div class="agent-card-label">Tools:</div>
-            <div class="agent-card-value">
-              ${agent.tools.length > 0 ? `<div class="agent-card-list">${agent.tools.map(tool => `<span class="agent-card-tag" data-agent="${agentKey}" data-item="${tool}" data-type="tool">${tool}</span>`).join('')}</div>` : '<span class="agent-card-empty">None assigned</span>'}
-            </div>
-          </div>
-          
-          <div class="agent-card-row">
-            <div class="agent-card-label">Output:</div>
-            <div class="agent-card-value ${!output ? 'agent-card-empty' : ''}">
-              ${output ? `<span class="agent-card-clickable" data-agent="${agentKey}" data-item="${output}" data-type="constraint">${output}</span>` : 'Not assigned'}
-            </div>
-          </div>
-          
-          ${agentConstraints.length > 0 ? `
-          <div class="agent-card-row">
-            <div class="agent-card-label">Constraints:</div>
-            <div class="agent-card-value agent-card-constraint-summary">
-              ${agentConstraints.map(constraint => `${constraint} (${priorityLabel(constraintPriorities[constraint] || 'manager')})`).join('<br>')}
-            </div>
-          </div>
-          ` : ''}
 
-          ${handoffInstructions.length > 0 ? `
-          <div class="agent-card-row">
-            <div class="agent-card-label">Handoff:</div>
-            <div class="agent-card-value">
-              <div class="agent-card-list">${handoffInstructions.map(handoff => `<span class="agent-card-constraint-tag" data-agent="${agentKey}" data-item="${handoff}" data-type="constraint">${handoff}</span>`).join('')}</div>
-            </div>
-          </div>
-          ` : ''}
-        `;
-        canvas.appendChild(card);
-        
-        // Add click handlers for item removal
-        card.querySelectorAll('[data-item]').forEach(item => {
-          item.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const agentKey = item.dataset.agent;
-            const itemText = item.dataset.item;
-            const itemType = item.dataset.type;
-            
-            if (itemType === 'tool') {
-              agents[agentKey].tools = agents[agentKey].tools.filter(t => t !== itemText);
-            } else if (itemType === 'constraint') {
-              agents[agentKey].constraints = agents[agentKey].constraints.filter(c => c !== itemText);
-            }
-            drawWorkflow();
-          });
-        });
-      });
-    }, 0);
-    
-    // Output node
-    svg.innerHTML += `
-      <rect class="flow-output" x="${canvasWidth/2 - 80}" y="${outputY - 20}" width="160" height="40" rx="20" />
-      <text class="flow-text" x="${canvasWidth/2}" y="${outputY + 5}">Search Strategy</text>
+    svgMarkup += `
+      <rect class="flow-output" x="${canvasWidth / 2 - 80}" y="${outputY - 20}" width="160" height="40" rx="20" />
+      <text class="flow-text" x="${canvasWidth / 2}" y="${outputY + 5}">Search Strategy</text>
     `;
-    
-    // Attach event listeners
-    document.querySelectorAll('.agent-group').forEach(g => {
-      g.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const key = e.currentTarget.dataset.agent;
+    svg.innerHTML = svgMarkup;
+
+    document.querySelectorAll('.agent-group').forEach(group => {
+      group.addEventListener('click', event => {
+        event.stopPropagation();
+        const key = event.currentTarget.dataset.agent;
         selectedAgent = selectedAgent === key ? null : key;
+
         if (selectedAgent) {
           agentSelect.value = agents[key].name;
-          const rect = e.currentTarget.querySelector('.agent-node-rect').getBoundingClientRect();
+          const rect = event.currentTarget.querySelector('.agent-node-rect').getBoundingClientRect();
           const canvasRect = canvas.getBoundingClientRect();
-          agentDropdown.style.left = (rect.left - canvasRect.left) + 'px';
-          agentDropdown.style.top = (rect.bottom - canvasRect.top + 5) + 'px';
+          agentDropdown.style.left = `${rect.left - canvasRect.left}px`;
+          agentDropdown.style.top = `${rect.bottom - canvasRect.top + 5}px`;
           agentDropdown.classList.add('show');
         } else {
           agentDropdown.classList.remove('show');
@@ -2159,11 +2149,8 @@
         drawWorkflow();
       });
     });
-    
-    // Item removal is now handled through card interface
-    // Students click on the agent card to edit
   }
-  
+
   // Sidebar drag handlers
   document.querySelectorAll('.tool-node').forEach(node => {
     node.addEventListener('dragstart', (e) => {
@@ -2301,12 +2288,13 @@
     }
   });
   
-  // Window resize handler
-  window.addEventListener('resize', () => {
-    canvasWidth = canvas.offsetWidth;
-    canvasHeight = canvas.offsetHeight;
-    drawWorkflow();
-  });
+  // Repack the workflow whenever the available workspace changes.
+  window.addEventListener('resize', scheduleWorkflowRedraw);
+
+  if (typeof ResizeObserver !== 'undefined') {
+    const workspaceResizeObserver = new ResizeObserver(scheduleWorkflowRedraw);
+    workspaceResizeObserver.observe(workflowWorkspace);
+  }
   
   // Build and validate the complete four-file submission package.
   function getAttributes(agentKey) {
