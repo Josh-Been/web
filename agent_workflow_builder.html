@@ -2199,6 +2199,31 @@
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   });
+
+  // Return the single closest active agent within the allowed drop radius.
+  // This prevents one drop from being assigned to multiple agents when
+  // neighboring drop zones overlap.
+  function getNearestActiveAgent(x, y, maxDistance = 120) {
+    let nearestAgentKey = null;
+    let nearestDistance = Infinity;
+
+    Object.keys(agents).forEach(key => {
+      if (!agents[key].active) return;
+
+      const agent = agents[key];
+      const distance = Math.sqrt(
+        Math.pow(x - canvasWidth / 2, 2) +
+        Math.pow(y - agent.y, 2)
+      );
+
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestAgentKey = key;
+      }
+    });
+
+    return nearestDistance < maxDistance ? nearestAgentKey : null;
+  }
   
   svg.addEventListener('drop', (e) => {
     e.preventDefault();
@@ -2218,41 +2243,42 @@
       const svgRect = svg.getBoundingClientRect();
       const x = e.clientX - svgRect.left;
       const y = e.clientY - svgRect.top;
-      
-      Object.keys(agents).forEach(key => {
-        if (!agents[key].active) return;
-        const agent = agents[key];
-        const dist = Math.sqrt(Math.pow(x - canvasWidth/2, 2) + Math.pow(y - agent.y, 2));
-        if (dist < 120) {
-          // Role, Primary Task, and Output Format are true single-select categories.
-          if (CATEGORY_TAGS[draggedConstraint.category]) {
-            agent.constraints = agent.constraints.filter(item => !CATEGORY_TAGS[draggedConstraint.category].includes(item));
-          }
+      const targetAgentKey = getNearestActiveAgent(x, y);
 
-          if (!agent.constraints.includes(draggedConstraint.text)) {
-            agent.constraints.push(draggedConstraint.text);
-          }
+      if (targetAgentKey) {
+        const agent = agents[targetAgentKey];
 
-          if (draggedConstraint.category === 'constraint' && !constraintPriorities[draggedConstraint.text]) {
-            constraintPriorities[draggedConstraint.text] = 'manager';
-          }
-          drawWorkflow();
+        // Role, Primary Task, and Output Format are true single-select categories.
+        if (CATEGORY_TAGS[draggedConstraint.category]) {
+          agent.constraints = agent.constraints.filter(
+            item => !CATEGORY_TAGS[draggedConstraint.category].includes(item)
+          );
         }
-      });
+
+        if (!agent.constraints.includes(draggedConstraint.text)) {
+          agent.constraints.push(draggedConstraint.text);
+        }
+
+        if (draggedConstraint.category === 'constraint' && !constraintPriorities[draggedConstraint.text]) {
+          constraintPriorities[draggedConstraint.text] = 'manager';
+        }
+
+        drawWorkflow();
+      }
     } else if (draggedTool) {
       const svgRect = svg.getBoundingClientRect();
       const x = e.clientX - svgRect.left;
       const y = e.clientY - svgRect.top;
-      
-      Object.keys(agents).forEach(key => {
-        if (!agents[key].active) return;
-        const agent = agents[key];
-        const dist = Math.sqrt(Math.pow(x - canvasWidth/2, 2) + Math.pow(y - agent.y, 2));
-        if (dist < 120 && !agent.tools.includes(draggedTool)) {
+      const targetAgentKey = getNearestActiveAgent(x, y);
+
+      if (targetAgentKey) {
+        const agent = agents[targetAgentKey];
+
+        if (!agent.tools.includes(draggedTool)) {
           agent.tools.push(draggedTool);
           drawWorkflow();
         }
-      });
+      }
     }
   });
   
