@@ -1175,7 +1175,7 @@
 
     <div class="utility-panel" id="helpUtilityPanel" hidden>
       <div class="utility-panel-header"><div><div class="utility-panel-title">Help and Workshop Information</div><div class="utility-panel-subtitle">Open only what you need, then return to the canvas.</div></div><button class="utility-panel-close" type="button" data-close-utility aria-label="Close help panel">×</button></div>
-      <details open><summary>How to use the builder</summary><p>Lock the project setup, add three agents, then work from top to bottom in the sidebar. Click an agent to assign its workflow name. Click an item on an agent card to remove it. Use the Workflow Constraints badge on the canvas to enter each value and priority.</p></details>
+      <details open><summary>How to use the builder</summary><p>Lock the project setup, add three agents, then work from top to bottom in the sidebar. Click an agent to assign its workflow name. Click an item on an agent card to remove it. Drag a Constraint tile anywhere onto the workflow; then use the Workflow Constraints badge to enter its value and priority.</p></details>
       <details><summary>Example workflow</summary><p>Manager defines and prioritizes candidate constraints → Researcher curates standardized job evidence → Analyst produces the standardized Search Strategy.</p></details>
       <details><summary>About this workshop</summary><p>This workflow builder is part of a workshop prepared by Baylor University Libraries. See the <a href="https://libguides.baylor.edu/agents" target="_blank" rel="noopener">workshop guide</a> for full materials. Developed summer 2026.</p><button class="instructor-demo-link" id="loadInstructorDemoButton" type="button" title="Instructor/testing backup only. Students should design their own workflow.">Instructor demo tools</button></details>
     </div>
@@ -1229,6 +1229,11 @@
     researcher: { name: '', x: 150, y: 280, tools: [], constraints: [], active: false },
     analyst: { name: '', x: 150, y: 440, tools: [], constraints: [], active: false }
   };
+
+  // Workflow-level constraints belong to the workflow itself, not to any agent.
+  // The Manager receives and interprets them in the exported SOP, then passes
+  // the resulting decisions downstream through the Manager handoff.
+  let workflowConstraints = [];
 
   // Workflow-level constraint values entered by the team.
   let constraintValues = {};
@@ -1656,11 +1661,6 @@
           'Strategic planner',
           'Define constraints',
           'Strategic brief',
-          'Regional focus',
-          'Compensation-aware',
-          'Candidate urgency',
-          'Visa/sponsorship-bound',
-          'Company-size restricted',
           'Prioritize & flag constraints',
           'Highlight assumptions',
           'Flag uncertainties'
@@ -1676,11 +1676,6 @@
           'Data Curator',
           'Gather job postings/company data',
           'Structured table',
-          'Regional focus',
-          'Compensation-aware',
-          'Candidate urgency',
-          'Visa/sponsorship-bound',
-          'Company-size restricted',
           'Pass structured data',
           'Include methodology',
           'Document sources',
@@ -1697,11 +1692,6 @@
           'Strategy Synthesizer',
           'Analyze role fit',
           'Executive report',
-          'Regional focus',
-          'Compensation-aware',
-          'Candidate urgency',
-          'Visa/sponsorship-bound',
-          'Company-size restricted',
           'Highlight assumptions',
           'Flag uncertainties',
           'Document sources'
@@ -1709,9 +1699,17 @@
       }
     };
 
-    // Instructor/demo mode supplies concrete details from the selected fictional
-    // profile. Students still choose and enter their own values during normal use.
+    // Instructor/demo mode supplies workflow-level constraints and concrete
+    // details from the selected fictional profile. Students still choose and
+    // enter their own values during normal use.
     const selectedProfile = getSelectedProfile();
+    workflowConstraints = [
+      'Regional focus',
+      'Compensation-aware',
+      'Candidate urgency',
+      'Visa/sponsorship-bound',
+      'Company-size restricted'
+    ];
     constraintValues = {
       'Regional focus': selectedProfile.location,
       'Compensation-aware': selectedProfile.compensation,
@@ -1756,6 +1754,7 @@
       researcher: { name: '', x: 150, y: 280, tools: [], constraints: [], active: false },
       analyst: { name: '', x: 150, y: 440, tools: [], constraints: [], active: false }
     };
+    workflowConstraints = [];
     constraintValues = {};
     constraintPriorities = {};
     constraintsPanelOpen = false;
@@ -1830,7 +1829,6 @@
       role: agent.constraints.find(c => ROLE_TAGS.includes(c)),
       task: agent.constraints.find(c => TASK_TAGS.includes(c)),
       output: agent.constraints.find(c => OUTPUT_TAGS.includes(c)),
-      workflowConstraints: agent.constraints.filter(c => CONSTRAINT_TAGS.includes(c)),
       handoffInstructions: agent.constraints.filter(c => HANDOFF_TAGS.includes(c))
     };
   }
@@ -1871,15 +1869,6 @@
           ${data.output ? `<span class="agent-card-clickable" data-agent="${agentKey}" data-item="${data.output}" data-type="constraint">${data.output}</span>` : 'Not assigned'}
         </div>
       </div>
-
-      ${data.workflowConstraints.length > 0 ? `
-      <div class="agent-card-row">
-        <div class="agent-card-label">Constraints:</div>
-        <div class="agent-card-value agent-card-constraint-summary">
-          ${data.workflowConstraints.map(constraint => `${constraint} (${priorityLabel(constraintPriorities[constraint] || 'manager')})`).join('<br>')}
-        </div>
-      </div>
-      ` : ''}
 
       ${data.handoffInstructions.length > 0 ? `
       <div class="agent-card-row">
@@ -1932,14 +1921,7 @@
     canvasWidth = Math.ceil(Math.max(workflowWorkspace.clientWidth, 900));
     canvas.style.width = `${canvasWidth}px`;
 
-    const allConstraints = [];
-    Object.keys(agents).forEach(key => {
-      agents[key].constraints.forEach(constraint => {
-        if (CONSTRAINT_TAGS.includes(constraint) && !allConstraints.includes(constraint)) {
-          allConstraints.push(constraint);
-        }
-      });
-    });
+    const allConstraints = [...workflowConstraints];
 
     const badge = document.createElement('div');
     badge.className = 'workflow-constraints-badge';
@@ -1970,7 +1952,7 @@
         <div class="workflow-constraints-overlay-header">
           <div>
             <div class="workflow-constraints-title">Workflow Constraints</div>
-            <div class="workflow-constraints-subtitle" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">Set by Manager, followed by all downstream agents. Add or edit a detail anytime -- optional.</div>
+            <div class="workflow-constraints-subtitle" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">Workflow-level constraints interpreted by the Manager and passed downstream through the Manager handoff. Add or edit a detail anytime -- optional.</div>
           </div>
           <button class="workflow-constraints-overlay-close" id="constraintsOverlayClose">✕</button>
         </div>
@@ -1993,7 +1975,7 @@
               </div>
               <div class="constraint-priority-note">Required may exclude only an affirmative failure. Preferred affects ranking. Manager determines delegates the classification.</div>
             </div>
-          `).join('') : '<div class="workflow-constraints-empty">No constraints tagged yet. Drag a Constraint tile onto an agent to get started.</div>'}
+          `).join('') : '<div class="workflow-constraints-empty">No constraints tagged yet. Drag a Constraint tile anywhere onto the workflow to get started.</div>'}
         </div>
       `;
       document.body.appendChild(overlay);
@@ -2007,9 +1989,7 @@
         item.addEventListener('click', event => {
           event.stopPropagation();
           const constraintText = item.dataset.constraint;
-          Object.keys(agents).forEach(agentKey => {
-            agents[agentKey].constraints = agents[agentKey].constraints.filter(constraint => constraint !== constraintText);
-          });
+          workflowConstraints = workflowConstraints.filter(constraint => constraint !== constraintText);
           delete constraintValues[constraintText];
           delete constraintPriorities[constraintText];
           drawWorkflow();
@@ -2195,7 +2175,7 @@
   });
   
   // Canvas drop handlers
-  svg.addEventListener('dragover', (e) => {
+  canvas.addEventListener('dragover', (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   });
@@ -2225,7 +2205,7 @@
     return nearestDistance < maxDistance ? nearestAgentKey : null;
   }
   
-  svg.addEventListener('drop', (e) => {
+  canvas.addEventListener('drop', (e) => {
     e.preventDefault();
     
     if (draggedAgent) {
@@ -2240,6 +2220,19 @@
         }
       }
     } else if (draggedConstraint) {
+      // Workflow constraints are global. Dropping one anywhere on the workflow
+      // adds it only to the Workflow Constraints collection, never to an agent.
+      if (draggedConstraint.category === 'constraint') {
+        if (!workflowConstraints.includes(draggedConstraint.text)) {
+          workflowConstraints.push(draggedConstraint.text);
+        }
+        if (!constraintPriorities[draggedConstraint.text]) {
+          constraintPriorities[draggedConstraint.text] = 'manager';
+        }
+        drawWorkflow();
+        return;
+      }
+
       const svgRect = svg.getBoundingClientRect();
       const x = e.clientX - svgRect.left;
       const y = e.clientY - svgRect.top;
@@ -2257,10 +2250,6 @@
 
         if (!agent.constraints.includes(draggedConstraint.text)) {
           agent.constraints.push(draggedConstraint.text);
-        }
-
-        if (draggedConstraint.category === 'constraint' && !constraintPriorities[draggedConstraint.text]) {
-          constraintPriorities[draggedConstraint.text] = 'manager';
         }
 
         drawWorkflow();
@@ -2329,26 +2318,16 @@
     const task = agent.constraints.find(item => TASK_TAGS.includes(item));
     const output = agent.constraints.find(item => OUTPUT_TAGS.includes(item));
     const handoff = agent.constraints.filter(item => HANDOFF_TAGS.includes(item));
-    const workflowConstraints = agent.constraints.filter(item => CONSTRAINT_TAGS.includes(item));
     return {
       role,
       task,
       output,
-      handoff,
-      workflowConstraints
+      handoff
     };
   }
 
   function getWorkflowConstraints() {
-    const workflowConstraints = [];
-    Object.keys(agents).forEach(key => {
-      agents[key].constraints.forEach(item => {
-        if (CONSTRAINT_TAGS.includes(item) && !workflowConstraints.includes(item)) {
-          workflowConstraints.push(item);
-        }
-      });
-    });
-    return workflowConstraints;
+    return [...workflowConstraints];
   }
 
   function validateWorkflowForExport() {
