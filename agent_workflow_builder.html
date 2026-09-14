@@ -1009,6 +1009,223 @@
 
   
     /* ================================================================
+       SIDEBAR INSTRUCTIONAL AFFORDANCES
+       Visual guidance only. Workflow behavior and drag/drop logic are unchanged.
+       ================================================================ */
+    .sidebar {
+      width: 280px;
+    }
+
+    .sidebar-section {
+      margin-bottom: 22px;
+    }
+
+    .sidebar-stage-title {
+      margin: 25px -20px 14px;
+      padding: 9px 20px;
+      background: #eef5f0;
+      border-top: 1px solid #d7e5db;
+      border-bottom: 1px solid #d7e5db;
+      color: #154734;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+    }
+
+    .sidebar-stage-title.setup-stage {
+      margin-top: 8px;
+      background: #f3f6fb;
+      border-color: #d7e0ef;
+      color: #24476b;
+    }
+
+    .decision-header,
+    .setup-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
+    .decision-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .decision-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 25px;
+      height: 25px;
+      flex: 0 0 25px;
+      border-radius: 999px;
+      background: #154734;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+
+    .sidebar-action-title {
+      color: #2f2f2f;
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .selection-badge,
+    .workflow-wide-badge,
+    .guided-badge,
+    .setup-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      border-radius: 999px;
+      font-size: 9px;
+      line-height: 1.15;
+      font-weight: 800;
+      letter-spacing: 0.25px;
+      white-space: nowrap;
+    }
+
+    .selection-badge {
+      padding: 5px 7px;
+      flex-shrink: 0;
+    }
+
+    .selection-badge.single {
+      color: #0b5fad;
+      background: #e8f3ff;
+      border: 1px solid #9fc9ef;
+    }
+
+    .selection-badge.multi {
+      color: #1f6d3c;
+      background: #eaf7ef;
+      border: 1px solid #aad9ba;
+    }
+
+    .workflow-wide-badge {
+      color: #6a1b7b;
+      background: #f5eafa;
+      border: 1px solid #d6a9df;
+      padding: 5px 7px;
+    }
+
+    .guided-badge {
+      color: #8a4d00;
+      background: #fff5df;
+      border: 1px solid #e7bd70;
+      padding: 5px 8px;
+      margin-bottom: 7px;
+    }
+
+    .setup-badge {
+      color: #24476b;
+      background: #edf3fb;
+      border: 1px solid #b9cce2;
+      padding: 5px 8px;
+    }
+
+    .decision-badge-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 7px;
+    }
+
+    .category-description {
+      color: #707070;
+      font-size: 11px;
+      font-weight: normal;
+      margin-bottom: 8px;
+      line-height: 1.45;
+      font-style: normal;
+    }
+
+    .category-description strong {
+      color: #4a4a4a;
+      font-weight: 750;
+    }
+
+    .drop-target-cue {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin: 0 0 9px;
+      padding: 5px 7px;
+      border-radius: 4px;
+      font-size: 9px;
+      line-height: 1.25;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .drop-target-cue.agent-target {
+      color: #35506a;
+      background: #f2f6fa;
+      border-left: 3px solid #6f8daa;
+    }
+
+    .drop-target-cue.workflow-target {
+      color: #6a1b7b;
+      background: #faf3fc;
+      border-left: 3px solid #9c4dad;
+    }
+
+    .selection-legend {
+      margin: 2px 0 18px;
+      padding: 10px;
+      border: 1px solid #dedede;
+      border-radius: 7px;
+      background: #fbfbfb;
+    }
+
+    .selection-legend-title {
+      color: #555;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.45px;
+      margin-bottom: 7px;
+    }
+
+    .selection-legend-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 7px;
+      align-items: center;
+      margin-top: 6px;
+      color: #777;
+      font-size: 10px;
+      line-height: 1.3;
+    }
+
+    .student-release-banner {
+      margin: -4px 0 18px;
+      padding: 9px 10px;
+      border-radius: 6px;
+      background: #f0f7f2;
+      border: 1px solid #c5dfcd;
+      border-left: 4px solid #2f7d4f;
+      color: #285f3f;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .student-release-banner strong {
+      font-weight: 800;
+    }
+
+    /* ================================================================
        RESPONSIVE UTILITY TOOLBAR LAYOUT
        ================================================================ */
     .utility-toolbar { position:sticky; top:12px; z-index:90; display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; width:max-content; max-width:calc(100% - 24px); margin:12px 20px -50px auto; pointer-events:none; }
@@ -1047,26 +1264,61 @@
 
 <div class="container">
   <div class="sidebar">
+    <div class="sidebar-stage-title setup-stage">Setup: Build the Organization</div>
+
     <div class="sidebar-section">
-      <div class="sidebar-title">Agents</div>
-      <div class="category-description">Build the three-agent sequence before assigning each agent's work.</div>
+      <div class="setup-header">
+        <div class="sidebar-action-title">Add the Three Agents</div>
+        <span class="setup-badge">SETUP</span>
+      </div>
+      <div class="category-description"><strong>Build the organization first.</strong> Drag <strong>Agent</strong> onto the workflow three times. Agents are added in order as Manager, Researcher, and Analyst.</div>
+      <div class="drop-target-cue workflow-target">↘ Drag onto the workflow</div>
       <div class="tool-node" draggable="true" data-agent-slot="true" data-description="Add the next agent node to the workflow. Agents are added in sequence as Manager, Researcher, and Analyst." style="background: #f0f4ff; border-color: #0066cc; color: #0066cc; font-weight: 600;">Agent</div>
+    </div>
+
+    <div class="selection-legend" aria-label="Selection guide">
+      <div class="selection-legend-title">How selections work</div>
+      <div class="selection-legend-row">
+        <span class="selection-badge single">○ CHOOSE ONE</span>
+        <span>A new choice replaces the previous one.</span>
+      </div>
+      <div class="selection-legend-row">
+        <span class="selection-badge multi">☑ CHOOSE MULTIPLE</span>
+        <span>Add all choices that support the work.</span>
+      </div>
     </div>
 
     <div class="sidebar-stage-title">Define the Assignment</div>
 
     <div class="sidebar-section">
-      <div class="sidebar-title">Role <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
-      <div class="category-description">Define what the agent is and the perspective it brings to the workflow.</div>
+      <div class="decision-header">
+        <div class="decision-title-wrap">
+          <span class="decision-number">1</span>
+          <div class="sidebar-action-title">Choose a Role</div>
+        </div>
+        <span class="selection-badge single">○ CHOOSE ONE</span>
+      </div>
+      <div class="guided-badge">START HERE · WE'LL DO THIS TOGETHER</div>
+      <div class="category-description"><strong>How will this agent contribute?</strong> The workflow name tells you where the agent sits (Manager, Researcher, Analyst). The Role describes the perspective it brings.</div>
+      <div class="drop-target-cue agent-target">↘ Drag to an agent</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Strategic planner" data-category="role" data-description="Sets overall strategy, defines objectives, and establishes the rules and constraints that downstream agents must follow.">Strategic planner</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Data Curator" data-category="role" data-description="Filters and organizes information from the pre-collected database, documents exclusions, and preserves uncertainty.">Data Curator</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Strategy Synthesizer" data-category="role" data-description="Analyzes curated evidence and transforms it into a recommended job-search strategy.">Strategy Synthesizer</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Quality validator" data-category="role" data-description="Reviews and validates the work of other agents. Assigning this role raises a useful question about whether a three-agent workflow has enough dedicated quality assurance.">Quality validator</div>
     </div>
 
+    <div class="student-release-banner"><strong>Your turn:</strong> Complete Decisions 2–6 with your team, working from top to bottom.</div>
+
     <div class="sidebar-section">
-      <div class="sidebar-title">Primary Task <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
-      <div class="category-description">Specify the agent's central responsibility.</div>
+      <div class="decision-header">
+        <div class="decision-title-wrap">
+          <span class="decision-number">2</span>
+          <div class="sidebar-action-title">Choose the Primary Task</div>
+        </div>
+        <span class="selection-badge single">○ CHOOSE ONE</span>
+      </div>
+      <div class="category-description"><strong>What is this agent chiefly responsible for accomplishing?</strong> Choose the central task that best matches the agent's place in the workflow.</div>
+      <div class="drop-target-cue agent-target">↘ Drag to an agent</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Define constraints" data-category="task" data-description="Establish the boundaries, priorities, timeline, and other limits that guide the workflow.">Define constraints</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Gather job postings/company data" data-category="task" data-description="Filter and identify open roles and companies relevant to the candidate from the pre-collected job database.">Gather job postings/company data</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Analyze role fit" data-category="task" data-description="Evaluate how well available roles match the candidate's experience, goals, and constraints.">Analyze role fit</div>
@@ -1075,8 +1327,18 @@
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-title">Constraints <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
-      <div class="category-description">Define the boundaries governing the workflow. After adding one, use the Workflow Constraints panel to enter a value and classify it as Required, Preferred, or Manager determines.</div>
+      <div class="decision-header">
+        <div class="decision-title-wrap">
+          <span class="decision-number">3</span>
+          <div class="sidebar-action-title">Set Workflow Constraints</div>
+        </div>
+        <span class="selection-badge multi">☑ CHOOSE ANY</span>
+      </div>
+      <div class="decision-badge-row">
+        <span class="workflow-wide-badge">WORKFLOW-WIDE</span>
+      </div>
+      <div class="category-description"><strong>What requirements must the entire workflow honor?</strong> Constraints belong to the workflow, not to an individual agent. After adding one, open <strong>Workflow Constraints</strong> to enter its value and classify it as Required, Preferred, or Manager determines.</div>
+      <div class="drop-target-cue workflow-target">↘ Drop anywhere on the workflow</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Compensation-aware" data-category="constraint" data-description="The workflow must consider the candidate's salary expectations or compensation floor.">Compensation-aware</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Candidate urgency" data-category="constraint" data-description="The candidate has a target timeline for obtaining or starting a new role. This affects prioritization, not how quickly the agents run.">Candidate urgency</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Company-size restricted" data-category="constraint" data-description="The search is limited or weighted toward a particular company-size range.">Company-size restricted</div>
@@ -1087,8 +1349,15 @@
     <div class="sidebar-stage-title">Equip the Agent</div>
 
     <div class="sidebar-section">
-      <div class="sidebar-title">Tools / Capabilities <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
-      <div class="category-description">Assign the resources the agent needs to complete its bounded task.</div>
+      <div class="decision-header">
+        <div class="decision-title-wrap">
+          <span class="decision-number">4</span>
+          <div class="sidebar-action-title">Assign Tools / Capabilities</div>
+        </div>
+        <span class="selection-badge multi">☑ CHOOSE 1+</span>
+      </div>
+      <div class="category-description"><strong>What does this agent need in order to do its task?</strong> Give the agent only the capabilities that support its responsibility.</div>
+      <div class="drop-target-cue agent-target">↘ Drag to an agent</div>
       <div class="tool-node" draggable="true" data-tool="Define Constraints" data-description="Allows the agent to establish and communicate priorities, timelines, and other workflow boundaries.">Define Constraints</div>
       <div class="tool-node" draggable="true" data-tool="Query Job Database" data-description="Enables the agent to search and filter the pre-collected job listings database for reproducible results.">Query Job Database</div>
       <div class="tool-node" draggable="true" data-tool="Format & Synthesize" data-description="Structures evidence into organized formats and creates useful summaries.">Format &amp; Synthesize</div>
@@ -1097,8 +1366,15 @@
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-title">Output Format <span style="font-weight: normal; font-size: 10px; color: #999;">(single-select)</span></div>
-      <div class="category-description">Choose the broad type of deliverable. The workshop supplies the exact Researcher and Analyst structures.</div>
+      <div class="decision-header">
+        <div class="decision-title-wrap">
+          <span class="decision-number">5</span>
+          <div class="sidebar-action-title">Choose the Output</div>
+        </div>
+        <span class="selection-badge single">○ CHOOSE ONE</span>
+      </div>
+      <div class="category-description"><strong>What broad deliverable should this agent produce?</strong> Choose the format that best prepares the next stage or final audience. The workshop supplies the exact Researcher and Analyst structures.</div>
+      <div class="drop-target-cue agent-target">↘ Drag to an agent</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Strategic brief" data-category="output" data-description="A concise document outlining strategy, objectives, constraints, and key decisions.">Strategic brief</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Data summary" data-category="output" data-description="A structured summary of collected evidence with methodology and uncertainty documented.">Data summary</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Executive report" data-category="output" data-description="A professional report containing findings, recommendations, and supporting evidence.">Executive report</div>
@@ -1109,8 +1385,15 @@
     <div class="sidebar-stage-title">Connect the Workflow</div>
 
     <div class="sidebar-section">
-      <div class="sidebar-title">Handoff Instructions <span style="font-weight: normal; font-size: 10px; color: #999;">(multi-select)</span></div>
-      <div class="category-description">Specify what the agent must preserve or communicate for the next stage. Exact table and report schemas are standardized by the workshop.</div>
+      <div class="decision-header">
+        <div class="decision-title-wrap">
+          <span class="decision-number">6</span>
+          <div class="sidebar-action-title">Define the Handoff</div>
+        </div>
+        <span class="selection-badge multi">☑ CHOOSE 1+</span>
+      </div>
+      <div class="category-description"><strong>What must survive to the next stage?</strong> Choose what the agent must preserve or communicate so the next agent can continue without reconstructing earlier work. Exact table and report schemas are standardized by the workshop.</div>
+      <div class="drop-target-cue agent-target">↘ Drag to an agent</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Prioritize & flag constraints" data-category="handoff" data-description="Preserve each constraint's value and team-selected priority, and flag missing details or delegated judgments.">Prioritize &amp; flag constraints</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Pass structured data" data-category="handoff" data-description="Organize the evidence clearly so the next agent can use it without reconstructing the earlier work.">Pass structured data</div>
       <div class="tool-node constraint-node" draggable="true" data-constraint="Include methodology" data-category="handoff" data-description="Document the method used to reach the findings.">Include methodology</div>
@@ -1175,7 +1458,7 @@
 
     <div class="utility-panel" id="helpUtilityPanel" hidden>
       <div class="utility-panel-header"><div><div class="utility-panel-title">Help and Workshop Information</div><div class="utility-panel-subtitle">Open only what you need, then return to the canvas.</div></div><button class="utility-panel-close" type="button" data-close-utility aria-label="Close help panel">×</button></div>
-      <details open><summary>How to use the builder</summary><p>Lock the project setup, add three agents, then work from top to bottom in the sidebar. Click an agent to assign its workflow name. Click an item on an agent card to remove it. Drag a Constraint tile anywhere onto the workflow; then use the Workflow Constraints badge to enter its value and priority.</p></details>
+      <details open><summary>How to use the builder</summary><p>Lock Project Setup, add three agents, then complete Decisions 1–6 from top to bottom. Blue badges mean choose one; green badges allow multiple choices. Drag agent-specific decisions to the appropriate agent. Workflow Constraints can be dropped anywhere and apply to the entire workflow. Click an agent to assign its workflow name, and click an item on an agent card to remove it.</p></details>
       <details><summary>Example workflow</summary><p>Manager defines and prioritizes candidate constraints → Researcher curates standardized job evidence → Analyst produces the standardized Search Strategy.</p></details>
       <details><summary>About this workshop</summary><p>This workflow builder is part of a workshop prepared by Baylor University Libraries. See the <a href="https://libguides.baylor.edu/agents" target="_blank" rel="noopener">workshop guide</a> for full materials. Developed summer 2026.</p><button class="instructor-demo-link" id="loadInstructorDemoButton" type="button" title="Instructor/testing backup only. Students should design their own workflow.">Instructor demo tools</button></details>
     </div>
